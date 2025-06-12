@@ -10,7 +10,8 @@
     </parent>
 
     <properties>
-        <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-sdk.version>12.29.0</azure-sdk.version>
+        <azure-identity.version>1.15.4</azure-identity.version>
     </properties>
 
     <artifactId>assets-manager-web</artifactId>
@@ -31,8 +32,12 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -69,9 +74,14 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>s3</artifactId>
-                <version>${aws-sdk.version}</version>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
