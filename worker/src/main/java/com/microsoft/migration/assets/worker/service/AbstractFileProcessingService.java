@@ -29,7 +29,7 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
     private RetryTemplate retryTemplate;
 
     @ServiceBusListener(destination = QUEUE_NAME)
-    public void processImage(final ImageProcessingMessage message) {
+    public void processImage(final ImageProcessingMessage message) throws Exception {
         try {
             retryTemplate.execute(new RetryCallback<Void, Exception>() {
                 @Override

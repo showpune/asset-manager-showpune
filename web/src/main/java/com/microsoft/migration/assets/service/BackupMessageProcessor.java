@@ -26,7 +26,7 @@ public class BackupMessageProcessor {
      * Uses the same Service Bus API pattern as the worker module.
      */
     @ServiceBusListener(destination = QUEUE_NAME)
-    public void processBackupMessage(final ImageProcessingMessage message) {
+    public void processBackupMessage(final ImageProcessingMessage message) throws Exception {
         try {
             log.info("[BACKUP] Monitoring message: {}", message.getKey());
             log.info("[BACKUP] Content type: {}, Storage: {}, Size: {}", 
