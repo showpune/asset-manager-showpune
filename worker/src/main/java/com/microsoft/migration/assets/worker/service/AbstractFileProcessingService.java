@@ -2,11 +2,12 @@ package com.microsoft.migration.assets.worker.service;
 
 import com.microsoft.migration.assets.worker.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.worker.util.StorageUtil;
-import com.rabbitmq.client.Channel;
+import com.azure.spring.messaging.servicebus.implementation.core.annotation.ServiceBusListener;
+import com.azure.spring.messaging.servicebus.support.ServiceBusMessageHeaders;
+import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.microsoft.migration.assets.worker.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.worker.config.ServiceBusConfig.QUEUE_NAME;
 
 @Slf4j
 public abstract class AbstractFileProcessingService implements FileProcessor {
@@ -28,72 +29,72 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
     @Autowired
     private RetryTemplate retryTemplate;
 
-    @RabbitListener(queues = QUEUE_NAME)
-    public void processImage(final ImageProcessingMessage message, 
-                           Channel channel, 
-                           @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+    @ServiceBusListener(destination = QUEUE_NAME)
+    public void processImage(ImageProcessingMessage messagePayload, 
+                           Message<ImageProcessingMessage> message,
+                           @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) ServiceBusReceivedMessageContext context) {
         try {
             retryTemplate.execute(new RetryCallback<Void, Exception>() {
                 @Override
-                public Void doWithRetry(RetryContext context) throws Exception {
-                    if (context.getRetryCount() > 0) {
-                        log.info("Retry attempt {} for image: {}", context.getRetryCount(), message.getKey());
+                public Void doWithRetry(RetryContext retryContext) throws Exception {
+                    if (retryContext.getRetryCount() > 0) {
+                        log.info("Retry attempt {} for image: {}", retryContext.getRetryCount(), messagePayload.getKey());
                     }
                     
-                    processImageWithRetry(message);
+                    processImageWithRetry(messagePayload);
                     return null;
                 }
             });
             
-            // Success - acknowledge the message
-            log.debug("Acknowledging message after successful processing: {}", message.getKey());
-            channel.basicAck(deliveryTag, false);
+            // Success - complete the message
+            log.debug("Completing message after successful processing: {}", messagePayload.getKey());
+            context.complete();
         } catch (Exception e) {
-            log.error("All retry attempts failed for image: " + message.getKey(), e);
+            log.error("All retry attempts failed for image: " + messagePayload.getKey(), e);
             
             try {
-                // After all retries are exhausted, reject the message
-                // to retry later, use basicNack with requeue=true
-                log.debug("Rejecting message after all retry attempts failed: {}", message.getKey());
-                channel.basicNack(deliveryTag, false, true);
-            } catch (IOException ackEx) {
-                log.error("Error handling RabbitMQ acknowledgment for: {}", message.getKey(), ackEx);
+                // After all retries are exhausted, abandon the message
+                // to retry later (similar to basicNack with requeue=true)
+                log.debug("Abandoning message after all retry attempts failed: {}", messagePayload.getKey());
+                context.abandon();
+            } catch (Exception abandonEx) {
+                log.error("Error handling Service Bus message completion for: {}", messagePayload.getKey(), abandonEx);
             }
         }
     }
     
-    private void processImageWithRetry(ImageProcessingMessage message) {
+    private void processImageWithRetry(ImageProcessingMessage messagePayload) {
         Path tempDir = null;
         Path originalFile = null;
         Path thumbnailFile = null;
 
         try {
-            log.info("Processing image: {}", message.getKey());
+            log.info("Processing image: {}", messagePayload.getKey());
 
             tempDir = Files.createTempDirectory("image-processing");
-            originalFile = tempDir.resolve("original" + StorageUtil.getExtension(message.getKey()));
-            thumbnailFile = tempDir.resolve("thumbnail" + StorageUtil.getExtension(message.getKey()));
+            originalFile = tempDir.resolve("original" + StorageUtil.getExtension(messagePayload.getKey()));
+            thumbnailFile = tempDir.resolve("thumbnail" + StorageUtil.getExtension(messagePayload.getKey()));
 
             // Only process if message matches our storage type
-            if (message.getStorageType().equals(getStorageType())) {
+            if (messagePayload.getStorageType().equals(getStorageType())) {
                 // Download original file
-                downloadOriginal(message.getKey(), originalFile);
+                downloadOriginal(messagePayload.getKey(), originalFile);
 
                 // Generate thumbnail
                 generateThumbnail(originalFile, thumbnailFile);
 
                 // Upload thumbnail
-                String thumbnailKey = StorageUtil.getThumbnailKey(message.getKey());
-                uploadThumbnail(thumbnailFile, thumbnailKey, message.getContentType());
+                String thumbnailKey = StorageUtil.getThumbnailKey(messagePayload.getKey());
+                uploadThumbnail(thumbnailFile, thumbnailKey, messagePayload.getContentType());
 
-                log.info("Successfully processed image: {}", message.getKey());
+                log.info("Successfully processed image: {}", messagePayload.getKey());
             } else {
                 log.debug("Skipping message with storage type: {} (we handle {})",
-                    message.getStorageType(), getStorageType());
+                    messagePayload.getStorageType(), getStorageType());
             }
         } catch (Exception e) {
-            log.error("Failed to process image: " + message.getKey(), e);
-            throw new RuntimeException("Failed to process image: " + message.getKey(), e);
+            log.error("Failed to process image: " + messagePayload.getKey(), e);
+            throw new RuntimeException("Failed to process image: " + messagePayload.getKey(), e);
         } finally {
             try {
                 // Cleanup temporary files
@@ -107,7 +108,7 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
                     Files.deleteIfExists(tempDir);
                 }
             } catch (IOException e) {
-                log.error("Error cleaning up temporary files for: {}", message.getKey(), e);
+                log.error("Error cleaning up temporary files for: {}", messagePayload.getKey(), e);
             }
         }
     }
