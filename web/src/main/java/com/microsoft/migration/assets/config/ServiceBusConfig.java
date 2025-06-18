@@ -8,10 +8,12 @@ import com.azure.messaging.servicebus.administration.models.QueueProperties;
 import com.azure.spring.cloud.autoconfigure.implementation.servicebus.properties.AzureServiceBusProperties;
 import com.azure.spring.messaging.implementation.annotation.EnableAzureMessaging;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "spring.cloud.azure.servicebus.enabled", havingValue = "true", matchIfMissing = true)
 public class ServiceBusConfig {
     
     public static final String QUEUE_NAME = "image-processing";
