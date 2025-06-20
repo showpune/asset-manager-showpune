@@ -5,7 +5,9 @@ import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
 import com.microsoft.migration.assets.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.azure.spring.messaging.servicebus.core.ServiceBusTemplate;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.config.ServiceBusConfig.QUEUE_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 public class AwsS3Service implements StorageService {
 
     private final S3Client s3Client;
-    private final RabbitTemplate rabbitTemplate;
+    private final ServiceBusTemplate serviceBusTemplate;
     private final ImageMetadataRepository imageMetadataRepository;
 
     @Value("${aws.s3.bucket}")
@@ -76,14 +78,15 @@ public class AwsS3Service implements StorageService {
         
         s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-        // Send message to queue for thumbnail generation
+        // Send message to Service Bus queue for thumbnail generation
         ImageProcessingMessage message = new ImageProcessingMessage(
             key,
             file.getContentType(),
             getStorageType(),
             file.getSize()
         );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        Message<ImageProcessingMessage> serviceBusMessage = MessageBuilder.withPayload(message).build();
+        serviceBusTemplate.send(QUEUE_NAME, serviceBusMessage);
 
         // Create and save metadata to database
         ImageMetadata metadata = new ImageMetadata();
