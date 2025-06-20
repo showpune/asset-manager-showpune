@@ -7,7 +7,7 @@ import jakarta.persistence.PreUpdate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Data
@@ -18,21 +18,21 @@ public class ImageMetadata {
     private String filename;
     private String contentType;
     private Long size;
-    private String s3Key;
-    private String s3Url;
+    private String blobKey;
+    private String blobUrl;
     private String thumbnailKey;
     private String thumbnailUrl;
-    private LocalDateTime uploadedAt;
-    private LocalDateTime lastModified;
+    private Instant uploadedAt;
+    private Instant lastModified;
 
     @PrePersist
     protected void onCreate() {
-        uploadedAt = LocalDateTime.now();
-        lastModified = LocalDateTime.now();
+        uploadedAt = Instant.now();
+        lastModified = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        lastModified = LocalDateTime.now();
+        lastModified = Instant.now();
     }
 }

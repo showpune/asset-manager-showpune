@@ -1,6 +1,6 @@
 package com.microsoft.migration.assets.controller;
 
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.BlobStorageItem;
 import com.microsoft.migration.assets.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -19,15 +19,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/s3")
+@RequestMapping("/storage")
 @RequiredArgsConstructor
-public class S3Controller {
+public class StorageController {
 
     private final StorageService storageService;
 
     @GetMapping
     public String listObjects(Model model) {
-        List<S3StorageItem> objects = storageService.listObjects();
+        List<BlobStorageItem> objects = storageService.listObjects();
         model.addAttribute("objects", objects);
         return "list";
     }
@@ -42,15 +42,15 @@ public class S3Controller {
         try {
             if (file.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Please select a file to upload");
-                return "redirect:/s3/upload";
+                return "redirect:/storage/upload";
             }
 
             storageService.uploadObject(file);
             redirectAttributes.addFlashAttribute("success", "File uploaded successfully");
-            return "redirect:/s3";
+            return "redirect:/storage";
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("error", "Failed to upload file: " + e.getMessage());
-            return "redirect:/s3/upload";
+            return "redirect:/storage/upload";
         }
     }
     
@@ -58,7 +58,7 @@ public class S3Controller {
     public String viewObjectPage(@PathVariable String key, Model model, RedirectAttributes redirectAttributes) {
         try {
             // Find the object in the list of objects
-            Optional<S3StorageItem> foundObject = storageService.listObjects().stream()
+            Optional<BlobStorageItem> foundObject = storageService.listObjects().stream()
                     .filter(obj -> obj.getKey().equals(key))
                     .findFirst();
             
@@ -67,11 +67,11 @@ public class S3Controller {
                 return "view";
             } else {
                 redirectAttributes.addFlashAttribute("error", "Image not found");
-                return "redirect:/s3";
+                return "redirect:/storage";
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to view image: " + e.getMessage());
-            return "redirect:/s3";
+            return "redirect:/storage";
         }
     }
 
@@ -100,6 +100,17 @@ public class S3Controller {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to delete file: " + e.getMessage());
         }
-        return "redirect:/s3";
+        return "redirect:/storage";
+    }
+    
+    // Keep the old S3 endpoints for backward compatibility
+    @GetMapping("/s3")
+    public String listObjectsLegacy(Model model) {
+        return listObjects(model);
+    }
+
+    @GetMapping("/s3/view/{key}")
+    public ResponseEntity<InputStreamResource> viewObjectLegacy(@PathVariable String key) {
+        return viewObject(key);
     }
 }
