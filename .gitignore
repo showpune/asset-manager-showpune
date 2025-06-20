@@ -12,6 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
+.metadata
 
 ### IntelliJ IDEA ###
 .idea
@@ -33,3 +34,5 @@ build/
 .vscode/
 
 /logs/
+.github/appmod-java/appcat/*
+.a2a/*
