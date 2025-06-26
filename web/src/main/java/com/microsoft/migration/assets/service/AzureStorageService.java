@@ -28,7 +28,7 @@ import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 
 @Service
 @RequiredArgsConstructor
-@Profile("!dev") // Active when not in dev profile
+@Profile("!dev") // Active when not in dev profile (default for production)
 public class AzureStorageService implements StorageService {
 
     private final BlobServiceClient blobServiceClient;

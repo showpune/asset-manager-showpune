@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 @Service
-@Profile("!dev")
+@Profile({"s3", "legacy"})
 @RequiredArgsConstructor
 public class S3FileProcessingService extends AbstractFileProcessingService {
     private final S3Client s3Client;

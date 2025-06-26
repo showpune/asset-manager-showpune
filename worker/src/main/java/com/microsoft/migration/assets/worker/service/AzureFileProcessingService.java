@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 @Service
-@Profile("!dev")
+@Profile("!dev") // Active when not in dev profile (default for production)
 @RequiredArgsConstructor
 public class AzureFileProcessingService extends AbstractFileProcessingService {
     private final BlobServiceClient blobServiceClient;
