@@ -11,6 +11,8 @@
 
     <properties>
         <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-storage-blob.version>12.29.0</azure-storage-blob.version>
+        <azure-identity.version>1.15.4</azure-identity.version>
     </properties>
 
     <artifactId>assets-manager-web</artifactId>
@@ -33,6 +35,14 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -72,6 +82,16 @@
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
                 <version>${aws-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-storage-blob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
