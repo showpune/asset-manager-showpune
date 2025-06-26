@@ -26,7 +26,7 @@ import static com.microsoft.migration.assets.config.ServiceBusConfig.QUEUE_NAME;
 
 @Service
 @RequiredArgsConstructor
-@Profile("!dev") // Active when not in dev profile
+@Profile({"!dev", "!test"}) // Active when not in dev or test profile
 public class AwsS3Service implements StorageService {
 
     private final S3Client s3Client;

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static com.microsoft.migration.assets.config.ServiceBusConfig.QUEUE_NAME;
 
 @Service
-@Profile("dev") // Only active when dev profile is active
+@Profile({"dev", "!test"}) // Only active when dev profile is active and not test
 public class LocalFileStorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalFileStorageService.class);

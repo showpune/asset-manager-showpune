@@ -18,7 +18,7 @@ import static com.microsoft.migration.assets.config.ServiceBusConfig.QUEUE_NAME;
  */
 @Slf4j
 @Component
-@Profile("backup") 
+@Profile({"backup", "!test"}) // Only enabled when backup profile is active and not test
 public class BackupMessageProcessor {
 
     /**
