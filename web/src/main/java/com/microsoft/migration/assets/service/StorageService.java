@@ -1,6 +1,6 @@
 package com.microsoft.migration.assets.service;
 
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.StorageItem;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public interface StorageService {
     /**
      * List all objects in storage
      */
-    List<S3StorageItem> listObjects();
+    List<StorageItem> listObjects();
     
     /**
      * Upload file to storage

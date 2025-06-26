@@ -9,7 +9,7 @@ import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.microsoft.migration.assets.model.ImageMetadata;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.StorageItem;
 import com.microsoft.migration.assets.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class AzureStorageService implements StorageService {
     }
     
     @Override
-    public List<S3StorageItem> listObjects() {
+    public List<StorageItem> listObjects() {
         try {
             BlobContainerClient containerClient = getContainerClient();
             
@@ -56,12 +56,12 @@ public class AzureStorageService implements StorageService {
                     .map(blobItem -> {
                         // Try to get metadata for upload time
                         var uploadedAt = imageMetadataRepository.findAll().stream()
-                                .filter(metadata -> metadata.getS3Key() != null && metadata.getS3Key().equals(blobItem.getName()))
+                                .filter(metadata -> metadata.getStorageKey() != null && metadata.getStorageKey().equals(blobItem.getName()))
                                 .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
                                 .findFirst()
                                 .orElse(blobItem.getProperties().getLastModified().toInstant());
 
-                        return new S3StorageItem(
+                        return new StorageItem(
                                 blobItem.getName(),
                                 extractFilename(blobItem.getName()),
                                 blobItem.getProperties().getContentLength(),
@@ -101,8 +101,8 @@ public class AzureStorageService implements StorageService {
         metadata.setFilename(file.getOriginalFilename());
         metadata.setContentType(file.getContentType());
         metadata.setSize(file.getSize());
-        metadata.setS3Key(key);
-        metadata.setS3Url(generateUrl(key));
+        metadata.setStorageKey(key);
+        metadata.setStorageUrl(generateUrl(key));
         
         imageMetadataRepository.save(metadata);
     }
