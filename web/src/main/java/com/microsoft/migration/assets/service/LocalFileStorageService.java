@@ -1,7 +1,7 @@
 package com.microsoft.migration.assets.service;
 
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.StorageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -51,7 +51,7 @@ public class LocalFileStorageService implements StorageService {
     }
 
     @Override
-    public List<S3StorageItem> listObjects() {
+    public List<StorageItem> listObjects() {
         try {
             return Files.walk(rootLocation, 1)
                 .filter(path -> !path.equals(rootLocation))
@@ -59,7 +59,7 @@ public class LocalFileStorageService implements StorageService {
                     try {
                         String filename = path.getFileName().toString();
                         BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
-                        return new S3StorageItem(
+                        return new StorageItem(
                             filename,
                             filename,
                             Files.size(path),
