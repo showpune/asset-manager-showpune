@@ -1,13 +1,10 @@
 package com.microsoft.migration.assets.worker.service;
 
+import com.azure.spring.messaging.servicebus.implementation.core.annotation.ServiceBusListener;
 import com.microsoft.migration.assets.worker.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.worker.util.StorageUtil;
-import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.support.RetryTemplate;
@@ -20,7 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.microsoft.migration.assets.worker.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.worker.config.ServiceBusConfig.QUEUE_NAME;
 
 @Slf4j
 public abstract class AbstractFileProcessingService implements FileProcessor {
@@ -28,10 +25,8 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
     @Autowired
     private RetryTemplate retryTemplate;
 
-    @RabbitListener(queues = QUEUE_NAME)
-    public void processImage(final ImageProcessingMessage message, 
-                           Channel channel, 
-                           @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+    @ServiceBusListener(destination = QUEUE_NAME)
+    public void processImage(final ImageProcessingMessage message) throws Exception {
         try {
             retryTemplate.execute(new RetryCallback<Void, Exception>() {
                 @Override
@@ -45,20 +40,12 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
                 }
             });
             
-            // Success - acknowledge the message
-            log.debug("Acknowledging message after successful processing: {}", message.getKey());
-            channel.basicAck(deliveryTag, false);
+            // Success - message is automatically acknowledged
+            log.debug("Successfully processed message: {}", message.getKey());
         } catch (Exception e) {
             log.error("All retry attempts failed for image: " + message.getKey(), e);
-            
-            try {
-                // After all retries are exhausted, reject the message
-                // to retry later, use basicNack with requeue=true
-                log.debug("Rejecting message after all retry attempts failed: {}", message.getKey());
-                channel.basicNack(deliveryTag, false, true);
-            } catch (IOException ackEx) {
-                log.error("Error handling RabbitMQ acknowledgment for: {}", message.getKey(), ackEx);
-            }
+            // Let Azure Service Bus handle dead letter queue or redelivery based on configuration
+            throw e;
         }
     }
     
