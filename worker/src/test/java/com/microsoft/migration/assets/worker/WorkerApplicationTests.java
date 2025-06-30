@@ -1,16 +1,16 @@
-package com.microsoft.migration.assets;
+package com.microsoft.migration.assets.worker;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class AssetsManagerApplicationTests {
+class WorkerApplicationTests {
 
 	@Test
-	void applicationMainClassExists() {
+	void workerApplicationMainClassExists() {
 		// This test verifies that the migration was successful by ensuring
-		// the main application class can be instantiated
-		AssetsManagerApplication app = new AssetsManagerApplication();
+		// the worker application class can be instantiated
+		WorkerApplication app = new WorkerApplication();
 		assertNotNull(app);
 	}
 
@@ -18,7 +18,7 @@ class AssetsManagerApplicationTests {
 	void serviceBusConfigurationClassExists() {
 		// Verify that ServiceBusConfig class exists and can be instantiated
 		try {
-			Class.forName("com.microsoft.migration.assets.config.ServiceBusConfig");
+			Class.forName("com.microsoft.migration.assets.worker.config.ServiceBusConfig");
 		} catch (ClassNotFoundException e) {
 			throw new AssertionError("ServiceBusConfig class not found - migration incomplete", e);
 		}
