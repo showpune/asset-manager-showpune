@@ -141,8 +141,10 @@ Managed identity based authentication
 
 **Prerequisites**: JDK, Docker
 
+### Running with Local File System and RabbitMQ (Development)
+
 Run the following commands to start the apps locally. This will:
-* Use local file system instead of S3 to store the image
+* Use local file system instead of cloud storage to store the image
 * Launch RabbitMQ and PostgreSQL using Docker
 
 Windows:
@@ -159,4 +161,76 @@ cd asset-manager
 scripts/start.sh
 ```
 
+### Running with AWS S3 and RabbitMQ
+
+To use AWS S3 instead of local file system:
+
+1. Set the spring profile to `s3` (not `dev`) in both web and worker applications
+2. Configure your AWS credentials in the application-s3.properties files
+3. Run the applications
+
+### Running with Azure Storage Account and Service Bus
+
+To use Azure Blob Storage and Azure Service Bus:
+
+1. Set the spring profile to `azure` in both web and worker applications
+2. Configure your Azure credentials using Azure Managed Identity
+3. Set the following environment variables:
+   - `AZURE_CLIENT_ID`: Your Azure managed identity client ID
+   - `SERVICE_BUS_NAMESPACE`: Your Azure Service Bus namespace
+4. Update the Azure configuration in application-azure.properties files
+5. Run the applications
+
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
+
+## Migration Guide
+
+### Easy Configuration Switching
+
+Use the provided configuration scripts to easily switch between storage providers:
+
+**Linux/Mac:**
+```bash
+./configure.sh --azure    # Switch to Azure configuration
+./configure.sh --s3       # Switch to AWS S3 configuration  
+./configure.sh --dev      # Switch to development configuration
+./configure.sh --status   # Show current configuration
+```
+
+**Windows:**
+```cmd
+configure.cmd --azure     # Switch to Azure configuration
+configure.cmd --s3        # Switch to AWS S3 configuration
+configure.cmd --dev       # Switch to development configuration
+configure.cmd --status    # Show current configuration
+```
+
+### Migrating from AWS S3 to Azure Storage Account
+
+This project supports both AWS S3 and Azure Blob Storage. To migrate from S3 to Azure:
+
+1. **Set up Azure Resources**:
+   - Create an Azure Storage Account
+   - Create a blob container for image storage
+   - Create an Azure Service Bus namespace and queue
+   - Set up Azure Managed Identity for authentication
+
+2. **Configure Environment Variables**:
+   ```bash
+   export AZURE_CLIENT_ID=your-managed-identity-client-id
+   export SERVICE_BUS_NAMESPACE=your-servicebus-namespace.servicebus.windows.net
+   ```
+
+3. **Update Configuration**:
+   - Modify `application-azure.properties` files with your Azure resource details
+   - Set the storage account endpoint and container name
+
+4. **Switch Application Profile**:
+   - Change from `s3` profile to `azure` profile
+   - Or start applications with `-Dspring.profiles.active=azure`
+
+5. **Data Migration** (if needed):
+   - Use Azure Storage Migration tools to copy existing data from S3 to Azure Blob Storage
+   - Update any database records that reference S3 URLs to point to Azure Blob Storage URLs
+
+The application will automatically use Azure Blob Storage for new uploads and Azure Service Bus for message processing when running with the `azure` profile.
