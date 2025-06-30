@@ -2,7 +2,7 @@ package com.microsoft.migration.assets.service;
 
 import com.microsoft.migration.assets.model.ImageMetadata;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.StorageItem;
 import com.microsoft.migration.assets.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -36,7 +36,7 @@ public class AwsS3Service implements StorageService {
     private String bucketName;
 
     @Override
-    public List<S3StorageItem> listObjects() {
+    public List<StorageItem> listObjects() {
         ListObjectsV2Request request = ListObjectsV2Request.builder()
                 .bucket(bucketName)
                 .build();
@@ -47,12 +47,12 @@ public class AwsS3Service implements StorageService {
                 .map(s3Object -> {
                     // Try to get metadata for upload time
                     Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(s3Object.key()))
+                            .filter(metadata -> metadata.getStorageKey().equals(s3Object.key()))
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
                             .findFirst()
                             .orElse(s3Object.lastModified()); // fallback to lastModified if metadata not found
 
-                    return new S3StorageItem(
+                    return new StorageItem(
                             s3Object.key(),
                             extractFilename(s3Object.key()),
                             s3Object.size(),
@@ -91,8 +91,8 @@ public class AwsS3Service implements StorageService {
         metadata.setFilename(file.getOriginalFilename());
         metadata.setContentType(file.getContentType());
         metadata.setSize(file.getSize());
-        metadata.setS3Key(key);
-        metadata.setS3Url(generateUrl(key));
+        metadata.setStorageKey(key);
+        metadata.setStorageUrl(generateUrl(key));
         
         imageMetadataRepository.save(metadata);
     }
