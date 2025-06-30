@@ -18,8 +18,8 @@ public class ImageMetadata {
     private String filename;
     private String contentType;
     private Long size;
-    private String s3Key;
-    private String s3Url;
+    private String blobKey;
+    private String blobUrl;
     private String thumbnailKey;
     private String thumbnailUrl;
     private LocalDateTime uploadedAt;
@@ -34,5 +34,26 @@ public class ImageMetadata {
     @PreUpdate
     protected void onUpdate() {
         lastModified = LocalDateTime.now();
+    }
+    
+    // Backward compatibility getters/setters for S3 names
+    @Deprecated
+    public String getS3Key() {
+        return blobKey;
+    }
+    
+    @Deprecated
+    public void setS3Key(String s3Key) {
+        this.blobKey = s3Key;
+    }
+    
+    @Deprecated
+    public String getS3Url() {
+        return blobUrl;
+    }
+    
+    @Deprecated
+    public void setS3Url(String s3Url) {
+        this.blobUrl = s3Url;
     }
 }
