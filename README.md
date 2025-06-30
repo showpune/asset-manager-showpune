@@ -139,11 +139,16 @@ Managed identity based authentication
 
 ## Run Locally
 
-**Prerequisites**: JDK, Docker
+**Prerequisites**: JDK, Docker, Azure credentials
+
+**Environment Variables**: Set the following environment variables:
+* `AZURE_CLIENT_ID` - Azure Managed Identity Client ID
+* `SERVICE_BUS_NAMESPACE` - Azure Service Bus namespace (e.g., `myservicebus.servicebus.windows.net`)
 
 Run the following commands to start the apps locally. This will:
 * Use local file system instead of S3 to store the image
-* Launch RabbitMQ and PostgreSQL using Docker
+* Use Azure Service Bus for message queuing (requires Azure credentials)
+* Launch PostgreSQL using Docker
 
 Windows:
 
