@@ -20,6 +20,8 @@ public class ImageMetadata {
     private Long size;
     private String s3Key;
     private String s3Url;
+    private String azureBlobName;
+    private String azureBlobUrl;
     private String thumbnailKey;
     private String thumbnailUrl;
     private LocalDateTime uploadedAt;
