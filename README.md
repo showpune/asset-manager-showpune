@@ -2,12 +2,20 @@
 Sample project for migration tool code remediation that manages assets in cloud storage.
 
 ## Current Infrastructure
-The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
-* RabbitMQ for message queuing, using password-based authentication
-* PostgreSQL database for metadata storage, using password-based authentication
+The project has been **migrated** to use Azure services and supports multiple storage backends:
 
-## Current Architecture
+**Default (Production):**
+* Azure Blob Storage for image storage, using managed identity authentication
+* RabbitMQ for message queuing
+* PostgreSQL database for metadata storage
+
+**AWS S3 (Optional):**
+* AWS S3 for image storage, using access key/secret key authentication (activate with `aws` profile)
+
+**Local Development:**
+* Local file system for image storage (activate with `dev` profile)
+
+## Current Architecture (Default - Azure)
 ```mermaid
 flowchart TD
 
@@ -16,7 +24,7 @@ WebApp[Web Application]
 Worker[Worker Service]
 
 %% Storage Components
-S3[(AWS S3)]
+AzBlob[(Azure Blob Storage)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
@@ -33,11 +41,11 @@ User -->|Upload Image| WebApp
 User -->|View Images| WebApp
 
 %% Web App Flows
-WebApp -->|Store Original Image| S3
+WebApp -->|Store Original Image| AzBlob
 WebApp -->|Store Original Image| LocalFS
 WebApp -->|Send Processing Message| RabbitMQ
 WebApp -->|Store Metadata| PostgreSQL
-WebApp -->|Retrieve Images| S3
+WebApp -->|Retrieve Images| AzBlob
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
 
@@ -45,9 +53,9 @@ WebApp -->|Retrieve Metadata| PostgreSQL
 RabbitMQ -->|Push Message| Worker
 
 %% Worker Flow
-Worker -->|Download Original| S3
+Worker -->|Download Original| AzBlob
 Worker -->|Download Original| LocalFS
-Worker -->|Upload Thumbnail| S3
+Worker -->|Upload Thumbnail| AzBlob
 Worker -->|Upload Thumbnail| LocalFS
 Worker -->|Store Metadata| PostgreSQL
 Worker -->|Retrieve Metadata| PostgreSQL
@@ -136,6 +144,39 @@ class Queue,RetryQueue queue
 class User user
 ```
 Managed identity based authentication
+
+## Storage Configuration
+
+The application supports three storage backends:
+
+### Azure Blob Storage (Default)
+- **Activation**: Default when no specific profile is set
+- **Authentication**: Azure managed identity (DefaultAzureCredential)
+- **Configuration**: Set `azure.storage.endpoint` and `azure.storage.container`
+
+```bash
+java -jar assets-manager-web.jar
+```
+
+### AWS S3 Storage
+- **Activation**: Use `aws` profile
+- **Authentication**: Access key and secret key
+- **Configuration**: Set AWS credentials and S3 bucket name
+
+```bash
+java -jar assets-manager-web.jar --spring.profiles.active=aws
+```
+
+### Local File Storage (Development)
+- **Activation**: Use `dev` profile  
+- **Storage**: Local file system
+- **Configuration**: Set `local.storage.directory`
+
+```bash
+java -jar assets-manager-web.jar --spring.profiles.active=dev
+```
+
+For detailed configuration, see [STORAGE_CONFIG.md](STORAGE_CONFIG.md).
 
 ## Run Locally
 
