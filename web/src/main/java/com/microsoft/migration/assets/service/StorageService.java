@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Interface for storage operations that can be implemented by different storage providers
- * (AWS S3, local file system, etc.)
+ * (Azure Blob Storage, AWS S3, local file system, etc.)
  */
 public interface StorageService {
     
