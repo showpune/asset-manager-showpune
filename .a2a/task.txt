@@ -1,0 +1,2 @@
+Title: [migration-work-session-id] Migrate from AWS S3 to Azure Storage Account
+Description: Please refer to the knowledge base of Migrate from AWS S3 to Azure Storage Account provided by the MCP tool to change the code, include build dependency, configuration and code change
