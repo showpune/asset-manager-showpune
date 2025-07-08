@@ -11,11 +11,8 @@ docker run -d --name assets-postgres \
     -e POSTGRES_PASSWORD=postgres \
     -p 5432:5432 postgres:latest
 
-echo "Starting RabbitMQ container..."
-docker run -d --name assets-rabbitmq \
-    -p 5672:5672 \
-    -p 15672:15672 \
-    rabbitmq:management
+echo "Starting applications (Azure Service Bus configuration required)..."
+echo "Note: Make sure to set AZURE_CLIENT_ID and SERVICE_BUS_NAMESPACE environment variables"
 
 echo "Waiting for services to start..."
 sleep 10
@@ -35,4 +32,4 @@ cd "$PROJECT_ROOT/worker" && "$PROJECT_ROOT/mvnw" spring-boot:run -Dspring-boot.
 echo "All services started! Check logs directory for output."
 echo "Web application: http://localhost:8080"
 echo "Worker application: http://localhost:8081"
-echo "RabbitMQ Management: http://localhost:15672 (guest/guest)"
+echo "Note: Ensure Azure Service Bus is configured with the required queue 'image-processing'"
