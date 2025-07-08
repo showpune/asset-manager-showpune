@@ -1,9 +1,16 @@
 # Asset Manager
 Sample project for migration tool code remediation that manages assets in cloud storage.
 
+## Storage Options
+The project supports multiple storage backends:
+* **Azure Storage (Default)**: Uses Azure Blob Storage with managed identity authentication
+* **AWS S3**: Uses AWS S3 with access key/secret key authentication (activate with `aws` profile)  
+* **Local File System**: For development only (activate with `dev` profile)
+
 ## Current Infrastructure
 The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
+* Azure Blob Storage for image storage, using managed identity authentication (Default)
+* AWS S3 for image storage, using password-based authentication (when using `aws` profile)
 * RabbitMQ for message queuing, using password-based authentication
 * PostgreSQL database for metadata storage, using password-based authentication
 
@@ -16,7 +23,8 @@ WebApp[Web Application]
 Worker[Worker Service]
 
 %% Storage Components
-S3[(AWS S3)]
+AzBlob[(Azure Blob Storage)]
+S3[(AWS S3 - aws profile)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
@@ -33,10 +41,12 @@ User -->|Upload Image| WebApp
 User -->|View Images| WebApp
 
 %% Web App Flows
+WebApp -->|Store Original Image| AzBlob
 WebApp -->|Store Original Image| S3
 WebApp -->|Store Original Image| LocalFS
 WebApp -->|Send Processing Message| RabbitMQ
 WebApp -->|Store Metadata| PostgreSQL
+WebApp -->|Retrieve Images| AzBlob
 WebApp -->|Retrieve Images| S3
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
@@ -45,8 +55,10 @@ WebApp -->|Retrieve Metadata| PostgreSQL
 RabbitMQ -->|Push Message| Worker
 
 %% Worker Flow
+Worker -->|Download Original| AzBlob
 Worker -->|Download Original| S3
 Worker -->|Download Original| LocalFS
+Worker -->|Upload Thumbnail| AzBlob
 Worker -->|Upload Thumbnail| S3
 Worker -->|Upload Thumbnail| LocalFS
 Worker -->|Store Metadata| PostgreSQL
@@ -61,19 +73,21 @@ classDef queue fill:#fff59d,stroke:#f57f17,color:#f57f17
 classDef user fill:#ef9a9a,stroke:#b71c1c,color:#b71c1c
 
 class WebApp,Worker app
-class S3,LocalFS storage
+class AzBlob,S3,LocalFS storage
 class RabbitMQ broker
 class PostgreSQL db
 class Queue,RetryQueue queue
 class User user
 ```
-Password-based authentication
+Azure Storage (default) with managed identity authentication, AWS S3 (aws profile) with password-based authentication
 
 ## Migrated Infrastructure
-After migration, the project will use the following Azure services:
-* Azure Blob Storage for image storage, using managed identity authentication
-* Azure Service Bus for message queuing, using managed identity authentication
-* Azure Database for PostgreSQL for metadata storage, using managed identity authentication
+The project now supports the following Azure services:
+* Azure Blob Storage for image storage, using managed identity authentication (default)
+* RabbitMQ for message queuing, using password-based authentication
+* PostgreSQL database for metadata storage, using password-based authentication
+
+Legacy AWS S3 support is maintained through the `aws` profile.
 
 ## Migrated Architecture
 ```mermaid
@@ -141,8 +155,39 @@ Managed identity based authentication
 
 **Prerequisites**: JDK, Docker
 
+### Configuration
+
+The application supports multiple storage backends configured through Spring profiles:
+
+#### Azure Storage (Default)
+```properties
+# Azure Storage Configuration
+azure.storage.account.endpoint=https://yourstorageaccount.blob.core.windows.net
+azure.storage.container.name=your-container-name
+```
+
+To use Azure Storage, ensure the application has access to Azure credentials through:
+- Azure CLI: `az login`
+- Managed Identity (when running on Azure)
+- Environment variables: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`
+
+#### AWS S3 (Legacy)
+Activate the `aws` profile to use AWS S3:
+```properties
+# AWS S3 Configuration
+aws.accessKey=your-access-key
+aws.secretKey=your-secret-key
+aws.region=us-east-1
+aws.s3.bucket=your-bucket-name
+```
+
+#### Local Development
+Activate the `dev` profile to use local file system storage.
+
+### Running the Application
+
 Run the following commands to start the apps locally. This will:
-* Use local file system instead of S3 to store the image
+* Use local file system instead of cloud storage (when using `dev` profile)
 * Launch RabbitMQ and PostgreSQL using Docker
 
 Windows:
@@ -160,3 +205,20 @@ scripts/start.sh
 ```
 
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
+
+### Migration from S3 to Azure Storage
+
+This project has been migrated from AWS S3 to Azure Storage Account. The migration includes:
+
+1. **Dependencies**: Added Azure Storage Blob, Azure Identity libraries
+2. **Configuration**: Added Azure Storage configuration alongside AWS S3 configuration
+3. **Services**: Created Azure Storage service implementations
+4. **Profiles**: 
+   - Default: Uses Azure Storage with managed identity
+   - `aws`: Uses AWS S3 with access key/secret key authentication
+   - `dev`: Uses local file system
+
+To switch between storage backends:
+- **Azure Storage**: Run without any profile (default)
+- **AWS S3**: Run with `--spring.profiles.active=aws`
+- **Local Storage**: Run with `--spring.profiles.active=dev`
