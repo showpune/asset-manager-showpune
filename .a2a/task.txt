@@ -1,0 +1,2 @@
+Title: RabbitMQ to Azure Service Bus migration
+Description: Please refer to the knowledge base of RabbitMQ to Azure Service Bus migration provided by the MCP tool to change the code, include build dependency, configuration and code change
