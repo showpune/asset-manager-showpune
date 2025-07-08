@@ -141,22 +141,88 @@ Managed identity based authentication
 
 **Prerequisites**: JDK, Docker
 
-Run the following commands to start the apps locally. This will:
-* Use local file system instead of S3 to store the image
-* Launch RabbitMQ and PostgreSQL using Docker
+The application now supports multiple deployment modes through Spring profiles:
 
-Windows:
+### Development Mode (Local File System + RabbitMQ)
+Uses local file system for storage and RabbitMQ for messaging.
 
-```batch
-cd asset-manager
-scripts\start.cmd
-```
+```bash
+# Set the dev profile
+export SPRING_PROFILES_ACTIVE=dev
 
-Linux:
-
-```sh
+# Start infrastructure
 cd asset-manager
 scripts/start.sh
+
+# Start web application
+cd web
+mvn spring-boot:run
+
+# Start worker application
+cd worker
+mvn spring-boot:run
+```
+
+### AWS Mode (S3 + RabbitMQ)
+Uses AWS S3 for storage and RabbitMQ for messaging.
+
+```bash
+# Set the aws profile and AWS credentials
+export SPRING_PROFILES_ACTIVE=aws
+export AWS_ACCESS_KEY=your-access-key
+export AWS_SECRET_KEY=your-secret-key
+export AWS_REGION=us-east-1
+export AWS_S3_BUCKET=your-bucket-name
+
+# Start infrastructure (RabbitMQ + PostgreSQL)
+cd asset-manager
+scripts/start.sh
+
+# Start applications
+cd web
+mvn spring-boot:run
+cd worker
+mvn spring-boot:run
+```
+
+### Azure Mode (Azure Storage + Service Bus)
+Uses Azure Blob Storage and Azure Service Bus with managed identity authentication.
+
+```bash
+# Set the azure profile and Azure configuration
+export SPRING_PROFILES_ACTIVE=azure
+export AZURE_CLIENT_ID=your-managed-identity-client-id
+export SERVICE_BUS_NAMESPACE=your-servicebus-namespace
+export AZURE_STORAGE_ACCOUNT_NAME=your-storage-account
+export AZURE_STORAGE_CONTAINER_NAME=your-container-name
+
+# Start infrastructure (PostgreSQL only, Azure services are cloud-based)
+cd asset-manager
+scripts/start-azure.sh
+
+# Start applications
+cd web
+mvn spring-boot:run
+cd worker
+mvn spring-boot:run
+```
+
+### Configuration Files
+
+Update `application.properties` in both `web` and `worker` modules:
+
+**For Azure mode:**
+```properties
+# Azure Storage Configuration
+azure.storage.account-name=${AZURE_STORAGE_ACCOUNT_NAME}
+azure.storage.container-name=${AZURE_STORAGE_CONTAINER_NAME}
+azure.storage.endpoint=https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net
+
+# Azure Service Bus Configuration
+spring.cloud.azure.credential.managed-identity-enabled=true
+spring.cloud.azure.credential.client-id=${AZURE_CLIENT_ID}
+spring.cloud.azure.servicebus.entity-type=queue
+spring.cloud.azure.servicebus.namespace=${SERVICE_BUS_NAMESPACE}
 ```
 
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
