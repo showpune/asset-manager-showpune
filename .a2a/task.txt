@@ -1,0 +1,2 @@
+Title: [sessionid-20250708050319] Migration from RabbitMQ to Azure Service Bus
+Description: Please refer to the knowledge base of Migration from RabbitMQ to Azure Service Bus provided by the MCP tool to change the code, include build dependency, configuration and code change
