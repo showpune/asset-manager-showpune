@@ -14,7 +14,10 @@ import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
+import org.springframework.context.annotation.Profile;
+
 @Configuration
+@Profile({"aws", "dev"})
 public class RabbitConfig {
     public static final String QUEUE_NAME = "image-processing";
     public static final int RETRY_DELAY_MS = 60000; // 1 minute delay
