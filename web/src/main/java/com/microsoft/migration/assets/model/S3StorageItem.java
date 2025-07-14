@@ -10,8 +10,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class S3StorageItem {
-    private String key;
-    private String name;
+    private String key;        // blob name
+    private String name;       // display name
     private long size;
     private Instant lastModified;
     private Instant uploadedAt;
