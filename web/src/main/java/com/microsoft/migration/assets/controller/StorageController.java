@@ -1,6 +1,6 @@
 package com.microsoft.migration.assets.controller;
 
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.StorageItem;
 import com.microsoft.migration.assets.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -19,21 +19,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/s3")
+@RequestMapping("/storage")
 @RequiredArgsConstructor
-public class S3Controller {
+public class StorageController {
 
     private final StorageService storageService;
 
     @GetMapping
     public String listObjects(Model model) {
-        List<S3StorageItem> objects = storageService.listObjects();
+        List<StorageItem> objects = storageService.listObjects();
         model.addAttribute("objects", objects);
+        model.addAttribute("storageType", storageService.getStorageType());
         return "list";
     }
 
     @GetMapping("/upload")
-    public String uploadForm() {
+    public String uploadForm(Model model) {
+        model.addAttribute("storageType", storageService.getStorageType());
         return "upload";
     }
 
@@ -42,15 +44,15 @@ public class S3Controller {
         try {
             if (file.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Please select a file to upload");
-                return "redirect:/s3/upload";
+                return "redirect:/storage/upload";
             }
 
             storageService.uploadObject(file);
             redirectAttributes.addFlashAttribute("success", "File uploaded successfully");
-            return "redirect:/s3";
+            return "redirect:/storage";
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("error", "Failed to upload file: " + e.getMessage());
-            return "redirect:/s3/upload";
+            return "redirect:/storage/upload";
         }
     }
     
@@ -58,9 +60,52 @@ public class S3Controller {
     public String viewObjectPage(@PathVariable String key, Model model, RedirectAttributes redirectAttributes) {
         try {
             // Find the object in the list of objects
-            Optional<S3StorageItem> foundObject = storageService.listObjects().stream()
+            Optional<StorageItem> foundObject = storageService.listObjects().stream()
                     .filter(obj -> obj.getKey().equals(key))
                     .findFirst();
+            
+            if (foundObject.isPresent()) {
+                model.addAttribute("object", foundObject.get());
+                model.addAttribute("storageType", storageService.getStorageType());
+                return "view";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Image not found");
+                return "redirect:/storage";
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to view image: " + e.getMessage());
+            return "redirect:/storage";
+        }
+    }
+
+    @GetMapping("/view/{key}")
+    public ResponseEntity<InputStreamResource> viewObject(@PathVariable String key) {
+        try {
+            InputStream inputStream = storageService.getObject(key);
+            
+            HttpHeaders headers = new HttpHeaders();
+            // Use a generic content type if we don't know the exact type
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(new InputStreamResource(inputStream));
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/delete/{key}")
+    public String deleteObject(@PathVariable String key, RedirectAttributes redirectAttributes) {
+        try {
+            storageService.deleteObject(key);
+            redirectAttributes.addFlashAttribute("success", "File deleted successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to delete file: " + e.getMessage());
+        }
+        return "redirect:/storage";
+    }
+}
             
             if (foundObject.isPresent()) {
                 model.addAttribute("object", foundObject.get());
