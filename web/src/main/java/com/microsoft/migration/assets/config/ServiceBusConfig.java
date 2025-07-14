@@ -9,9 +9,11 @@ import com.azure.spring.messaging.implementation.annotation.EnableAzureMessaging
 import com.azure.core.exception.ResourceNotFoundException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 @EnableAzureMessaging
+@Profile("!test")
 public class ServiceBusConfig {
     public static final String QUEUE_NAME = "image-processing";
 
