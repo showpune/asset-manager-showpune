@@ -1,17 +1,15 @@
 package com.microsoft.migration.assets.service;
 
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
-import com.rabbitmq.client.Channel;
+import com.azure.spring.messaging.servicebus.implementation.core.annotation.ServiceBusListener;
+import com.azure.spring.messaging.servicebus.support.ServiceBusMessageHeaders;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
-
-import java.io.IOException;
+import static com.microsoft.migration.assets.config.ServiceBusConfig.QUEUE_NAME;
 
 /**
  * A backup message processor that serves as a monitoring and logging service.
@@ -24,30 +22,30 @@ import java.io.IOException;
 public class BackupMessageProcessor {
 
     /**
-     * Processes image messages from a backup queue for monitoring and resilience purposes.
-     * Uses the same RabbitMQ API pattern as the worker module.
+     * Processes image messages from Azure Service Bus for monitoring and resilience purposes.
      */
-    @RabbitListener(queues = QUEUE_NAME)
+    @ServiceBusListener(destination = QUEUE_NAME)
     public void processBackupMessage(final ImageProcessingMessage message, 
-                                    Channel channel, 
-                                    @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+                                    Message<ImageProcessingMessage> serviceBusMessage,
+                                    @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) 
+                                    com.azure.messaging.servicebus.ServiceBusReceivedMessageContext context) {
         try {
             log.info("[BACKUP] Monitoring message: {}", message.getKey());
             log.info("[BACKUP] Content type: {}, Storage: {}, Size: {}", 
                     message.getContentType(), message.getStorageType(), message.getSize());
             
-            // Acknowledge the message
-            channel.basicAck(deliveryTag, false);
+            // Complete the message
+            context.complete();
             log.info("[BACKUP] Successfully processed message: {}", message.getKey());
         } catch (Exception e) {
             log.error("[BACKUP] Failed to process message: " + message.getKey(), e);
             
             try {
-                // Reject the message and requeue it
-                channel.basicNack(deliveryTag, false, true);
-                log.warn("[BACKUP] Message requeued: {}", message.getKey());
-            } catch (IOException ackEx) {
-                log.error("[BACKUP] Error handling RabbitMQ acknowledgment: {}", message.getKey(), ackEx);
+                // Abandon the message for retry
+                context.abandon();
+                log.warn("[BACKUP] Message abandoned for retry: {}", message.getKey());
+            } catch (Exception abandonEx) {
+                log.error("[BACKUP] Error handling Azure Service Bus acknowledgment: {}", message.getKey(), abandonEx);
             }
         }
     }
