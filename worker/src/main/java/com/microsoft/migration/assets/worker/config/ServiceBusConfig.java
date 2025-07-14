@@ -7,6 +7,7 @@ import com.azure.messaging.servicebus.administration.ServiceBusAdministrationCli
 import com.azure.messaging.servicebus.administration.models.QueueProperties;
 import com.azure.spring.cloud.autoconfigure.implementation.servicebus.properties.AzureServiceBusProperties;
 import com.azure.spring.messaging.implementation.annotation.EnableAzureMessaging;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
@@ -15,12 +16,14 @@ import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @EnableAzureMessaging
+@ConditionalOnProperty(name = "spring.cloud.azure.servicebus.enabled", havingValue = "true", matchIfMissing = true)
 public class ServiceBusConfig {
     public static final String QUEUE_NAME = "image-processing";
     public static final int RETRY_DELAY_MS = 60000; // 1 minute delay
     public static final int MAX_ATTEMPTS = 3; // Maximum number of retry attempts
 
     @Bean
+    @ConditionalOnProperty(name = "spring.cloud.azure.servicebus.enabled", havingValue = "true", matchIfMissing = true)
     public ServiceBusAdministrationClient adminClient(AzureServiceBusProperties properties, TokenCredential credential) {
         return new ServiceBusAdministrationClientBuilder()
                 .credential(properties.getFullyQualifiedNamespace(), credential)
@@ -28,6 +31,7 @@ public class ServiceBusConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "spring.cloud.azure.servicebus.enabled", havingValue = "true", matchIfMissing = true)
     public QueueProperties queue(ServiceBusAdministrationClient adminClient) {
         try {
             return adminClient.getQueue(QUEUE_NAME);
