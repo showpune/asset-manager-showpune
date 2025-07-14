@@ -4,7 +4,6 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.models.BlobItem;
-import com.azure.storage.blob.models.ListBlobsOptions;
 import com.microsoft.migration.assets.model.ImageMetadata;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.StorageItem;
@@ -42,9 +41,7 @@ public class AzureStorageService implements StorageService {
     public List<StorageItem> listObjects() {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
         
-        ListBlobsOptions options = new ListBlobsOptions();
-        
-        return StreamSupport.stream(containerClient.listBlobs(options).spliterator(), false)
+        return StreamSupport.stream(containerClient.listBlobs().spliterator(), false)
                 .map(blobItem -> {
                     // Try to get metadata for upload time
                     Instant uploadedAt = imageMetadataRepository.findAll().stream()
