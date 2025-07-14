@@ -2,10 +2,12 @@
 Sample project for migration tool code remediation that manages assets in cloud storage.
 
 ## Current Infrastructure
-The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
-* RabbitMQ for message queuing, using password-based authentication
+The project has been migrated to use the following Azure infrastructure:
+* Azure Service Bus for message queuing, using managed identity authentication
+* AWS S3 for image storage, using password-based authentication (access key/secret key) 
 * PostgreSQL database for metadata storage, using password-based authentication
+
+> **Note**: The application has been successfully migrated from RabbitMQ to Azure Service Bus. See [AZURE_SERVICE_BUS_MIGRATION.md](AZURE_SERVICE_BUS_MIGRATION.md) for migration details.
 
 ## Current Architecture
 ```mermaid
@@ -20,7 +22,7 @@ S3[(AWS S3)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
-RabbitMQ(RabbitMQ)
+ServiceBus(Azure Service Bus)
 
 %% Database
 PostgreSQL[(PostgreSQL)]
@@ -35,14 +37,14 @@ User -->|View Images| WebApp
 %% Web App Flows
 WebApp -->|Store Original Image| S3
 WebApp -->|Store Original Image| LocalFS
-WebApp -->|Send Processing Message| RabbitMQ
+WebApp -->|Send Processing Message| ServiceBus
 WebApp -->|Store Metadata| PostgreSQL
 WebApp -->|Retrieve Images| S3
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
 
-%% RabbitMQ Flow
-RabbitMQ -->|Push Message| Worker
+%% Service Bus Flow
+ServiceBus -->|Push Message| Worker
 
 %% Worker Flow
 Worker -->|Download Original| S3
@@ -62,12 +64,12 @@ classDef user fill:#ef9a9a,stroke:#b71c1c,color:#b71c1c
 
 class WebApp,Worker app
 class S3,LocalFS storage
-class RabbitMQ broker
+class ServiceBus broker
 class PostgreSQL db
 class Queue,RetryQueue queue
 class User user
 ```
-Password-based authentication
+Azure Service Bus + managed identity authentication
 
 ## Migrated Infrastructure
 After migration, the project will use the following Azure services:
@@ -139,11 +141,18 @@ Managed identity based authentication
 
 ## Run Locally
 
-**Prerequisites**: JDK, Docker
+**Prerequisites**: JDK, Docker, Azure Service Bus
 
 Run the following commands to start the apps locally. This will:
 * Use local file system instead of S3 to store the image
-* Launch RabbitMQ and PostgreSQL using Docker
+* Launch PostgreSQL using Docker
+* Connect to Azure Service Bus (requires environment variables)
+
+**Environment Variables Required**:
+```bash
+export AZURE_CLIENT_ID=your-managed-identity-client-id
+export SERVICE_BUS_NAMESPACE=your-service-bus-namespace
+```
 
 Windows:
 
