@@ -3,7 +3,7 @@ Sample project for migration tool code remediation that manages assets in cloud 
 
 ## Current Infrastructure
 The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
+* Azure Blob Storage for image storage, using managed identity authentication
 * RabbitMQ for message queuing, using password-based authentication
 * PostgreSQL database for metadata storage, using password-based authentication
 
@@ -16,7 +16,7 @@ WebApp[Web Application]
 Worker[Worker Service]
 
 %% Storage Components
-S3[(AWS S3)]
+AzBlob[(Azure Blob Storage)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
@@ -33,11 +33,11 @@ User -->|Upload Image| WebApp
 User -->|View Images| WebApp
 
 %% Web App Flows
-WebApp -->|Store Original Image| S3
+WebApp -->|Store Original Image| AzBlob
 WebApp -->|Store Original Image| LocalFS
 WebApp -->|Send Processing Message| RabbitMQ
 WebApp -->|Store Metadata| PostgreSQL
-WebApp -->|Retrieve Images| S3
+WebApp -->|Retrieve Images| AzBlob
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
 
@@ -45,9 +45,9 @@ WebApp -->|Retrieve Metadata| PostgreSQL
 RabbitMQ -->|Push Message| Worker
 
 %% Worker Flow
-Worker -->|Download Original| S3
+Worker -->|Download Original| AzBlob
 Worker -->|Download Original| LocalFS
-Worker -->|Upload Thumbnail| S3
+Worker -->|Upload Thumbnail| AzBlob
 Worker -->|Upload Thumbnail| LocalFS
 Worker -->|Store Metadata| PostgreSQL
 Worker -->|Retrieve Metadata| PostgreSQL
