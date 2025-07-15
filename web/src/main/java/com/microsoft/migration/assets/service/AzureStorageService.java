@@ -11,6 +11,8 @@ import com.microsoft.migration.assets.model.S3StorageItem;
 import com.microsoft.migration.assets.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
