@@ -1,4 +1,39 @@
 # Asset Manager
+
+A Spring Boot application for managing file assets with support for both AWS S3 and Azure Blob Storage.
+
+## Features
+
+- File upload and download
+- Thumbnail generation for images
+- Support for multiple storage backends (AWS S3, Azure Blob Storage, Local filesystem)
+- REST API for file operations
+- PostgreSQL database for metadata storage
+- RabbitMQ for asynchronous processing
+
+## Storage Backend Support
+
+### AWS S3 (Legacy)
+The application originally supported AWS S3 for file storage.
+
+### Azure Blob Storage (Recommended)
+The application now supports Azure Blob Storage as the recommended storage backend.
+
+### Configuration
+
+Set the storage backend using Spring profiles:
+
+**For AWS S3:**
+```bash
+java -jar app.jar --spring.profiles.active=s3
+```
+
+**For Azure Blob Storage:**
+```bash
+java -jar app.jar --spring.profiles.active=azure
+```
+
+See [AZURE_MIGRATION.md](AZURE_MIGRATION.md) for detailed migration instructions.
 Sample project for migration tool code remediation that manages assets in cloud storage.
 
 ## Current Infrastructure
