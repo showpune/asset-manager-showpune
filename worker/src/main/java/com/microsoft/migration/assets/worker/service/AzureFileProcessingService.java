@@ -1,52 +1,53 @@
 package com.microsoft.migration.assets.worker.service;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.microsoft.migration.assets.worker.model.ImageMetadata;
 import com.microsoft.migration.assets.worker.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 @Service
-@Profile("s3")
+@Profile("azure")
 @RequiredArgsConstructor
-public class S3FileProcessingService extends AbstractFileProcessingService {
-    private final S3Client s3Client;
+public class AzureFileProcessingService extends AbstractFileProcessingService {
+    private final BlobServiceClient blobServiceClient;
     private final ImageMetadataRepository imageMetadataRepository;
     
-    @Value("${aws.s3.bucket}")
-    private String bucketName;
+    @Value("${azure.storage.container.name}")
+    private String containerName;
+
+    private BlobContainerClient getContainerClient() {
+        return blobServiceClient.getBlobContainerClient(containerName);
+    }
 
     @Override
     public void downloadOriginal(String key, Path destination) throws Exception {
-        GetObjectRequest request = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-                
-        try (var inputStream = s3Client.getObject(request)) {
+        BlobClient blobClient = getContainerClient().getBlobClient(key);
+        
+        try (var inputStream = blobClient.openInputStream()) {
             Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
     @Override
     public void uploadThumbnail(Path source, String key, String contentType) throws Exception {
-        PutObjectRequest request = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .contentType(contentType)
-                .build();
-                
-        s3Client.putObject(request, RequestBody.fromFile(source));
+        BlobClient blobClient = getContainerClient().getBlobClient(key);
+        
+        // Set content type
+        BlobHttpHeaders headers = new BlobHttpHeaders()
+                .setContentType(contentType);
+        
+        blobClient.uploadFromFile(source.toString(), true);
+        blobClient.setHttpHeaders(headers);
         
         // Save or update thumbnail metadata
         ImageMetadata metadata = imageMetadataRepository.findById(extractOriginalKey(key))
@@ -56,23 +57,20 @@ public class S3FileProcessingService extends AbstractFileProcessingService {
                 return newMetadata;
             });
 
-        metadata.setThumbnailKey(key);
-        metadata.setThumbnailUrl(generateUrl(key));
+        metadata.setThumbnailBlobKey(key);
+        metadata.setThumbnailBlobUrl(generateUrl(key));
         imageMetadataRepository.save(metadata);
     }
 
     @Override
     public String getStorageType() {
-        return "s3";
+        return "azure";
     }
 
     @Override
     protected String generateUrl(String key) {
-        GetUrlRequest request = GetUrlRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-        return s3Client.utilities().getUrl(request).toString();
+        BlobClient blobClient = getContainerClient().getBlobClient(key);
+        return blobClient.getBlobUrl();
     }
 
     private String extractOriginalKey(String key) {

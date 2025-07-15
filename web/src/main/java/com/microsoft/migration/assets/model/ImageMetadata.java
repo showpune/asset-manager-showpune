@@ -19,6 +19,11 @@ public class ImageMetadata {
     private String s3Url;
     private String thumbnailKey;
     private String thumbnailUrl;
+    // Azure Storage fields
+    private String blobKey;
+    private String blobUrl;
+    private String thumbnailBlobKey;
+    private String thumbnailBlobUrl;
     private LocalDateTime uploadedAt;
     private LocalDateTime lastModified;
 
