@@ -1,11 +1,13 @@
 # Asset Manager
-Sample project for migration tool code remediation that manages assets in cloud storage.
+Sample project demonstrating migration from AWS S3 to Azure Storage Account for asset management in cloud storage.
 
-## Current Infrastructure
-The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
-* RabbitMQ for message queuing, using password-based authentication
-* PostgreSQL database for metadata storage, using password-based authentication
+## Current Infrastructure (After Migration)
+The project now uses the following infrastructure:
+* Azure Storage Account for image storage, using DefaultAzureCredential authentication
+* RabbitMQ for message queuing (can be migrated to Azure Service Bus in future)
+* PostgreSQL database for metadata storage (can be migrated to Azure Database for PostgreSQL in future)
+
+Note: This migration focused on storage layer only. Message queuing and database can be migrated separately.
 
 ## Current Architecture
 ```mermaid
@@ -16,7 +18,7 @@ WebApp[Web Application]
 Worker[Worker Service]
 
 %% Storage Components
-S3[(AWS S3)]
+AzBlob[(Azure Storage Account)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
@@ -33,11 +35,11 @@ User -->|Upload Image| WebApp
 User -->|View Images| WebApp
 
 %% Web App Flows
-WebApp -->|Store Original Image| S3
+WebApp -->|Store Original Image| AzBlob
 WebApp -->|Store Original Image| LocalFS
 WebApp -->|Send Processing Message| RabbitMQ
 WebApp -->|Store Metadata| PostgreSQL
-WebApp -->|Retrieve Images| S3
+WebApp -->|Retrieve Images| AzBlob
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
 
@@ -45,9 +47,9 @@ WebApp -->|Retrieve Metadata| PostgreSQL
 RabbitMQ -->|Push Message| Worker
 
 %% Worker Flow
-Worker -->|Download Original| S3
+Worker -->|Download Original| AzBlob
 Worker -->|Download Original| LocalFS
-Worker -->|Upload Thumbnail| S3
+Worker -->|Upload Thumbnail| AzBlob
 Worker -->|Upload Thumbnail| LocalFS
 Worker -->|Store Metadata| PostgreSQL
 Worker -->|Retrieve Metadata| PostgreSQL
@@ -61,13 +63,46 @@ classDef queue fill:#fff59d,stroke:#f57f17,color:#f57f17
 classDef user fill:#ef9a9a,stroke:#b71c1c,color:#b71c1c
 
 class WebApp,Worker app
-class S3,LocalFS storage
+class AzBlob,LocalFS storage
 class RabbitMQ broker
 class PostgreSQL db
 class Queue,RetryQueue queue
 class User user
 ```
-Password-based authentication
+DefaultAzureCredential based authentication
+
+## Migration Summary
+
+This project has been successfully migrated from AWS S3 to Azure Storage Account:
+
+### What was migrated:
+- **Storage Layer**: AWS S3 → Azure Storage Account
+- **Dependencies**: AWS SDK → Azure Storage Blob SDK  
+- **Authentication**: Access/Secret Keys → DefaultAzureCredential
+- **Configuration**: AWS-specific properties → Azure-specific properties
+- **Service Implementation**: AwsS3Service → AzureStorageService
+- **API Endpoints**: Made cloud-agnostic (/s3 → /storage with backward compatibility)
+
+### Configuration Changes:
+
+**Before (AWS S3):**
+```properties
+aws.accessKey=your-access-key
+aws.secretKey=your-secret-key
+aws.region=us-east-1
+aws.s3.bucket=your-bucket-name
+```
+
+**After (Azure Storage):**
+```properties
+azure.storage.endpoint=https://yourstorageaccount.blob.core.windows.net
+azure.storage.container=your-container-name
+```
+
+### Backward Compatibility:
+- Legacy `/s3/*` endpoints redirect to new `/storage/*` endpoints
+- Database field names maintained for compatibility (s3Key, s3Url)
+- Same StorageService interface ensures seamless transition
 
 ## Migrated Infrastructure
 After migration, the project will use the following Azure services:
