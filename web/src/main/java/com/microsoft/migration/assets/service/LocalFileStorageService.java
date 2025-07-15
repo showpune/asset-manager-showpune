@@ -144,6 +144,6 @@ public class LocalFileStorageService implements StorageService {
     
     private String generateUrl(String key) {
         // Generate a URL for the object (simplified path)
-        return "/s3/view/" + key;
+        return "/storage/view/" + key;
     }
 }

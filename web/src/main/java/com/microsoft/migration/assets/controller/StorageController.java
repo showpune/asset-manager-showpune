@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/s3")
+@RequestMapping("/storage")
 @RequiredArgsConstructor
-public class S3Controller {
+public class StorageController {
 
     private final StorageService storageService;
 
@@ -42,15 +42,15 @@ public class S3Controller {
         try {
             if (file.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Please select a file to upload");
-                return "redirect:/s3/upload";
+                return "redirect:/storage/upload";
             }
 
             storageService.uploadObject(file);
             redirectAttributes.addFlashAttribute("success", "File uploaded successfully");
-            return "redirect:/s3";
+            return "redirect:/storage";
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("error", "Failed to upload file: " + e.getMessage());
-            return "redirect:/s3/upload";
+            return "redirect:/storage/upload";
         }
     }
     
@@ -67,11 +67,11 @@ public class S3Controller {
                 return "view";
             } else {
                 redirectAttributes.addFlashAttribute("error", "Image not found");
-                return "redirect:/s3";
+                return "redirect:/storage";
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to view image: " + e.getMessage());
-            return "redirect:/s3";
+            return "redirect:/storage";
         }
     }
 
@@ -100,6 +100,32 @@ public class S3Controller {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to delete file: " + e.getMessage());
         }
-        return "redirect:/s3";
+        return "redirect:/storage";
+    }
+
+    // Keep backward compatibility with old S3 routes by redirecting to new storage routes
+    @GetMapping({"/s3", "/s3/"})
+    public String redirectS3ToStorage() {
+        return "redirect:/storage";
+    }
+
+    @GetMapping("/s3/upload")
+    public String redirectS3UploadToStorage() {
+        return "redirect:/storage/upload";
+    }
+
+    @GetMapping("/s3/view-page/{key}")
+    public String redirectS3ViewPageToStorage(@PathVariable String key) {
+        return "redirect:/storage/view-page/" + key;
+    }
+
+    @GetMapping("/s3/view/{key}")
+    public String redirectS3ViewToStorage(@PathVariable String key) {
+        return "redirect:/storage/view/" + key;
+    }
+
+    @PostMapping("/s3/delete/{key}")
+    public String redirectS3DeleteToStorage(@PathVariable String key, RedirectAttributes redirectAttributes) {
+        return deleteObject(key, redirectAttributes);
     }
 }
