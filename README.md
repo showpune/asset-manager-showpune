@@ -2,10 +2,10 @@
 Sample project for migration tool code remediation that manages assets in cloud storage.
 
 ## Current Infrastructure
-The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
-* RabbitMQ for message queuing, using password-based authentication
-* PostgreSQL database for metadata storage, using password-based authentication
+The project has been migrated and now uses the following Azure infrastructure:
+* AWS S3 for image storage, using password-based authentication (access key/secret key) - *to be migrated to Azure Blob Storage*
+* **Azure Service Bus for message queuing, using managed identity authentication** ✅ 
+* PostgreSQL database for metadata storage, using password-based authentication - *to be migrated to Azure PostgreSQL*
 
 ## Current Architecture
 ```mermaid
@@ -20,7 +20,7 @@ S3[(AWS S3)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
-RabbitMQ(RabbitMQ)
+ServiceBus(Azure Service Bus)
 
 %% Database
 PostgreSQL[(PostgreSQL)]
@@ -35,14 +35,14 @@ User -->|View Images| WebApp
 %% Web App Flows
 WebApp -->|Store Original Image| S3
 WebApp -->|Store Original Image| LocalFS
-WebApp -->|Send Processing Message| RabbitMQ
+WebApp -->|Send Processing Message| ServiceBus
 WebApp -->|Store Metadata| PostgreSQL
 WebApp -->|Retrieve Images| S3
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
 
-%% RabbitMQ Flow
-RabbitMQ -->|Push Message| Worker
+%% Service Bus Flow
+ServiceBus -->|Push Message| Worker
 
 %% Worker Flow
 Worker -->|Download Original| S3
@@ -141,9 +141,23 @@ Managed identity based authentication
 
 **Prerequisites**: JDK, Docker
 
+### Azure Service Bus Configuration
+
+The application now uses Azure Service Bus for messaging. To run locally, you need to set the following environment variables:
+
+```bash
+export AZURE_CLIENT_ID=your-azure-client-id
+export SERVICE_BUS_NAMESPACE=your-servicebus-namespace.servicebus.windows.net
+```
+
+Alternatively, for development/testing, you can update the application.properties files to use local values or remove the ${} placeholders.
+
+### Starting the Application
+
 Run the following commands to start the apps locally. This will:
-* Use local file system instead of S3 to store the image
-* Launch RabbitMQ and PostgreSQL using Docker
+* Use local file system instead of S3 to store the image  
+* Use Azure Service Bus for message queuing (requires Azure configuration)
+* Launch PostgreSQL using Docker
 
 Windows:
 
@@ -160,3 +174,5 @@ scripts/start.sh
 ```
 
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
+
+**Note**: The scripts may need to be updated to remove RabbitMQ and use Azure Service Bus configuration.
