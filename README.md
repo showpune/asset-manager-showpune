@@ -2,10 +2,11 @@
 Sample project for migration tool code remediation that manages assets in cloud storage.
 
 ## Current Infrastructure
-The project currently uses the following infrastructure:
-* AWS S3 for image storage, using password-based authentication (access key/secret key)
-* RabbitMQ for message queuing, using password-based authentication
-* PostgreSQL database for metadata storage, using password-based authentication
+The project has been migrated to use the following infrastructure:
+* **Azure Storage Account** for image storage, using managed identity authentication (default)
+* **AWS S3** for image storage, using password-based authentication (legacy, via `aws` profile)
+* **RabbitMQ** for message queuing, using password-based authentication  
+* **PostgreSQL** database for metadata storage, using password-based authentication
 
 ## Current Architecture
 ```mermaid
@@ -16,7 +17,8 @@ WebApp[Web Application]
 Worker[Worker Service]
 
 %% Storage Components
-S3[(AWS S3)]
+AzureBlob[(Azure Storage Account)]
+S3[(AWS S3<br/>legacy)]
 LocalFS[("Local File System<br/>dev only")]
 
 %% Message Broker
@@ -33,10 +35,12 @@ User -->|Upload Image| WebApp
 User -->|View Images| WebApp
 
 %% Web App Flows
+WebApp -->|Store Original Image| AzureBlob
 WebApp -->|Store Original Image| S3
 WebApp -->|Store Original Image| LocalFS
 WebApp -->|Send Processing Message| RabbitMQ
 WebApp -->|Store Metadata| PostgreSQL
+WebApp -->|Retrieve Images| AzureBlob
 WebApp -->|Retrieve Images| S3
 WebApp -->|Retrieve Images| LocalFS
 WebApp -->|Retrieve Metadata| PostgreSQL
@@ -45,8 +49,10 @@ WebApp -->|Retrieve Metadata| PostgreSQL
 RabbitMQ -->|Push Message| Worker
 
 %% Worker Flow
+Worker -->|Download Original| AzureBlob
 Worker -->|Download Original| S3
 Worker -->|Download Original| LocalFS
+Worker -->|Upload Thumbnail| AzureBlob
 Worker -->|Upload Thumbnail| S3
 Worker -->|Upload Thumbnail| LocalFS
 Worker -->|Store Metadata| PostgreSQL
@@ -61,7 +67,7 @@ classDef queue fill:#fff59d,stroke:#f57f17,color:#f57f17
 classDef user fill:#ef9a9a,stroke:#b71c1c,color:#b71c1c
 
 class WebApp,Worker app
-class S3,LocalFS storage
+class AzureBlob,S3,LocalFS storage
 class RabbitMQ broker
 class PostgreSQL db
 class Queue,RetryQueue queue
@@ -136,6 +142,46 @@ class Queue,RetryQueue queue
 class User user
 ```
 Managed identity based authentication
+
+## Configuration Profiles
+
+The application supports multiple configuration profiles:
+
+### Default Profile (Azure Storage + RabbitMQ)
+```bash
+./mvnw spring-boot:run
+# or
+java -jar target/assets-manager-web-0.0.1-SNAPSHOT.jar
+```
+
+**Configuration:**
+- Storage: Azure Storage Account with managed identity
+- Messaging: RabbitMQ
+- Database: PostgreSQL
+
+### AWS Profile (Legacy)
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=aws
+# or  
+java -jar target/assets-manager-web-0.0.1-SNAPSHOT.jar --spring.profiles.active=aws
+```
+
+**Configuration:**
+- Storage: AWS S3 with access key/secret
+- Messaging: RabbitMQ
+- Database: PostgreSQL
+
+### Development Profile
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+# or
+java -jar target/assets-manager-web-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+```
+
+**Configuration:**
+- Storage: Local file system
+- Messaging: RabbitMQ
+- Database: PostgreSQL
 
 ## Run Locally
 
