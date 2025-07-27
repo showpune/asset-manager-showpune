@@ -137,12 +137,47 @@ class User user
 ```
 Managed identity based authentication
 
+## Migration from AWS S3 to Azure Storage
+
+This project has been migrated from AWS S3 to Azure Blob Storage while maintaining backward compatibility. The migration includes:
+
+### Changes Made
+- **Dependencies**: Added Azure Storage Blob SDK alongside AWS S3 SDK
+- **Configuration**: Created Azure Blob Storage configuration classes
+- **Services**: Implemented `AzureBlobStorageService` and `AzureBlobFileProcessingService`
+- **Data Model**: Updated to use generic `StorageItem` instead of `S3StorageItem`
+- **Database**: Changed field names from `s3Key/s3Url` to `storageKey/storageUrl`
+- **Profiles**: Created Spring profiles for easy switching between providers
+
+### Available Profiles
+- **azure** (default): Uses Azure Blob Storage with managed identity authentication
+- **s3**: Uses AWS S3 with access key authentication
+- **dev**: Uses local file system for development
+
+### Configuration
+Configure the application using Spring profiles in `application.properties`:
+
+```properties
+# Set active profile
+spring.profiles.active=azure  # or s3, or dev
+```
+
+Provider-specific configurations are in:
+- `application-azure.properties`: Azure Storage endpoint and container
+- `application-s3.properties`: AWS S3 credentials and bucket
+- `application-dev.properties`: Local file storage directory
+
+### Authentication
+- **Azure**: Uses `DefaultAzureCredential` for managed identity authentication
+- **AWS S3**: Uses access key and secret key authentication
+- **Local**: No authentication required
+
 ## Run Locally
 
 **Prerequisites**: JDK, Docker
 
 Run the following commands to start the apps locally. This will:
-* Use local file system instead of S3 to store the image
+* Use local file system instead of cloud storage (dev profile)
 * Launch RabbitMQ and PostgreSQL using Docker
 
 Windows:
