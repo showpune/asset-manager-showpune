@@ -12,16 +12,16 @@ public class DBConnection {
     public static Connection getConnection() throws SQLException {
         
         Properties properties = new Properties();
-        try (InputStream input = MainPG.class.getClassLoader().getResourceAsStream("application.properties")) {
+        try (InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("application.properties")) {
             if (input == null) {
                 System.out.println("Sorry, unable to find application.properties");
-                return;
+                return null;
             }
             // Load the properties file
             properties.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
-            return;
+            return null;
         }
 
         String connString = properties.getProperty("AZURE_PGSQL_CONNECTIONSTRING");
