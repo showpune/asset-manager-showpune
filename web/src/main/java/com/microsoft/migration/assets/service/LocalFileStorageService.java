@@ -30,7 +30,7 @@ public class LocalFileStorageService implements StorageService {
     
     private final ServiceBusTemplate serviceBusTemplate;
     
-    @Value("${local.storage.directory:../storage}")
+    @Value("${local.storage.directory:${AZURE_MOUNT_PATH:/mnt/azure}}")
     private String storageDirectory;
     
     private Path rootLocation;

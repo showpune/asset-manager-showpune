@@ -17,7 +17,7 @@ public class LocalFileProcessingService extends AbstractFileProcessingService {
     
     private static final Logger logger = LoggerFactory.getLogger(LocalFileProcessingService.class);
     
-    @Value("${local.storage.directory:../storage}")
+    @Value("${local.storage.directory:${AZURE_MOUNT_PATH:/mnt/azure}}")
     private String storageDirectory;
     
     private Path rootLocation;
