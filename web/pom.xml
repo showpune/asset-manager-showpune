@@ -70,6 +70,10 @@
             <artifactId>spring-cloud-azure-starter-jdbc-postgresql</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-keyvault-secrets</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
