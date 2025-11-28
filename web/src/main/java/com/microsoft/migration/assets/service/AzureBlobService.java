@@ -2,15 +2,16 @@ package com.microsoft.migration.assets.service;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.migration.assets.model.ImageMetadata;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
 import com.microsoft.migration.assets.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,8 +30,9 @@ import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 public class AzureBlobService implements StorageService {
 
     private final BlobContainerClient blobContainerClient;
-    private final RabbitTemplate rabbitTemplate;
+    private final JmsTemplate jmsTemplate;
     private final ImageMetadataRepository imageMetadataRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public List<S3StorageItem> listObjects() {
@@ -76,7 +78,12 @@ public class AzureBlobService implements StorageService {
                 getStorageType(),
                 file.getSize()
         );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            jmsTemplate.convertAndSend(QUEUE_NAME, jsonMessage);
+        } catch (JsonProcessingException e) {
+            throw new IOException("Failed to serialize message", e);
+        }
 
         // Create and save metadata to database
         ImageMetadata metadata = new ImageMetadata();
