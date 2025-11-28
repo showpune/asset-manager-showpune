@@ -12,6 +12,7 @@
     <properties>
         <azure-sdk-bom.version>1.2.36</azure-sdk-bom.version>
         <azure-identity.version>1.16.3</azure-identity.version>
+        <spring-cloud-azure.version>5.22.0</spring-cloud-azure.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
@@ -24,8 +25,12 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-messaging-azure-servicebus</artifactId>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
@@ -51,6 +56,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
@@ -71,6 +80,13 @@
                 <groupId>com.azure</groupId>
                 <artifactId>azure-sdk-bom</artifactId>
                 <version>${azure-sdk-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${spring-cloud-azure.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
