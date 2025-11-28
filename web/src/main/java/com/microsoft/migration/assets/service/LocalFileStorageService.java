@@ -23,6 +23,17 @@ import java.util.stream.Collectors;
 
 import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 
+/**
+ * File storage service that uses mounted storage (local or Azure Storage File Share).
+ * 
+ * This service supports Azure Storage File Share when mounted to the container.
+ * Configure the mount path using the 'storage.mount.path' property:
+ * - Local development: storage.mount.path=../storage
+ * - Azure Container Apps: storage.mount.path=/mnt/azure-storage
+ * 
+ * For Azure Container Apps, mount an Azure Storage File Share to the container
+ * and configure the mount path accordingly.
+ */
 @Service
 @Profile("dev") // Only active when dev profile is active
 public class LocalFileStorageService implements StorageService {
@@ -32,7 +43,7 @@ public class LocalFileStorageService implements StorageService {
     private final JmsTemplate jmsTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
-    @Value("${local.storage.directory:../storage}")
+    @Value("${storage.mount.path:${local.storage.directory:../storage}}")
     private String storageDirectory;
     
     private Path rootLocation;

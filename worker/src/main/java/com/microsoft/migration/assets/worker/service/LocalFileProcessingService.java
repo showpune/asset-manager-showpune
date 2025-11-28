@@ -11,13 +11,24 @@ import java.nio.file.StandardCopyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * File processing service that uses mounted storage (local or Azure Storage File Share).
+ * 
+ * This service supports Azure Storage File Share when mounted to the container.
+ * Configure the mount path using the 'storage.mount.path' property:
+ * - Local development: storage.mount.path=../storage
+ * - Azure Container Apps: storage.mount.path=/mnt/azure-storage
+ * 
+ * For Azure Container Apps, mount an Azure Storage File Share to the container
+ * and configure the mount path accordingly.
+ */
 @Service
 @Profile("dev")
 public class LocalFileProcessingService extends AbstractFileProcessingService {
     
     private static final Logger logger = LoggerFactory.getLogger(LocalFileProcessingService.class);
     
-    @Value("${local.storage.directory:../storage}")
+    @Value("${storage.mount.path:${local.storage.directory:../storage}}")
     private String storageDirectory;
     
     private Path rootLocation;
