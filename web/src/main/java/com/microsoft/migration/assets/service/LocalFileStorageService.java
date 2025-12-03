@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.config.RabbitConfig.IMAGE_PROCESSING_QUEUE;
 
 @Service
 @Profile("dev") // Only active when dev profile is active
@@ -102,7 +102,7 @@ public class LocalFileStorageService implements StorageService {
             getStorageType(),
             file.getSize()
         );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        rabbitTemplate.convertAndSend(IMAGE_PROCESSING_QUEUE, message);
     }
 
     @Override
@@ -140,10 +140,5 @@ public class LocalFileStorageService implements StorageService {
     @Override
     public String getStorageType() {
         return "local";
-    }
-    
-    private String generateUrl(String key) {
-        // Generate a URL for the object (simplified path)
-        return "/s3/view/" + key;
     }
 }

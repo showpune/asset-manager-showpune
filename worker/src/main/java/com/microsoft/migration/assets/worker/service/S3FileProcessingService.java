@@ -1,6 +1,5 @@
 package com.microsoft.migration.assets.worker.service;
 
-import com.microsoft.migration.assets.worker.model.ImageMetadata;
 import com.microsoft.migration.assets.worker.repository.ImageMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +11,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -33,7 +33,7 @@ public class S3FileProcessingService extends AbstractFileProcessingService {
                 .key(key)
                 .build();
                 
-        try (var inputStream = s3Client.getObject(request)) {
+        try (InputStream inputStream = s3Client.getObject(request)) {
             Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
         }
     }
@@ -47,18 +47,19 @@ public class S3FileProcessingService extends AbstractFileProcessingService {
                 .build();
                 
         s3Client.putObject(request, RequestBody.fromFile(source));
-        
-        // Save or update thumbnail metadata
-        ImageMetadata metadata = imageMetadataRepository.findById(extractOriginalKey(key))
-            .orElseGet(() -> {
-                ImageMetadata newMetadata = new ImageMetadata();
-                newMetadata.setId(extractOriginalKey(key));
-                return newMetadata;
-            });
 
-        metadata.setThumbnailKey(key);
-        metadata.setThumbnailUrl(generateUrl(key));
-        imageMetadataRepository.save(metadata);
+        // Extract the original key from the thumbnail key
+        String originalKey = extractOriginalKey(key);
+        
+        // Find and update metadata
+        imageMetadataRepository.findAll().stream()
+            .filter(metadata -> metadata.getS3Key().equals(originalKey))
+            .findFirst()
+            .ifPresent(metadata -> {
+                metadata.setThumbnailKey(key);
+                metadata.setThumbnailUrl(generateUrl(key));
+                imageMetadataRepository.save(metadata);
+            });
     }
 
     @Override
@@ -76,11 +77,17 @@ public class S3FileProcessingService extends AbstractFileProcessingService {
     }
 
     private String extractOriginalKey(String key) {
-        // Remove _thumbnail suffix if present
+        // For a key like "xxxxx_thumbnail.png", get "xxxxx.png"
         String suffix = "_thumbnail";
-        int suffixIndex = key.lastIndexOf(suffix);
-        if (suffixIndex > 0) {
-            return key.substring(0, suffixIndex);
+        int extensionIndex = key.lastIndexOf('.');
+        if (extensionIndex > 0) {
+            String nameWithoutExtension = key.substring(0, extensionIndex);
+            String extension = key.substring(extensionIndex);
+            
+            int suffixIndex = nameWithoutExtension.lastIndexOf(suffix);
+            if (suffixIndex > 0) {
+                return nameWithoutExtension.substring(0, suffixIndex) + extension;
+            }
         }
         return key;
     }

@@ -1,7 +1,6 @@
 package com.microsoft.migration.assets.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -21,7 +20,6 @@ public class AwsS3Config {
     @Value("${aws.region}")
     private String region;
 
-    @Bean
     public S3Client s3Client() {
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
         

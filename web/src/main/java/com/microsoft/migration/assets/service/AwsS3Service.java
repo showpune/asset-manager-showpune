@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.config.RabbitConfig.IMAGE_PROCESSING_QUEUE;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +67,6 @@ public class AwsS3Service implements StorageService {
     @Override
     public void uploadObject(MultipartFile file) throws IOException {
         String key = generateKey(file.getOriginalFilename());
-        
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -83,7 +82,7 @@ public class AwsS3Service implements StorageService {
             getStorageType(),
             file.getSize()
         );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        rabbitTemplate.convertAndSend(IMAGE_PROCESSING_QUEUE, message);
 
         // Create and save metadata to database
         ImageMetadata metadata = new ImageMetadata();
@@ -93,7 +92,7 @@ public class AwsS3Service implements StorageService {
         metadata.setSize(file.getSize());
         metadata.setS3Key(key);
         metadata.setS3Url(generateUrl(key));
-        
+
         imageMetadataRepository.save(metadata);
     }
 
@@ -144,14 +143,6 @@ public class AwsS3Service implements StorageService {
         // Extract filename from the object key
         int lastSlashIndex = key.lastIndexOf('/');
         return lastSlashIndex >= 0 ? key.substring(lastSlashIndex + 1) : key;
-    }
-    
-    private String generateUrl(String key) {
-        GetUrlRequest request = GetUrlRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-        return s3Client.utilities().getUrl(request).toString();
     }
 
     private String generateKey(String filename) {

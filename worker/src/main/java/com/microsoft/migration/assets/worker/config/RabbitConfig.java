@@ -10,19 +10,15 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 public class RabbitConfig {
-    public static final String QUEUE_NAME = "image-processing";
-    public static final int RETRY_DELAY_MS = 60000; // 1 minute delay
-    public static final int MAX_ATTEMPTS = 3; // Maximum number of retry attempts
+    public static final String IMAGE_PROCESSING_QUEUE = "image-processing";
 
     @Bean
     public Queue imageProcessingQueue() {
-        return QueueBuilder.durable(QUEUE_NAME).build();
+        return QueueBuilder.durable(IMAGE_PROCESSING_QUEUE)
+        .build();
     }
 
     @Bean
@@ -39,23 +35,6 @@ public class RabbitConfig {
         factory.setMessageConverter(jsonMessageConverter());
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return factory;
-    }
-    
-    @Bean
-    public RetryTemplate retryTemplate() {
-        RetryTemplate retryTemplate = new RetryTemplate();
-        
-        // Configure retry policy (number of attempts)
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(MAX_ATTEMPTS);
-        retryTemplate.setRetryPolicy(retryPolicy);
-        
-        // Configure backoff policy (delay between retries)
-        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-        backOffPolicy.setBackOffPeriod(RETRY_DELAY_MS);
-        retryTemplate.setBackOffPolicy(backOffPolicy);
-        
-        return retryTemplate;
     }
 
 }

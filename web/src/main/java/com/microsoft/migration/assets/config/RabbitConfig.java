@@ -13,11 +13,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-    public static final String QUEUE_NAME = "image-processing";
+    public static final String IMAGE_PROCESSING_QUEUE = "image-processing";
 
     @Bean
     public Queue imageProcessingQueue() {
-        return QueueBuilder.durable(QUEUE_NAME).build();
+        return QueueBuilder.durable(IMAGE_PROCESSING_QUEUE)
+        .build();
     }
 
     @Bean
@@ -35,4 +36,5 @@ public class RabbitConfig {
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return factory;
     }
+
 }
