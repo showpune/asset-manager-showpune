@@ -36,3 +36,13 @@ build/
 /logs/
 .a2a*/*
 .claude/*
+
+# Eclipse OSGi build artifacts (from AppCAT)
+org.eclipse.core.runtime/
+org.eclipse.equinox.app/
+org.eclipse.equinox.launcher/
+org.eclipse.osgi/
+
+# AppCAT temporary files
+.github/appmod/appcat/result/shim.log
+.github/appmod/appcat/result/analysis.log
