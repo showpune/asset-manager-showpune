@@ -70,8 +70,8 @@ graph TB
 ```
 
 **Framework Details:**
-- **Language:** Java 17
-- **Framework:** Spring Boot 3.2.1, Spring Framework 6.1.x
+- **Language:** Java 17 (Note: AppCAT report shows Java 11, but actual project code is already on Java 17)
+- **Framework:** Spring Boot 3.2.1, Spring Framework 6.1.x (Note: AppCAT report shows outdated versions, but actual project code is already on Spring Boot 3.2.1)
 - **Build Tool:** Maven
 - **Key Dependencies:**
   - `spring-boot-starter-web` - REST API and MVC
@@ -93,7 +93,10 @@ graph TB
 
 ## Clarification
 
-This section is empty as there are no open issues that require clarification. The migration path is clear based on the appcat report and the available solutions in the knowledge base.
+1) Open issue 1: Discrepancy between AppCAT report and actual project state
+   - The AppCAT report indicates the project uses Java 11 and Spring Boot with end-of-support versions. However, the actual project code (pom.xml) shows Java 17 and Spring Boot 3.2.1, which are current and supported versions.
+   - Answer: Based on actual code analysis, the project has already been upgraded to Java 17 and Spring Boot 3.2.1. The AppCAT report appears to be outdated or was run on a different branch. Therefore, no Java or Spring Boot upgrade tasks are needed in this plan.
+   - Status: Resolved - Plan will proceed based on current project state (Java 17, Spring Boot 3.2.1)
 
 ## Target Architecture
 
@@ -155,8 +158,8 @@ graph TB
 ```
 
 **Target Framework Details:**
-- **Language:** Java 17 (unchanged)
-- **Framework:** Spring Boot 3.2.1 (unchanged), Spring Framework 6.1.x (unchanged)
+- **Language:** Java 17 (already on target version, no upgrade needed)
+- **Framework:** Spring Boot 3.2.1 (already on target version, no upgrade needed), Spring Framework 6.1.x (already on target version)
 - **Build Tool:** Maven (unchanged)
 - **New Azure Dependencies:**
   - `azure-storage-blob` - Azure Blob Storage SDK
