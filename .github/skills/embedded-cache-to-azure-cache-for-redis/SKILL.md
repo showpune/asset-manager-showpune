@@ -3,7 +3,7 @@ name: embedded-cache-to-azure-cache-for-redis
 description: Migrate from embedded cache to Azure Cache for Redis for a scalable, managed solution that easily integrates with other Azure services.
 ---
 
-# Migrate to Azure Cache for Redis (Embedded)
+# embedded-cache-to-azure-cache-for-redis
 
 ## Overview
 

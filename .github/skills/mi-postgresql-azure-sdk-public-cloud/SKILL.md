@@ -3,7 +3,7 @@ name: mi-postgresql-azure-sdk-public-cloud
 description: Migrate from PostgreSQL to Azure Database for PostgreSQL with Azure SDK and managed identity for secure, credential-free authentication.
 ---
 
-# Migrate to Azure Database for PostgreSQL (SDK, Public Cloud)
+# mi-postgresql-azure-sdk-public-cloud
 
 ## Overview
 

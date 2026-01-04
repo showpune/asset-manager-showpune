@@ -3,7 +3,7 @@ name: spring-cache-backends-to-spring-cache-with-azure-cache-for-redis
 description: Migrate from Spring Cache to Azure Cache for Redis for a scalable, managed solution that easily integrates with other Azure services.
 ---
 
-# Migrate to Azure Cache for Redis (Spring Cache)
+# spring-cache-backends-to-spring-cache-with-azure-cache-for-redis
 
 ## Overview
 

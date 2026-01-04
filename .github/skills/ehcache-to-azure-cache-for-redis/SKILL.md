@@ -3,7 +3,7 @@ name: ehcache-to-azure-cache-for-redis
 description: Migrate from Ehcache in-process cache to Azure Cache for Redis.
 ---
 
-# Migrate to Azure Cache for Redis (Ehcache)
+# ehcache-to-azure-cache-for-redis
 
 ## Overview
 

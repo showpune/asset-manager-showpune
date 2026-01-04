@@ -3,7 +3,7 @@ name: kafka-to-eventhubs
 description: Migrate from Kafka to Azure Event Hubs for Apache Kafka with managed identity for secure, credential-free authentication.
 ---
 
-# Migrate from Kafka to Azure Event Hubs for Apache Kafka
+# kafka-to-eventhubs
 
 ## Overview
 

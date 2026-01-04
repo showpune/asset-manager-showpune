@@ -3,7 +3,7 @@ name: spring-jms-rabbitmq-servicebus
 description: Migrate from RabbitMQ with JMS to Azure Service Bus for a managed messaging service with JMS API support.
 ---
 
-# Migrate from RabbitMQ(JMS) to Azure Service Bus
+# spring-jms-rabbitmq-servicebus
 
 ## Overview
 

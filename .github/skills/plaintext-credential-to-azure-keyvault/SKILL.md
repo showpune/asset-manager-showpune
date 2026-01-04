@@ -3,7 +3,7 @@ name: plaintext-credential-to-azure-keyvault
 description: Migrate from plaintext credentials in the code to Azure Key Vault for storage and access to sensitive information.
 ---
 
-# Migrate from Plaintext Credentials to Azure Key Vault
+# plaintext-credential-to-azure-keyvault
 
 ## Overview
 

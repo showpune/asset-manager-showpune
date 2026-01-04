@@ -3,7 +3,7 @@ name: s3-to-azure-blob-storage
 description: Migrate from AWS S3 to Azure Blob Storage for scalable and secure object storage in Azure.
 ---
 
-# Migrate from AWS S3 to Azure Blob Storage
+# s3-to-azure-blob-storage
 
 ## Overview
 

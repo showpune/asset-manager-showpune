@@ -3,7 +3,7 @@ name: AWS-secrets-manager-to-azure-key-vault
 description: Migrate from AWS Secrets Manager to Azure Key Vault to securely manage and access sensitive information in Azure.
 ---
 
-# Migrate from AWS Secrets Manager to Azure Key Vault
+# AWS-secrets-manager-to-azure-key-vault
 
 ## Overview
 

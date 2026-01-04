@@ -3,7 +3,7 @@ name: mi-azuresql-azure-sdk-public-cloud
 description: Migrate from SQL Database to Azure SQL Database with Azure SDK and managed identity for secure, credential-free authentication.
 ---
 
-# Migrate to Azure SQL Database (SDK, Public Cloud)
+# mi-azuresql-azure-sdk-public-cloud
 
 ## Overview
 

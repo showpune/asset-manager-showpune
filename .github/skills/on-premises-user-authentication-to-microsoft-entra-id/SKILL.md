@@ -3,7 +3,7 @@ name: on-premises-user-authentication-to-microsoft-entra-id
 description: TODO: need to further check if this aligns with the solution
 ---
 
-# Migrate from on-premises user authentication to Microsoft Entra ID
+# on-premises-user-authentication-to-microsoft-entra-id
 
 ## Overview
 

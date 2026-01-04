@@ -3,7 +3,7 @@ name: local-files-to-mounted-azure-storage
 description: Migrate from local file system to Azure Storage Account File Share mounts for scalable and secure file storage.
 ---
 
-# Migrate to Azure Storage Account File Share mounts
+# local-files-to-mounted-azure-storage
 
 ## Overview
 

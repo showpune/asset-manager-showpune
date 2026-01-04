@@ -3,7 +3,7 @@ name: local-redis-to-azure-redis-cache
 description: Migrate from a local Redis instance to Azure Cache for Redis.
 ---
 
-# Migrate to Azure Cache for Redis (Local)
+# local-redis-to-azure-redis-cache
 
 ## Overview
 

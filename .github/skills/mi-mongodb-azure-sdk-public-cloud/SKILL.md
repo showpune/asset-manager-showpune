@@ -3,7 +3,7 @@ name: mi-mongodb-azure-sdk-public-cloud
 description: Migrate from MongoDB to Azure Cosmos DB for MongoDB with managed identity for a fully managed, scalable database service with MongoDB API support.
 ---
 
-# Migrate to Azure Cosmos DB for MongoDB
+# mi-mongodb-azure-sdk-public-cloud
 
 ## Overview
 

@@ -3,7 +3,7 @@ name: containerization-copilot-agent
 description: The app does not have a Dockerfile and/or is not container-ready. Use Agent Mode with Copilot to create and execute a containerization plan.
 ---
 
-# Containerize Java Application for Container Readiness
+# containerization-copilot-agent
 
 ## Overview
 

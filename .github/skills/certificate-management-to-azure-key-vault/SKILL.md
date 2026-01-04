@@ -3,7 +3,7 @@ name: certificate-management-to-azure-key-vault
 description: Migrate from a local KeyStore to Azure Key Vault for secure storage and access to certificates and keys.
 ---
 
-# Migrate from KeyStore to Azure Key Vault
+# certificate-management-to-azure-key-vault
 
 ## Overview
 

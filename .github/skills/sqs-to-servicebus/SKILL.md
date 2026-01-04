@@ -3,7 +3,7 @@ name: sqs-to-servicebus
 description: Migrate from AWS Simple Queue Service to Azure Service Bus for a managed messaging service with advanced features.
 ---
 
-# Migrate from AWS Simple Queue Service to Azure Service Bus
+# sqs-to-servicebus
 
 ## Overview
 

@@ -3,7 +3,7 @@ name: eclipse-project-to-maven-project
 description: Migrate current project from eclipse project to maven project
 ---
 
-# Migrate from Eclipse Project to Maven Project
+# eclipse-project-to-maven-project
 
 ## Overview
 

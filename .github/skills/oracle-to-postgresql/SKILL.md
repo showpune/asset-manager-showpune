@@ -3,7 +3,7 @@ name: oracle-to-postgresql
 description: Migrate from Oracle DB to PostgreSQL
 ---
 
-# Migrate from Oracle DB to PostgreSQL
+# oracle-to-postgresql
 
 ## Overview
 

@@ -3,7 +3,7 @@ name: log-to-console
 description: Migrate from file-based logging to console logging to support cloud-native apps and integration with Azure Monitor.
 ---
 
-# Migrate to Console Logging
+# log-to-console
 
 ## Overview
 

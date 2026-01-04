@@ -3,7 +3,7 @@ name: oscache-to-azure-cache-for-redis
 description: Migrate from OSCache in-process cache to Azure Cache for Redis.
 ---
 
-# Migrate to Azure Cache for Redis (OSCache)
+# oscache-to-azure-cache-for-redis
 
 ## Overview
 

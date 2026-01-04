@@ -3,7 +3,7 @@ name: ant-project-to-maven-project
 description: Migrate current project from Ant project to Maven project
 ---
 
-# Migrate from Ant Project to Maven Project
+# ant-project-to-maven-project
 
 ## Overview
 

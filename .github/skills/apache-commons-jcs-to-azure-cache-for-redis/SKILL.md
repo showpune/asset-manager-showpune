@@ -3,7 +3,7 @@ name: apache-commons-jcs-to-azure-cache-for-redis
 description: Migrate from Apache Commons JCS in-process cache to Azure Cache for Redis.
 ---
 
-# Migrate to Azure Cache for Redis (Commons JCS)
+# apache-commons-jcs-to-azure-cache-for-redis
 
 ## Overview
 

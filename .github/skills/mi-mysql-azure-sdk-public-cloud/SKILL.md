@@ -3,7 +3,7 @@ name: mi-mysql-azure-sdk-public-cloud
 description: Migrate from MySQL to Azure Database for MySQL with Azure SDK and managed identity for secure, credential-free authentication.
 ---
 
-# Migrate to Azure Database for MYSQL (SDK, Public Cloud)
+# mi-mysql-azure-sdk-public-cloud
 
 ## Overview
 

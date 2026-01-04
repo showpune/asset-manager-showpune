@@ -3,7 +3,7 @@ name: mi-mysql-azure-sdk-21v-china
 description: Migrate from MySQL to Azure Database for MySQL with Azure SDK and managed identity in the Mooncake cloud for secure, credential-free authentication.
 ---
 
-# Migrate to Azure Database for MYSQL (SDK, Mooncake)
+# mi-mysql-azure-sdk-21v-china
 
 ## Overview
 

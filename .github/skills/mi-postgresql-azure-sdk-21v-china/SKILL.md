@@ -3,7 +3,7 @@ name: mi-postgresql-azure-sdk-21v-china
 description: Migrate from PostgreSQL to Azure Database for PostgreSQL with Azure SDK and managed identity in the Mooncake cloud for secure, credential-free authentication.
 ---
 
-# Migrate to Azure Database for PostgreSQL (SDK, Mooncake)
+# mi-postgresql-azure-sdk-21v-china
 
 ## Overview
 

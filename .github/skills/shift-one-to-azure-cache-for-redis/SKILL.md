@@ -3,7 +3,7 @@ name: shift-one-to-azure-cache-for-redis
 description: Migrate from ShiftOne in-process cache to Azure Cache for Redis.
 ---
 
-# Migrate to Azure Cache for Redis (ShiftOne)
+# shift-one-to-azure-cache-for-redis
 
 ## Overview
 

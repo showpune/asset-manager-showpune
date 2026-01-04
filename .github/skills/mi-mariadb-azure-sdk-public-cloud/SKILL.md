@@ -3,7 +3,7 @@ name: mi-mariadb-azure-sdk-public-cloud
 description: Migrate from MariaDB to Azure Database for MariaDB with managed identity for secure, credential-free authentication.
 ---
 
-# Migrate to Azure Database for MariaDB (Spring)
+# mi-mariadb-azure-sdk-public-cloud
 
 ## Overview
 

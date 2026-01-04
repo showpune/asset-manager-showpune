@@ -3,7 +3,7 @@ name: mi-cassandra-azure-sdk-public-cloud
 description: Migrate from Cassandra to Azure Cosmos DB for Cassandra for a fully managed, scalable database with Cassandra API support.
 ---
 
-# Migrate to Azure Cosmos DB for Cassandra
+# mi-cassandra-azure-sdk-public-cloud
 
 ## Overview
 

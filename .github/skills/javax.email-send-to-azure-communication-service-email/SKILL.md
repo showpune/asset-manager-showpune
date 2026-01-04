@@ -3,7 +3,7 @@ name: javax.email-send-to-azure-communication-service-email
 description: Migrate from Javax Email to Azure Communication Service for sending emails.
 ---
 
-# Migrate to Azure Communication Service
+# javax.email-send-to-azure-communication-service-email
 
 ## Overview
 

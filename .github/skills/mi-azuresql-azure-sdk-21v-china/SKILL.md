@@ -3,7 +3,7 @@ name: mi-azuresql-azure-sdk-21v-china
 description: Migrate from SQL Database to Azure SQL Database with Azure SDK and managed identity in Mooncake for secure, credential-free authentication.
 ---
 
-# Migrate to Azure SQL Database (SDK, Mooncake)
+# mi-azuresql-azure-sdk-21v-china
 
 ## Overview
 

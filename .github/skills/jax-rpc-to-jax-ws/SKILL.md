@@ -3,7 +3,7 @@ name: jax-rpc-to-jax-ws
 description: Migrate from JAX-RPC to JAX-WS for web services. JAX-RPC is deprecated and JAX-WS is the recommended alternative.
 ---
 
-# Migrate from JAX-RPC to JAX-WS
+# jax-rpc-to-jax-ws
 
 ## Overview
 
