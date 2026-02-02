@@ -34,5 +34,7 @@ build/
 .vscode/
 
 /logs/
+/pids/
+/tools/
 .a2a*/*
 .claude/*
