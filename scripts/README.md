@@ -9,14 +9,18 @@ This script downloads and runs the GitHub Copilot app modernization CLI tool (ap
 ### Usage
 
 ```bash
+# Run with default prompt
 ./scripts/run-appmod.sh
+
+# Run with custom prompt
+./scripts/run-appmod.sh "Your custom migration prompt here"
 ```
 
 ### What it does
 
 1. Downloads the appmod CLI tool from https://aka.ms/appmod_linux-x64.tar.gz
 2. Extracts the tool to the `tools/` directory
-3. Runs the command: `appmod plan create "Create a plan to migrate the project to Azure. I don't want to upgrade my Java this time"`
+3. Runs the command: `appmod plan create` with the provided prompt (default: "Create a plan to migrate the project to Azure. I don't want to upgrade my Java this time")
 4. Creates a modernization plan in `.github/modernization/` directory
 5. Creates a new branch `001-modernization-plan` for the migration work
 

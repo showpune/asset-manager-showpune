@@ -4,6 +4,10 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 
+# Default migration prompt
+DEFAULT_PROMPT="Create a plan to migrate the project to Azure. I don't want to upgrade my Java this time"
+MIGRATION_PROMPT="${1:-$DEFAULT_PROMPT}"
+
 # Create tools directory if it doesn't exist
 TOOLS_DIR="$PROJECT_ROOT/tools"
 mkdir -p "$TOOLS_DIR"
@@ -51,7 +55,8 @@ cd "$PROJECT_ROOT"
 
 # Run the appmod command
 echo "Running appmod plan create command..."
-"$APPMOD_EXECUTABLE" plan create "Create a plan to migrate the project to Azure. I don't want to upgrade my Java this time"
+echo "Prompt: $MIGRATION_PROMPT"
+"$APPMOD_EXECUTABLE" plan create "$MIGRATION_PROMPT"
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then
