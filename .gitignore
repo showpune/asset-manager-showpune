@@ -36,3 +36,8 @@ build/
 /logs/
 .a2a*/*
 .claude/*
+
+### AppMod CLI Tool ###
+appmod_linux-x64.tar.gz
+appmod
+.appmod/

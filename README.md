@@ -160,3 +160,47 @@ scripts/start.sh
 ```
 
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
+
+## Migration Planning with AppMod
+
+This project includes scripts to download and run the AppMod CLI tool for Azure migration planning.
+
+### Setup AppMod CLI Tool
+
+First, download and setup the AppMod CLI tool:
+
+Windows:
+```batch
+scripts\setup-appmod.cmd
+```
+
+Linux/Mac:
+```sh
+scripts/setup-appmod.sh
+```
+
+This will:
+* Download the AppMod CLI tool from Azure blob storage
+* Extract the tool to the project root
+* Verify the installation
+
+### Run Migration Planning
+
+After setup, create a migration plan:
+
+Windows:
+```batch
+scripts\run-migration-plan.cmd
+```
+
+Linux/Mac:
+```sh
+scripts/run-migration-plan.sh
+```
+
+This will run the following command:
+```
+appmod -- plan create "Create a plan to migrate the project to Azure. I don't want to upgrade my Java this time"
+```
+
+The migration plan will be generated based on the current Java Spring Boot application and will suggest Azure services to replace the current AWS infrastructure (S3, RabbitMQ, PostgreSQL) without requiring a Java version upgrade.
