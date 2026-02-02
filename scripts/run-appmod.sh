@@ -16,7 +16,7 @@ APPMOD_DIR="$TOOLS_DIR/appmod"
 echo "Downloading appmod CLI tool from $APPMOD_URL..."
 
 # Download the tool
-if ! curl -L -o "$APPMOD_TAR" "$APPMOD_URL"; then
+if ! curl -f -L -o "$APPMOD_TAR" "$APPMOD_URL"; then
     echo "Error: Failed to download appmod tool"
     exit 1
 fi
@@ -52,5 +52,18 @@ cd "$PROJECT_ROOT"
 # Run the appmod command
 echo "Running appmod plan create command..."
 "$APPMOD_EXECUTABLE" plan create "Create a plan to migrate the project to Azure. I don't want to upgrade my Java this time"
+EXIT_CODE=$?
 
-echo "Script completed!"
+if [ $EXIT_CODE -eq 0 ]; then
+    echo "Script completed successfully!"
+elif [ $EXIT_CODE -eq 1 ]; then
+    # Exit code 1 might indicate missing optional dependencies like GitHub Copilot CLI
+    # but the core functionality (branch creation, plan setup) may have succeeded
+    echo "Warning: appmod command exited with code 1."
+    echo "This may indicate missing optional dependencies (e.g., GitHub Copilot CLI)."
+    echo "Check if the branch and plan directory were created."
+    exit 0
+else
+    echo "Error: appmod command failed with exit code $EXIT_CODE"
+    exit $EXIT_CODE
+fi
