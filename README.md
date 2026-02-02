@@ -160,3 +160,28 @@ scripts/start.sh
 ```
 
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
+
+## Azure Migration Planning
+
+To set up tools for Azure migration planning and create a migration plan for this project:
+
+**Prerequisites**: curl (Linux) or Git Bash/WSL (Windows)
+
+Windows:
+
+```batch
+cd asset-manager
+scripts\setup-migration.cmd
+```
+
+Linux:
+
+```sh
+cd asset-manager
+scripts/setup-migration.sh
+```
+
+This script will:
+1. Install GitHub Copilot CLI
+2. Download and install the appmod tool for Azure migration planning
+3. Create a migration plan for the project to Azure (without Java version upgrade)
