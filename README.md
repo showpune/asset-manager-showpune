@@ -165,7 +165,9 @@ To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
 
 To set up tools for Azure migration planning and create a migration plan for this project:
 
-**Prerequisites**: curl (Linux) or Git Bash/WSL (Windows)
+**Prerequisites**: 
+- Linux/macOS: curl and bash
+- Windows: curl (or PowerShell for download) and Git Bash/WSL (required for GitHub Copilot CLI installation)
 
 Windows:
 

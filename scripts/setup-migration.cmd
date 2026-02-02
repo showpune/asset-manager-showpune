@@ -25,7 +25,7 @@ echo.
 REM Step 2: Download and install appmod tool
 echo Step 2: Downloading appmod tool...
 set APPMOD_URL=https://aka.ms/appmod_win-x64.zip
-set APPMOD_DIR=%TEMP%\appmod
+set APPMOD_DIR=%LOCALAPPDATA%\appmod
 set APPMOD_ZIP=%TEMP%\appmod_win-x64.zip
 
 REM Create temporary directory

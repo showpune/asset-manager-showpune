@@ -23,7 +23,7 @@ echo ""
 # Step 2: Download and install appmod tool
 echo "Step 2: Downloading appmod tool..."
 APPMOD_URL="https://aka.ms/appmod_linux-x64.tar.gz"
-APPMOD_DIR="/tmp/appmod"
+APPMOD_DIR="$HOME/.local/share/appmod"
 APPMOD_TAR="/tmp/appmod_linux-x64.tar.gz"
 
 # Create temporary directory
