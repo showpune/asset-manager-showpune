@@ -1,5 +1,5 @@
 ---
-name: hello
+name: bb
 description: Returns a hello greeting with the current timestamp
 ---
 
