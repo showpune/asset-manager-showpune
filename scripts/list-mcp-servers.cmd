@@ -14,6 +14,8 @@ echo.
 rem Check if the config file exists
 if not exist "%MCP_CONFIG_FILE%" (
     echo Error: MCP configuration file not found at %MCP_CONFIG_FILE%
+    echo.
+    echo ================================================
     goto :end
 )
 

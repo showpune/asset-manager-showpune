@@ -32,7 +32,10 @@ else
     cat "$MCP_CONFIG_FILE"
     echo ""
     echo ""
-    echo "Tip: Install 'jq' for better formatted output: sudo apt-get install jq"
+    echo "Tip: Install 'jq' for better formatted output"
+    echo "  - Ubuntu/Debian: sudo apt-get install jq"
+    echo "  - macOS: brew install jq"
+    echo "  - Red Hat/CentOS: sudo yum install jq"
 fi
 
 echo ""
