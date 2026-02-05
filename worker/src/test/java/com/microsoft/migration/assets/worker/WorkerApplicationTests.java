@@ -22,8 +22,10 @@ class WorkerApplicationTests {
 		@Bean
 		@Primary
 		public ConnectionFactory connectionFactory() {
-			// Return a dummy connection factory for tests
-			return new CachingConnectionFactory();
+			// Return a dummy connection factory for tests that doesn't attempt connections
+			CachingConnectionFactory factory = new CachingConnectionFactory();
+			factory.setAddresses(""); // Prevent actual connection attempts
+			return factory;
 		}
 	}
 
