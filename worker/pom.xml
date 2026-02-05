@@ -11,6 +11,7 @@
 
     <properties>
         <aws-sdk.version>2.25.13</aws-sdk.version>
+        <java.version>21</java.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
