@@ -87,7 +87,7 @@ public class S3Controller {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(new InputStreamResource(inputStream));
-        } catch (IOException _) {
+        } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }
     }

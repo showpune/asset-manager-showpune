@@ -124,7 +124,7 @@ public class AwsS3Service implements StorageService {
                     .key(getThumbnailKey(key))
                     .build();
             s3Client.deleteObject(thumbnailRequest);
-        } catch (Exception _) {
+        } catch (Exception e) {
             // Ignore if thumbnail doesn't exist
         }
 
