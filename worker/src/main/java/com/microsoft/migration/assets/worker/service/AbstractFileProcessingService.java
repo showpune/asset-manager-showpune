@@ -25,7 +25,7 @@ import static com.microsoft.migration.assets.worker.config.RabbitConfig.QUEUE_NA
 @Slf4j
 public abstract class AbstractFileProcessingService implements FileProcessor {
 
-    @Autowired
+    @Autowired(required = false)
     private RetryTemplate retryTemplate;
 
     @RabbitListener(queues = QUEUE_NAME)
