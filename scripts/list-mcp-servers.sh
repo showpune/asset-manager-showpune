@@ -10,6 +10,14 @@ echo "       MCP Servers Configuration List          "
 echo "================================================"
 echo ""
 
+# Check if the config file exists
+if [ ! -f "$MCP_CONFIG_FILE" ]; then
+    echo "Error: MCP configuration file not found at $MCP_CONFIG_FILE"
+    echo ""
+    echo "================================================"
+    exit 1
+fi
+
 # Check if jq is installed for pretty JSON parsing
 if command -v jq &> /dev/null; then
     echo "MCP Servers found in .github/mcp-config.json:"

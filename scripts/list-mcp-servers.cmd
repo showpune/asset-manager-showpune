@@ -21,7 +21,18 @@ echo MCP Servers found in .github\mcp-config.json:
 echo.
 
 rem Try to use PowerShell for better JSON parsing
-powershell -Command "if (Test-Path '%MCP_CONFIG_FILE%') { $config = Get-Content '%MCP_CONFIG_FILE%' | ConvertFrom-Json; $config.mcpServers.PSObject.Properties | ForEach-Object { Write-Host \"Server Name: $($_.Name)\"; Write-Host \"  Type: $($_.Value.type)\"; Write-Host \"  Command: $($_.Value.command)\"; Write-Host \"  Args: $($_.Value.args -join ' ')\"; Write-Host \"  Tools: $($_.Value.tools -join ', ')\"; Write-Host \"\" } }" 2>nul
+powershell -Command ^
+  "if (Test-Path '%MCP_CONFIG_FILE%') { ^
+    $config = Get-Content '%MCP_CONFIG_FILE%' ^| ConvertFrom-Json; ^
+    $config.mcpServers.PSObject.Properties ^| ForEach-Object { ^
+      Write-Host \"Server Name: $($_.Name)\"; ^
+      Write-Host \"  Type: $($_.Value.type)\"; ^
+      Write-Host \"  Command: $($_.Value.command)\"; ^
+      Write-Host \"  Args: $($_.Value.args -join ' ')\"; ^
+      Write-Host \"  Tools: $($_.Value.tools -join ', ')\"; ^
+      Write-Host \"\" ^
+    } ^
+  }" 2>nul
 
 if errorlevel 1 (
     echo Fallback: Displaying raw JSON content
