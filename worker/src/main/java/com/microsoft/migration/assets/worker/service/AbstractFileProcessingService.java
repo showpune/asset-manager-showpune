@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
@@ -23,6 +24,7 @@ import java.nio.file.Path;
 import static com.microsoft.migration.assets.worker.config.RabbitConfig.QUEUE_NAME;
 
 @Slf4j
+@ConditionalOnProperty(name = "spring.rabbitmq.enabled", havingValue = "true", matchIfMissing = true)
 public abstract class AbstractFileProcessingService implements FileProcessor {
 
     @Autowired(required = false)
