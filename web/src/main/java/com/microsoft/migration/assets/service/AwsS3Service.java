@@ -46,10 +46,8 @@ public class AwsS3Service implements StorageService {
         return response.contents().stream()
                 .map(s3Object -> {
                     // Try to get metadata for upload time
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(s3Object.key()))
+                    Instant uploadedAt = imageMetadataRepository.findByS3Key(s3Object.key())
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(s3Object.lastModified()); // fallback to lastModified if metadata not found
 
                     return new S3StorageItem(
@@ -129,9 +127,7 @@ public class AwsS3Service implements StorageService {
         }
 
         // Delete metadata from database
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
+        imageMetadataRepository.findByS3Key(key)
                 .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
     }
 
