@@ -72,7 +72,12 @@ public class AzureBlobFileProcessingService extends AbstractFileProcessingServic
         // Remove _thumbnail suffix if present
         String suffix = "_thumbnail";
         int suffixIndex = key.lastIndexOf(suffix);
-        if (suffixIndex > 0) {
+        if (suffixIndex >= 0) {
+            int dotIndex = key.lastIndexOf('.');
+            if (dotIndex > suffixIndex) {
+                // key is like "uuid-filename_thumbnail.jpg"
+                return key.substring(0, suffixIndex) + key.substring(dotIndex);
+            }
             return key.substring(0, suffixIndex);
         }
         return key;

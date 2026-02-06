@@ -4,7 +4,16 @@ import com.microsoft.migration.assets.model.ImageMetadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ImageMetadataRepository extends JpaRepository<ImageMetadata, String> {
     // Basic CRUD operations are automatically provided by JpaRepository
+    
+    /**
+     * Find image metadata by S3 key
+     * @param s3Key the S3 object key
+     * @return Optional containing the metadata if found
+     */
+    Optional<ImageMetadata> findByS3Key(String s3Key);
 }
