@@ -211,7 +211,7 @@ The application now supports three profiles:
 - ✅ Clear separation of concerns
 
 ### Modern Stack
-- ✅ Java 21 LTS provides long-term support until 2026
+- ✅ Java 21 LTS provides long-term support until 2028
 - ✅ Spring Boot 3.4.2 includes latest features and security patches
 - ✅ Azure SDK includes latest Azure features
 

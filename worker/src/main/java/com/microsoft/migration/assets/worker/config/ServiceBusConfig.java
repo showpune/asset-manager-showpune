@@ -1,8 +1,5 @@
 package com.microsoft.migration.assets.worker.config;
 
-import com.azure.identity.DefaultAzureCredential;
-import com.azure.identity.DefaultAzureCredentialBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -20,9 +17,6 @@ import jakarta.jms.Session;
 public class ServiceBusConfig {
     
     public static final String QUEUE_NAME = "image-processing";
-
-    @Value("${azure.servicebus.namespace:#{null}}")
-    private String serviceBusNamespace;
 
     @Bean
     public MessageConverter jmsMessageConverter() {
