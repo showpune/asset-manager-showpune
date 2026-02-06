@@ -37,8 +37,8 @@ This guide provides detailed information about the migration from RabbitMQ with 
 ## Prerequisites
 
 ### Software Requirements
-- Java 21 LTS (upgraded from Java 11)
-- Spring Boot 3.4.0 (upgraded from 2.7.14)
+- Java 21 LTS (upgraded from Java 17)
+- Spring Boot 3.4.0 (upgraded from 3.2.5)
 - Maven 3.x
 - Azure CLI (for resource setup)
 
