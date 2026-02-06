@@ -20,6 +20,17 @@
         "generateNewIntegrationTests": "false",
         "passUnitTests": "true",
         "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "startedAt": "2026-02-06T13:38:38.267Z",
+      "completedAt": "2026-02-06T13:41:24.000Z",
+      "summary": "Successfully migrated from RabbitMQ to Azure Service Bus. All RabbitMQ dependencies removed and replaced with Azure Service Bus JMS implementation. Configuration updated to use managed identity authentication. Build and tests pass successfully.",
+      "successCriteriaStatus": {
+        "passBuild": "passed",
+        "generateNewUnitTests": "skipped",
+        "generateNewIntegrationTests": "skipped",
+        "passUnitTests": "passed",
+        "passIntegrationTests": "skipped"
       }
     }
   ],
