@@ -139,10 +139,10 @@ Managed identity based authentication
 
 ## Run Locally
 
-**Prerequisites**: JDK, Docker
+**Prerequisites**: JDK 21, Docker
 
 Run the following commands to start the apps locally. This will:
-* Use local file system instead of S3 to store the image
+* Use local file system instead of S3/Azure Blob to store the image
 * Launch RabbitMQ and PostgreSQL using Docker
 
 Windows:
@@ -160,3 +160,69 @@ scripts/start.sh
 ```
 
 To stop, run `stop.cmd` or `stop.sh` in the `scripts` directory.
+
+## Deployment Options
+
+### Deploy to AWS
+The application can run on AWS using S3 for storage and RabbitMQ for messaging:
+- Set profile to `prod` or leave as default
+- Configure AWS credentials and S3 bucket
+- Deploy web and worker modules
+
+### Deploy to Azure
+The application supports Azure deployment with managed identity authentication:
+- Set profile to `azure`
+- Configure Azure Blob Storage and Service Bus
+- Enable managed identity on Azure App Service/Container Apps
+- Assign required RBAC roles
+
+See the [Migration Guide](.github/modernization/001-modernization-plan/MIGRATION_GUIDE.md) for detailed Azure deployment instructions.
+
+## Azure Migration
+
+The project has been modernized to support Azure services with managed identity authentication. Key changes:
+
+### ✅ Completed
+- **Java 21 LTS**: Upgraded from Java 17
+- **Spring Boot 3.4.2**: Upgraded from 3.2.1
+- **Azure Blob Storage**: Integrated with managed identity
+- **Azure Service Bus**: Integrated with JMS API
+- **Profile-based deployment**: `dev`, `prod`, and `azure` profiles
+
+### 📚 Documentation
+- [Modernization Plan](.github/modernization/001-modernization-plan/PLAN.md)
+- [Execution Summary](.github/modernization/001-modernization-plan/EXECUTION_SUMMARY.md)
+- [Migration Guide](.github/modernization/001-modernization-plan/MIGRATION_GUIDE.md)
+
+## Building the Application
+
+**Prerequisites**: JDK 21, Maven
+
+```bash
+# Set Java 21 as active JDK
+export JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH
+
+# Build the project
+./mvnw clean install
+
+# Run tests
+./mvnw test
+```
+
+## Running with Different Profiles
+
+### Local Development (dev)
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+### AWS Deployment (prod)
+```bash
+java -jar -Dspring.profiles.active=prod web/target/assets-manager-web-0.0.1-SNAPSHOT.jar
+```
+
+### Azure Deployment
+```bash
+java -jar -Dspring.profiles.active=azure web/target/assets-manager-web-0.0.1-SNAPSHOT.jar
+```
