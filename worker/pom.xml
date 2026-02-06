@@ -10,8 +10,8 @@
     </parent>
 
     <properties>
-        <aws-sdk.version>2.25.13</aws-sdk.version>
-        <spring-cloud-azure.version>5.18.0</spring-cloud-azure.version>
+        <aws-sdk.version>2.34.0</aws-sdk.version>
+        <spring-cloud-azure.version>5.22.0</spring-cloud-azure.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
