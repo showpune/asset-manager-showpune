@@ -54,9 +54,9 @@
         "passIntegrationTests": "false"
       },
       "status": "success",
-      "startedAt": "2026-02-06T13:38:38.267Z",
-      "completedAt": "2026-02-06T13:41:24.000Z",
-      "summary": "Successfully migrated from RabbitMQ to Azure Service Bus. All RabbitMQ dependencies removed and replaced with Azure Service Bus JMS implementation. Configuration updated to use managed identity authentication. Build and tests pass successfully.",
+      "startedAt": "2026-02-06T15:28:34.647Z",
+      "completedAt": "2026-02-06T15:28:34.647Z",
+      "summary": "Successfully migrated messaging infrastructure from RabbitMQ to Azure Service Bus. Removed all RabbitMQ dependencies (spring-boot-starter-amqp) and replaced with Azure Service Bus JMS (spring-cloud-azure-starter-servicebus-jms). Created ServiceBusConfig classes for both web and worker modules with JMS configuration. Replaced RabbitTemplate with JmsTemplate and @RabbitListener with @JmsListener. Updated application properties to use Azure Service Bus namespace. Maintained existing message formats and asynchronous processing patterns. All builds compile successfully and unit tests pass.",
       "successCriteriaStatus": {
         "passBuild": "passed",
         "generateNewUnitTests": "skipped",
