@@ -53,7 +53,8 @@
         "generateNewIntegrationTests": "false",
         "passUnitTests": "true",
         "passIntegrationTests": "false"
-      }
+      },
+      "status": "started"
     }
   ],
   "metadata": {
