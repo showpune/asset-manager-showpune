@@ -11,6 +11,9 @@
 
     <properties>
         <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-storage-blob.version>12.29.0</azure-storage-blob.version>
+        <azure-identity.version>1.14.2</azure-identity.version>
+        <spring-cloud-azure.version>5.18.0</spring-cloud-azure.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
@@ -52,6 +55,23 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <!-- Azure Blob Storage -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>${azure-storage-blob.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>${azure-identity.version}</version>
+        </dependency>
+        <!-- Azure Service Bus JMS -->
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-servicebus-jms</artifactId>
+            <version>${spring-cloud-azure.version}</version>
         </dependency>
     </dependencies>
 
