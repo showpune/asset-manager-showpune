@@ -22,9 +22,9 @@
         "passIntegrationTests": "false"
       },
       "status": "success",
-      "startedAt": "2026-02-06T13:30:00.000Z",
-      "completedAt": "2026-02-06T13:38:00.000Z",
-      "summary": "Successfully upgraded Spring Boot from 2.7.14 to 3.2.5 and Java from 11 to 17. Migrated from javax.* to jakarta.* packages. All dependencies updated and project compiles successfully.",
+      "startedAt": "2026-02-06T15:18:04.261Z",
+      "completedAt": "2026-02-06T15:20:07.858Z",
+      "summary": "Successfully upgraded Spring Boot from 2.7.14 to 3.2.5 and Java from 11 to 17. Migrated all JavaEE (javax.*) imports to Jakarta EE (jakarta.*). All dependencies are compatible with Spring Boot 3.x. Build compiles successfully and all unit tests pass.",
       "successCriteriaStatus": {
         "passBuild": "passed",
         "generateNewUnitTests": "skipped",
