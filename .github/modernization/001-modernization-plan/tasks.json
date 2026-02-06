@@ -21,15 +21,6 @@
         "generateNewIntegrationTests": "false",
         "passUnitTests": "true",
         "passIntegrationTests": "false"
-      },
-      "status": "success",
-      "taskSummary": "Successfully upgraded Spring Boot from 2.7.14 to 3.2.5, Java from 11 to 17, and migrated from javax.* to jakarta.* namespaces. Build passes, all unit tests pass. Application is now ready for Azure SDK integration.",
-      "successCriteriaStatus": {
-        "passBuild": "true",
-        "generateNewUnitTests": "true",
-        "generateNewIntegrationTests": "false",
-        "passUnitTests": "true",
-        "passIntegrationTests": "false"
       }
     },
     {
@@ -48,15 +39,6 @@
         }
       ],
       "successCriteria": {
-        "passBuild": "true",
-        "generateNewUnitTests": "false",
-        "generateNewIntegrationTests": "false",
-        "passUnitTests": "true",
-        "passIntegrationTests": "false"
-      },
-      "status": "success",
-      "taskSummary": "Successfully migrated from RabbitMQ with AMQP to Azure Service Bus using JMS API. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter-servicebus-jms, migrated configuration to use managed identity, refactored code from RabbitTemplate/RabbitListener to JmsTemplate/JmsListener. Build passes, all unit tests pass. Application is ready for Azure Service Bus deployment.",
-      "successCriteriaStatus": {
         "passBuild": "true",
         "generateNewUnitTests": "false",
         "generateNewIntegrationTests": "false",
