@@ -22,7 +22,15 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Successfully upgraded Spring Boot from 3.2.5 to 3.4.0 and Java from 17 to 21 LTS. All dependencies updated and compatible. Build passes and all tests pass (1/1). Project is ready for Azure Service Bus migration.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      }
     },
     {
       "type": "transform",
