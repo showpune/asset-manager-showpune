@@ -3,6 +3,36 @@
   "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
   "tasks": [
     {
+      "type": "upgrade",
+      "id": "001-upgrade-spring-boot",
+      "description": "Upgrade Spring Boot from 2.7.14 to 3.x to meet Azure SDK compatibility requirements and prepare for Azure Service Bus migration.",
+      "requirements": "This upgrade is required because the current Java 11 and Spring Boot 2.7.14 versions are below the minimum requirements for Azure Service Bus SDK. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).",
+      "environmentConfiguration": null,
+      "dependencies": [],
+      "skills": [
+        {
+          "name": "migration-spring-boot-upgrade",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "taskSummary": "Successfully upgraded Spring Boot from 3.2.5 to 3.4.0 and Java from 17 to 21 LTS. All dependencies updated and compatible. Build passes and all tests pass (1/1). Project is ready for Azure Service Bus migration.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      }
+    },
+    {
       "type": "transform",
       "id": "002-transform-migration-amqp-rabbitmq-servicebus",
       "description": "Migrate messaging infrastructure from RabbitMQ with AMQP to Azure Service Bus for cloud-native, managed messaging service.",
@@ -18,6 +48,15 @@
         }
       ],
       "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "taskSummary": "Successfully migrated from RabbitMQ with AMQP to Azure Service Bus. Dependencies updated, configuration migrated to use managed identity authentication, Java code uses JMS API for Azure Service Bus, and startup/shutdown scripts updated. All build and unit tests pass. Queue-based messaging maintained.",
+      "successCriteriaStatus": {
         "passBuild": "true",
         "generateNewUnitTests": "false",
         "generateNewIntegrationTests": "false",
