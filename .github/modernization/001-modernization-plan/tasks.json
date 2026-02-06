@@ -23,6 +23,15 @@
         "generateNewIntegrationTests": "false",
         "passUnitTests": "true",
         "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "taskSummary": "Successfully verified migration from RabbitMQ to Azure Service Bus. All code has been migrated to use Azure Service Bus with JMS API and managed identity authentication. Build and tests pass successfully.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
       }
     }
   ],
