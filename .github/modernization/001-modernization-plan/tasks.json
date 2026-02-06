@@ -54,7 +54,15 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Successfully migrated from RabbitMQ with AMQP to Azure Service Bus. Dependencies updated, configuration migrated to use managed identity authentication, Java code uses JMS API for Azure Service Bus, and startup/shutdown scripts updated. All build and unit tests pass. Queue-based messaging maintained.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      }
     }
   ],
   "metadata": {
