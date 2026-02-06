@@ -11,6 +11,8 @@
 
     <properties>
         <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-sdk.version>12.29.0</azure-sdk.version>
+        <spring-cloud-azure.version>5.18.0</spring-cloud-azure.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
@@ -53,6 +55,20 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- Azure Blob Storage SDK -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+        </dependency>
+        <!-- Azure Service Bus JMS -->
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-servicebus-jms</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -61,6 +77,23 @@
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
                 <version>${aws-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>1.14.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${spring-cloud-azure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
