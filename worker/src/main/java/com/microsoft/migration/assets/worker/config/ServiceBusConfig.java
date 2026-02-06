@@ -15,8 +15,6 @@ public class ServiceBusConfig {
     @Value("${azure.servicebus.namespace}")
     private String namespace;
 
-    public static final String QUEUE_NAME = "image-processing";
-
     @Bean
     public ConnectionFactory connectionFactory() {
         // Azure Service Bus connection string for managed identity
