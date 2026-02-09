@@ -245,9 +245,23 @@ If you have existing data in S3, you need to:
 
 The migration from AWS S3 to Azure Blob Storage has been completed successfully. All functionality has been preserved, and the application is now ready to use Azure Blob Storage for object storage operations. The code is cleaner, uses modern Azure SDK, and maintains full backward compatibility in terms of functionality.
 
+### Known Limitations
+
+**Database Field Naming**: The `ImageMetadata` JPA entity retains field names `s3Key` and `s3Url` for database compatibility. These are persisted database column names, and changing them would require a separate database migration task with:
+- Database schema migration scripts
+- Data migration for existing records
+- Potential downtime for schema updates
+
+This naming inconsistency does not affect functionality and can be addressed in a future database refactoring task if needed.
+
+### Security Summary
+
+✅ **CodeQL Analysis**: No security vulnerabilities detected in the migrated code.
+
 ### Next Steps
 1. Deploy to Azure environment
 2. Create Azure Storage Account and container
 3. Configure connection string in production environment
 4. (Optional) Migrate existing S3 data to Azure Blob Storage
 5. Update CI/CD pipelines with Azure-specific configurations
+6. (Optional) Consider database schema refactoring to rename s3-specific field names
