@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/s3")
+@RequestMapping("/storage")
 @RequiredArgsConstructor
-public class S3Controller {
+public class StorageController {
 
     private final StorageService storageService;
 
@@ -42,22 +42,21 @@ public class S3Controller {
         try {
             if (file.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Please select a file to upload");
-                return "redirect:/s3/upload";
+                return "redirect:/storage/upload";
             }
 
             storageService.uploadObject(file);
             redirectAttributes.addFlashAttribute("success", "File uploaded successfully");
-            return "redirect:/s3";
+            return "redirect:/storage";
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("error", "Failed to upload file: " + e.getMessage());
-            return "redirect:/s3/upload";
+            return "redirect:/storage/upload";
         }
     }
     
     @GetMapping("/view-page/{key}")
     public String viewObjectPage(@PathVariable String key, Model model, RedirectAttributes redirectAttributes) {
         try {
-            // Find the object in the list of objects
             Optional<S3StorageItem> foundObject = storageService.listObjects().stream()
                     .filter(obj -> obj.getKey().equals(key))
                     .findFirst();
@@ -67,11 +66,11 @@ public class S3Controller {
                 return "view";
             } else {
                 redirectAttributes.addFlashAttribute("error", "Image not found");
-                return "redirect:/s3";
+                return "redirect:/storage";
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to view image: " + e.getMessage());
-            return "redirect:/s3";
+            return "redirect:/storage";
         }
     }
 
@@ -81,7 +80,6 @@ public class S3Controller {
             InputStream inputStream = storageService.getObject(key);
             
             HttpHeaders headers = new HttpHeaders();
-            // Use a generic content type if we don't know the exact type
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             
             return ResponseEntity.ok()
@@ -100,6 +98,6 @@ public class S3Controller {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to delete file: " + e.getMessage());
         }
-        return "redirect:/s3";
+        return "redirect:/storage";
     }
 }
