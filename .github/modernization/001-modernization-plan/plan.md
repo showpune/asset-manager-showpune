@@ -37,33 +37,7 @@ The migration follows a two-phase approach: first upgrading the Java and Spring 
 
 ## Code
 
-### Task 1: Upgrade Spring Boot to 3.x
-
-**Description**: Upgrade the application to Spring Boot 3.x to meet the requirements for Azure SDK integration and modernization.
-
-**Requirements**: Upgrade Spring Boot from 2.7.14 to the latest 3.x version. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).
-
-**Environment Configuration**: None specified
-
-**App Scope**: 
-- web
-- worker
-
-**Skills**: 
-- Skill Name: migration-spring-boot-upgrade
-  - Skill Location: builtin
-
-**Success Criteria**:
-- Pass Build: true
-- Generate New Unit Tests (Mock-based): false
-- Generate New Integration Tests: false
-- Pass Unit Tests: true
-- Pass New Integration Tests: false
-- Pass Security Compliance: false
-
----
-
-### Task 2: Migrate from AWS S3 to Azure Blob Storage
+### Task 1: Migrate from AWS S3 to Azure Blob Storage
 
 **Description**: Migrate object storage from AWS S3 to Azure Blob Storage for both web and worker modules.
 
