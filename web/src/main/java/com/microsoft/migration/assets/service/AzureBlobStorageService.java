@@ -42,10 +42,8 @@ public class AzureBlobStorageService implements StorageService {
 
         return containerClient.listBlobs().stream()
                 .map(blobItem -> {
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
+                    Instant uploadedAt = imageMetadataRepository.findByS3Key(blobItem.getName())
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(blobItem.getProperties().getLastModified().toInstant());
 
                     return new BlobStorageItem(
@@ -112,9 +110,7 @@ public class AzureBlobStorageService implements StorageService {
             // Ignore if thumbnail doesn't exist
         }
 
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
+        imageMetadataRepository.findByS3Key(key)
                 .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
     }
 
