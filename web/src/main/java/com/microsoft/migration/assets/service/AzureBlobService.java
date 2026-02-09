@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,13 +43,15 @@ public class AzureBlobService implements StorageService {
     public List<S3StorageItem> listObjects() {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
+        Map<String, ImageMetadata> metadataMap = imageMetadataRepository.findAll().stream()
+                .collect(Collectors.toMap(ImageMetadata::getS3Key, metadata -> metadata));
+
         return containerClient.listBlobs().stream()
                 .map(blobItem -> {
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
-                            .map(metadata -> metadata.getUploadedAt().atZone(ZoneId.systemDefault()).toInstant())
-                            .findFirst()
-                            .orElse(blobItem.getProperties().getLastModified().toInstant());
+                    ImageMetadata metadata = metadataMap.get(blobItem.getName());
+                    Instant uploadedAt = metadata != null 
+                            ? metadata.getUploadedAt().atZone(ZoneId.systemDefault()).toInstant()
+                            : blobItem.getProperties().getLastModified().toInstant();
 
                     return new S3StorageItem(
                             blobItem.getName(),
