@@ -138,6 +138,7 @@ public class LocalFileStorageService implements StorageService {
     }
     
     private String generateUrl(String key) {
+        // Endpoint path retained for backward compatibility
         return "/s3/view/" + key;
     }
 }
