@@ -8,7 +8,7 @@
       "description": "Migrate object storage from AWS S3 to Azure Blob Storage for both web and worker modules",
       "requirements": "Migrate all S3 storage operations (upload, download, list, delete) to Azure Blob Storage. Maintain existing functionality while replacing AWS SDK with Azure SDK.",
       "environmentConfiguration": null,
-      "status": null,
+      "status": "started",
       "taskSummary": null,
       "skills": [
         {
