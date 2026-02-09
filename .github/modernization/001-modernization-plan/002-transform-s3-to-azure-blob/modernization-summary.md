@@ -176,6 +176,19 @@ All existing functionality has been maintained:
 1. **Dependency Security**: Azure Blob Storage SDK version 12.25.1 has been scanned for vulnerabilities - ✅ No vulnerabilities found
 2. **Authentication**: Migrated from AWS access keys to Azure connection string (both stored securely as environment variables)
 3. **Access Control**: Azure Blob Storage supports similar access control mechanisms through SAS tokens and Azure AD authentication
+4. **CodeQL Analysis**: ✅ No security alerts found in the migrated code
+
+## Performance Optimizations
+
+After initial code review, the following performance improvements were implemented:
+
+1. **Repository Method Addition**: Added `findByS3Key()` method to `ImageMetadataRepository` for efficient database queries
+2. **N+1 Query Fix in listObjects()**: 
+   - **Before**: Called `findAll()` for each blob in the stream (N+1 queries)
+   - **After**: Fetch all metadata once and use a Map for O(1) lookups
+3. **N+1 Query Fix in deleteObject()**:
+   - **Before**: Called `findAll().stream().filter()` to find one record
+   - **After**: Use `findByS3Key()` for direct query with WHERE clause
 
 ## Migration Notes
 
@@ -197,13 +210,14 @@ Set the following environment variables or update `application.properties`:
 
 ## Files Changed
 
-### Modified Files (10)
+### Modified Files (12)
 1. `web/pom.xml` - Updated dependencies
 2. `web/src/main/resources/application.properties` - Updated configuration properties
 3. `web/src/test/resources/application.properties` - Updated test properties
-4. `worker/pom.xml` - Updated dependencies
-5. `worker/src/main/resources/application.properties` - Updated configuration properties
-6. `mvnw` - Made executable
+4. `web/src/main/java/com/microsoft/migration/assets/repository/ImageMetadataRepository.java` - Added findByS3Key method
+5. `worker/pom.xml` - Updated dependencies
+6. `worker/src/main/resources/application.properties` - Updated configuration properties
+7. `mvnw` - Made executable
 
 ### Deleted Files (4)
 1. `web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java`
@@ -211,16 +225,17 @@ Set the following environment variables or update `application.properties`:
 3. `worker/src/main/java/com/microsoft/migration/assets/worker/config/AwsS3Config.java`
 4. `worker/src/main/java/com/microsoft/migration/assets/worker/service/S3FileProcessingService.java`
 
-### New Files (4)
+### New Files (5)
 1. `web/src/main/java/com/microsoft/migration/assets/config/AzureBlobStorageConfig.java`
 2. `web/src/main/java/com/microsoft/migration/assets/service/AzureBlobStorageService.java`
 3. `worker/src/main/java/com/microsoft/migration/assets/worker/config/AzureBlobStorageConfig.java`
 4. `worker/src/main/java/com/microsoft/migration/assets/worker/service/AzureBlobFileProcessingService.java`
+5. `.github/modernization/001-modernization-plan/002-transform-s3-to-azure-blob/modernization-summary.md`
 
 ### Total Impact
 - **Lines Removed**: ~338 lines
-- **Lines Added**: ~300 lines
-- **Net Change**: Simplified codebase with cleaner Azure SDK integration
+- **Lines Added**: ~315 lines (including optimizations)
+- **Net Change**: Simplified codebase with cleaner Azure SDK integration and improved performance
 
 ## Benefits of Azure Blob Storage
 
