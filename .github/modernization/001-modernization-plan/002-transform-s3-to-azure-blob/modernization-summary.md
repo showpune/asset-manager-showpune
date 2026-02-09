@@ -94,8 +94,9 @@ aws.s3.bucket=your-bucket-name
 
 **Added Properties**:
 ```properties
-azure.storage.connection-string=DefaultEndpointsProtocol=https;AccountName=your-account-name;AccountKey=your-account-key;EndpointSuffix=core.windows.net
-azure.storage.container-name=your-container-name
+# TODO: Replace with actual values or use environment variables
+azure.storage.connection-string=<REPLACE_WITH_YOUR_AZURE_CONNECTION_STRING>
+azure.storage.container-name=<REPLACE_WITH_YOUR_CONTAINER_NAME>
 ```
 
 #### Worker Module (`worker/src/main/resources/application.properties`)
@@ -109,8 +110,9 @@ aws.s3.bucket=your-bucket-name
 
 **Added Properties**:
 ```properties
-azure.storage.connection-string=DefaultEndpointsProtocol=https;AccountName=your-account-name;AccountKey=your-account-key;EndpointSuffix=core.windows.net
-azure.storage.container-name=your-container-name
+# TODO: Replace with actual values or use environment variables
+azure.storage.connection-string=<REPLACE_WITH_YOUR_AZURE_CONNECTION_STRING>
+azure.storage.container-name=<REPLACE_WITH_YOUR_CONTAINER_NAME>
 ```
 
 #### Test Configuration (`web/src/test/resources/application.properties`)
@@ -138,6 +140,19 @@ The following features remain fully functional after migration:
 - ✅ Thumbnail generation via RabbitMQ messaging
 - ✅ Database metadata persistence
 - ✅ Profile-based service activation (`!dev` profile)
+
+### 6. Performance Optimizations
+
+#### Repository Query Improvements
+**Added Methods to ImageMetadataRepository**:
+- `Optional<ImageMetadata> findByS3Key(String s3Key)` - Find metadata by blob name
+- `void deleteByS3Key(String s3Key)` - Delete metadata by blob name
+
+**Benefits**:
+- Eliminates N+1 query pattern that was present in `listObjects()` and `deleteObject()` methods
+- Replaces inefficient `findAll().stream().filter()` pattern with direct database queries
+- Added `@Transactional` annotation to `deleteObject()` for proper transaction management
+- Significantly improves performance when dealing with large numbers of stored files
 
 ## API Mapping Reference
 
@@ -212,11 +227,12 @@ azure.storage.container-name=<your-container-name>
 
 ## Files Modified
 
-### Created Files (6)
+### Created Files (5)
 1. `web/src/main/java/com/microsoft/migration/assets/config/AzureBlobConfig.java`
 2. `web/src/main/java/com/microsoft/migration/assets/service/AzureBlobStorageService.java`
 3. `worker/src/main/java/com/microsoft/migration/assets/worker/config/AzureBlobConfig.java`
 4. `worker/src/main/java/com/microsoft/migration/assets/worker/service/AzureBlobFileProcessingService.java`
+5. `.github/modernization/001-modernization-plan/002-transform-s3-to-azure-blob/modernization-summary.md`
 
 ### Deleted Files (4)
 1. `web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java`
@@ -224,12 +240,13 @@ azure.storage.container-name=<your-container-name>
 3. `worker/src/main/java/com/microsoft/migration/assets/worker/config/AwsS3Config.java`
 4. `worker/src/main/java/com/microsoft/migration/assets/worker/service/S3FileProcessingService.java`
 
-### Modified Files (5)
+### Modified Files (6)
 1. `web/pom.xml` - Updated dependencies
 2. `worker/pom.xml` - Updated dependencies
 3. `web/src/main/resources/application.properties` - Updated configuration properties
 4. `worker/src/main/resources/application.properties` - Updated configuration properties
 5. `web/src/test/resources/application.properties` - Updated test configuration properties
+6. `web/src/main/java/com/microsoft/migration/assets/repository/ImageMetadataRepository.java` - Added optimized query methods
 
 ## Unchanged Files
 
