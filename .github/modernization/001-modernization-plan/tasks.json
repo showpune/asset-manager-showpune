@@ -9,8 +9,8 @@
       "requirements": "Upgrade Spring Boot from 2.7.14 to the latest 3.x version. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).",
       "dependencies": [],
       "environmentConfiguration": null,
-      "status": "success",
-      "taskSummary": "Successfully upgraded Spring Boot from 2.7.14 to 3.2.12, Java from 11 to 17, and migrated from javax.* to jakarta.* packages using OpenRewrite. All builds and tests pass successfully.",
+      "status": "started",
+      "taskSummary": null,
       "skills": [
         {
           "name": "migration-spring-boot-upgrade",
