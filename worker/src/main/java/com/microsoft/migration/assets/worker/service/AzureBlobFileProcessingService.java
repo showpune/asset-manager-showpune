@@ -68,7 +68,7 @@ public class AzureBlobFileProcessingService extends AbstractFileProcessingServic
     private String extractOriginalKey(String key) {
         String suffix = "_thumbnail";
         int suffixIndex = key.lastIndexOf(suffix);
-        if (suffixIndex > 0) {
+        if (suffixIndex >= 0) {
             return key.substring(0, suffixIndex);
         }
         return key;

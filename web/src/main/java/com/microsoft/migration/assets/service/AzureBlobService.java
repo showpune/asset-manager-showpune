@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -40,12 +42,14 @@ public class AzureBlobService implements StorageService {
     public List<S3StorageItem> listObjects() {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
+        // Load all metadata once to avoid N+1 query pattern
+        Map<String, ImageMetadata> metadataMap = imageMetadataRepository.findAll().stream()
+                .collect(Collectors.toMap(ImageMetadata::getS3Key, metadata -> metadata, (a, b) -> a));
+
         return containerClient.listBlobs().stream()
                 .map(blobItem -> {
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
+                    Instant uploadedAt = Optional.ofNullable(metadataMap.get(blobItem.getName()))
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(blobItem.getProperties().getLastModified().toInstant());
 
                     return new S3StorageItem(
@@ -110,10 +114,7 @@ public class AzureBlobService implements StorageService {
             // Ignore if thumbnail doesn't exist
         }
 
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
-                .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
+        imageMetadataRepository.findByS3Key(key).ifPresent(imageMetadataRepository::delete);
     }
 
     @Override
