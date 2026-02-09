@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-spring-boot",
+      "description": "Upgrade the application to Spring Boot 3.x to meet the requirements for Azure SDK integration and modernization",
+      "requirements": "Upgrade Spring Boot from 2.7.14 to the latest 3.x version. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).",
+      "dependencies": [],
+      "environmentConfiguration": null,
+      "status": null,
+      "taskSummary": null,
+      "skills": [
+        {
+          "name": "migration-spring-boot-upgrade",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "successCriteriaStatus": null
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-s3-to-azure-blob",
+      "description": "Migrate object storage from AWS S3 to Azure Blob Storage for both web and worker modules",
+      "requirements": "Migrate all S3 storage operations (upload, download, list, delete) to Azure Blob Storage. Maintain existing functionality while replacing AWS SDK with Azure SDK.",
+      "dependencies": ["001-upgrade-spring-boot"],
+      "environmentConfiguration": null,
+      "status": null,
+      "taskSummary": null,
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "successCriteriaStatus": null
+    }
+  ],
+  "metadata": {
+    "planName": "001-modernization-plan",
+    "projectName": "asset-manager-kit",
+    "language": "java",
+    "createdAt": "2026-02-09T02:19:38.962Z",
+    "version": "1.0"
+  }
+}
