@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -46,10 +47,8 @@ public class AzureBlobStorageService implements StorageService {
         return StreamSupport.stream(containerClient.listBlobs().spliterator(), false)
                 .map(blobItem -> {
                     // Try to get metadata for upload time
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
+                    Instant uploadedAt = imageMetadataRepository.findByS3Key(blobItem.getName())
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(blobItem.getProperties().getLastModified().toInstant()); // fallback to lastModified if metadata not found
 
                     return new S3StorageItem(
@@ -103,6 +102,7 @@ public class AzureBlobStorageService implements StorageService {
     }
 
     @Override
+    @Transactional
     public void deleteObject(String key) throws IOException {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
         
@@ -118,11 +118,8 @@ public class AzureBlobStorageService implements StorageService {
             // Ignore if thumbnail doesn't exist
         }
 
-        // Delete metadata from database
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
-                .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
+        // Delete metadata from database using optimized query
+        imageMetadataRepository.deleteByS3Key(key);
     }
 
     @Override
