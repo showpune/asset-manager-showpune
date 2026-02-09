@@ -39,7 +39,7 @@
       "requirements": "Migrate all S3 storage operations (upload, download, list, delete) to Azure Blob Storage. Maintain existing functionality while replacing AWS SDK with Azure SDK.",
       "dependencies": ["001-upgrade-spring-boot"],
       "environmentConfiguration": null,
-      "status": null,
+      "status": "started",
       "taskSummary": null,
       "skills": [
         {
