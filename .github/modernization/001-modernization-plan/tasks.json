@@ -9,8 +9,8 @@
       "requirements": "Upgrade Spring Boot from 2.7.14 to the latest 3.x version. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).",
       "dependencies": [],
       "environmentConfiguration": null,
-      "status": "success",
-      "taskSummary": "Successfully upgraded Spring Boot from 2.7.14 to 3.2.12, Java from 11 to 17, and migrated from javax.* to jakarta.* packages using OpenRewrite. All builds and tests pass successfully.",
+      "status": "started",
+      "taskSummary": null,
       "skills": [
         {
           "name": "migration-spring-boot-upgrade",
@@ -24,13 +24,7 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false"
       },
-      "successCriteriaStatus": {
-        "passBuild": "true",
-        "generateNewUnitTests": "true",
-        "generateNewIntegrationTests": "true",
-        "passUnitTests": "true",
-        "passIntegrationTests": "true"
-      }
+      "successCriteriaStatus": null
     },
     {
       "type": "transform",
@@ -39,8 +33,8 @@
       "requirements": "Migrate all S3 storage operations (upload, download, list, delete) to Azure Blob Storage. Maintain existing functionality while replacing AWS SDK with Azure SDK.",
       "dependencies": ["001-upgrade-spring-boot"],
       "environmentConfiguration": null,
-      "status": "success",
-      "taskSummary": "Successfully migrated from AWS S3 to Azure Blob Storage. Created Azure Blob Storage configuration and service implementations for both web and worker modules. Uses managed identity (DefaultAzureCredential) for passwordless authentication. All builds and tests pass successfully. Comprehensive migration guide created.",
+      "status": "pending",
+      "taskSummary": null,
       "skills": [
         {
           "name": "migration-s3-to-azure-blob-storage",
@@ -54,13 +48,7 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false"
       },
-      "successCriteriaStatus": {
-        "passBuild": "true",
-        "generateNewUnitTests": "true",
-        "generateNewIntegrationTests": "true",
-        "passUnitTests": "true",
-        "passIntegrationTests": "true"
-      }
+      "successCriteriaStatus": null
     }
   ],
   "metadata": {
