@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -43,8 +44,8 @@ public class AzureBlobService implements StorageService {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
         List<ImageMetadata> allMetadata = imageMetadataRepository.findAll();
-        java.util.Map<String, ImageMetadata> metadataMap = allMetadata.stream()
-                .collect(java.util.stream.Collectors.toMap(ImageMetadata::getS3Key, metadata -> metadata, (a, b) -> a));
+        Map<String, ImageMetadata> metadataMap = allMetadata.stream()
+                .collect(Collectors.toMap(ImageMetadata::getS3Key, metadata -> metadata, (a, b) -> a));
 
         return StreamSupport.stream(containerClient.listBlobs().spliterator(), false)
                 .map(blobItem -> {
@@ -136,6 +137,8 @@ public class AzureBlobService implements StorageService {
     }
 
     private String generateKey(String filename) {
-        return UUID.randomUUID().toString() + "-" + filename;
+        // Sanitize filename to prevent path traversal attacks
+        String sanitizedFilename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+        return UUID.randomUUID().toString() + "-" + sanitizedFilename;
     }
 }

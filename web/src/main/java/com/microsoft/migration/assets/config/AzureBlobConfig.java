@@ -13,9 +13,6 @@ public class AzureBlobConfig {
     @Value("${azure.storage.accountName}")
     private String accountName;
 
-    @Value("${azure.storage.containerName}")
-    private String containerName;
-
     @Bean
     public BlobServiceClient blobServiceClient() {
         String endpoint = String.format("https://%s.blob.core.windows.net", accountName);
@@ -24,10 +21,5 @@ public class AzureBlobConfig {
                 .endpoint(endpoint)
                 .credential(new DefaultAzureCredentialBuilder().build())
                 .buildClient();
-    }
-
-    @Bean
-    public String containerName() {
-        return containerName;
     }
 }
