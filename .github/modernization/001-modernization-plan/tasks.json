@@ -22,7 +22,8 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false"
       },
-      "status": "started"
+      "status": "completed",
+      "completedAt": "2026-02-09T03:27:27Z"
     },
     {
       "type": "transform",
