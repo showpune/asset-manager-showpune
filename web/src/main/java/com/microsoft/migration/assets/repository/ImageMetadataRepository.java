@@ -11,7 +11,7 @@ public interface ImageMetadataRepository extends JpaRepository<ImageMetadata, St
     // Basic CRUD operations are automatically provided by JpaRepository
     
     /**
-     * Find image metadata by S3 key
+     * Find image metadata by storage key (blob name)
      */
     Optional<ImageMetadata> findByS3Key(String s3Key);
 }
