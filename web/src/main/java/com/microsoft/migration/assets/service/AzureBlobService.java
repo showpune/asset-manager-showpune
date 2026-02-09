@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -35,13 +37,21 @@ public class AzureBlobService implements StorageService {
 
     @Override
     public List<S3StorageItem> listObjects() {
+        // Collect all blob names first
+        List<String> blobNames = StreamSupport.stream(blobContainerClient.listBlobs().spliterator(), false)
+                .map(BlobItem::getName)
+                .collect(Collectors.toList());
+        
+        // Fetch all metadata in a single query
+        Map<String, ImageMetadata> metadataMap = imageMetadataRepository.findAll().stream()
+                .filter(metadata -> blobNames.contains(metadata.getS3Key()))
+                .collect(Collectors.toMap(ImageMetadata::getS3Key, metadata -> metadata));
+        
         return StreamSupport.stream(blobContainerClient.listBlobs().spliterator(), false)
                 .map(blobItem -> {
                     // Try to get metadata for upload time
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
+                    Instant uploadedAt = Optional.ofNullable(metadataMap.get(blobItem.getName()))
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(blobItem.getProperties().getLastModified().toInstant());
 
                     return new S3StorageItem(
@@ -110,7 +120,7 @@ public class AzureBlobService implements StorageService {
 
         // Delete metadata from database
         imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
+                .filter(metadata -> key.equals(metadata.getS3Key()))
                 .findFirst()
                 .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
     }
@@ -134,6 +144,24 @@ public class AzureBlobService implements StorageService {
     private String generateKey(String filename) {
         // Sanitize filename to prevent path traversal attacks
         String sanitizedFilename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+        
+        // Ensure the filename is not empty and has reasonable length
+        if (sanitizedFilename.isEmpty() || sanitizedFilename.matches("^[_\\.\\-]+$")) {
+            sanitizedFilename = "file";
+        }
+        
+        // Limit filename length (max 200 characters for the sanitized part)
+        if (sanitizedFilename.length() > 200) {
+            String extension = "";
+            int lastDot = sanitizedFilename.lastIndexOf('.');
+            if (lastDot > 0) {
+                extension = sanitizedFilename.substring(lastDot);
+                sanitizedFilename = sanitizedFilename.substring(0, Math.min(200 - extension.length(), sanitizedFilename.length() - extension.length())) + extension;
+            } else {
+                sanitizedFilename = sanitizedFilename.substring(0, 200);
+            }
+        }
+        
         return UUID.randomUUID().toString() + "-" + sanitizedFilename;
     }
 }
