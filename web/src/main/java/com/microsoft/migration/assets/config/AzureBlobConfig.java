@@ -29,7 +29,7 @@ public class AzureBlobConfig {
     }
 
     @Bean
-    public String containerName() {
+    public String blobContainerName() {
         return containerName;
     }
 }
