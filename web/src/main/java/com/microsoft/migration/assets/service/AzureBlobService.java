@@ -43,10 +43,8 @@ public class AzureBlobService implements StorageService {
         return containerClient.listBlobs().stream()
                 .map(blobItem -> {
                     // Try to get metadata for upload time
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
+                    Instant uploadedAt = imageMetadataRepository.findByS3Key(blobItem.getName())
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(blobItem.getProperties().getLastModified().toInstant()); // fallback to lastModified if metadata not found
 
                     return new BlobStorageItem(
@@ -116,9 +114,7 @@ public class AzureBlobService implements StorageService {
         }
 
         // Delete metadata from database
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
+        imageMetadataRepository.findByS3Key(key)
                 .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
     }
 
