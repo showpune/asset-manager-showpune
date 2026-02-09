@@ -71,11 +71,20 @@ public class AzureBlobFileProcessingService extends AbstractFileProcessingServic
     }
 
     private String extractOriginalKey(String key) {
-        // Remove _thumbnail suffix if present
+        // Remove _thumbnail suffix while preserving the file extension
+        // e.g., "image_thumbnail.jpg" -> "image.jpg"
         String suffix = "_thumbnail";
         int suffixIndex = key.lastIndexOf(suffix);
         if (suffixIndex > 0) {
-            return key.substring(0, suffixIndex);
+            // Find the file extension
+            int dotIndex = key.lastIndexOf('.');
+            if (dotIndex > suffixIndex) {
+                // Extension exists after the suffix
+                return key.substring(0, suffixIndex) + key.substring(dotIndex);
+            } else {
+                // No extension or extension before suffix
+                return key.substring(0, suffixIndex);
+            }
         }
         return key;
     }

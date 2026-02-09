@@ -21,7 +21,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/s3")
 @RequiredArgsConstructor
-public class S3Controller {
+public class StorageController {
 
     private final StorageService storageService;
 

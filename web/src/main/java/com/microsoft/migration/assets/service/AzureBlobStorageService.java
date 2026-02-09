@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -42,13 +44,15 @@ public class AzureBlobStorageService implements StorageService {
     public List<BlobStorageItem> listObjects() {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
         
+        // Fetch all metadata once and create a map for O(1) lookups
+        Map<String, ImageMetadata> metadataMap = imageMetadataRepository.findAll().stream()
+                .collect(Collectors.toMap(ImageMetadata::getS3Key, metadata -> metadata, (a, b) -> a));
+        
         return StreamSupport.stream(containerClient.listBlobs().spliterator(), false)
                 .map(blobItem -> {
-                    // Try to get metadata for upload time
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
+                    // Use map for O(1) lookup instead of filtering through all records
+                    Instant uploadedAt = Optional.ofNullable(metadataMap.get(blobItem.getName()))
                             .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
                             .orElse(blobItem.getProperties().getLastModified().toInstant()); // fallback to lastModified if metadata not found
 
                     return new BlobStorageItem(
@@ -121,11 +125,8 @@ public class AzureBlobStorageService implements StorageService {
             // Ignore if thumbnail doesn't exist
         }
 
-        // Delete metadata from database
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
-                .ifPresent(metadata -> imageMetadataRepository.delete(metadata));
+        // Delete metadata from database using repository query method
+        imageMetadataRepository.findByS3Key(key).ifPresent(imageMetadataRepository::delete);
     }
 
     @Override
