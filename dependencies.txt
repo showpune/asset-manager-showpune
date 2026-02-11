@@ -1,0 +1,1 @@
+com.microsoft.migration:assets-manager-parent:pom:0.0.1-SNAPSHOT
