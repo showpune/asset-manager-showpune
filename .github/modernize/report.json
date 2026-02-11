@@ -1,0 +1,409 @@
+{
+  "name": "asset-manager-showpune Assessment Report",
+  "description": "Application assessment for cloud migration readiness",
+  "timestamp": "2026-02-11T05:25:55.306Z",
+  "appCatVersion": "1.0.0",
+  "target": "Azure",
+  "repositoryInfo": {
+    "name": "asset-manager-showpune",
+    "type": "Java Maven Multi-Module",
+    "framework": "Spring Boot 3.2.1",
+    "language": "Java 17",
+    "modules": ["web", "worker"]
+  },
+  "summary": {
+    "totalIssues": 8,
+    "criticalIssues": 2,
+    "highIssues": 3,
+    "mediumIssues": 2,
+    "lowIssues": 1,
+    "cloudReadinessScore": 65,
+    "estimatedEffort": "Medium"
+  },
+  "issues": [
+    {
+      "id": "AWS-S3-001",
+      "category": "Cloud Service Dependency",
+      "severity": "critical",
+      "title": "AWS S3 SDK Dependency",
+      "description": "Application uses AWS S3 SDK (software.amazon.awssdk:s3) which is AWS-specific and needs to be replaced with Azure Blob Storage for Azure migration.",
+      "message": "AWS S3 SDK is used for object storage operations. This needs to be migrated to Azure Blob Storage SDK.",
+      "effort": "High",
+      "locations": [
+        {
+          "file": "web/pom.xml",
+          "line": 34,
+          "snippet": "software.amazon.awssdk:s3"
+        },
+        {
+          "file": "worker/pom.xml",
+          "line": 30,
+          "snippet": "software.amazon.awssdk:s3"
+        },
+        {
+          "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+          "line": 14,
+          "snippet": "import software.amazon.awssdk.services.s3.S3Client;"
+        }
+      ],
+      "recommendation": "Replace AWS S3 SDK with Azure Blob Storage SDK (com.azure:azure-storage-blob). Refactor AwsS3Service to use Azure BlobServiceClient and BlobContainerClient.",
+      "remediationPlan": [
+        "Add Azure Blob Storage SDK dependency (com.azure:azure-storage-blob:12.25.1)",
+        "Create AzureBlobService to replace AwsS3Service",
+        "Update configuration properties from aws.s3.* to azure.storage.*",
+        "Implement Azure Managed Identity (DefaultAzureCredential) for authentication",
+        "Update worker module S3FileProcessingService to use Azure Blob Storage"
+      ],
+      "tags": ["cloud-migration", "storage", "aws", "azure"]
+    },
+    {
+      "id": "MSG-RABBIT-001",
+      "category": "Messaging Infrastructure",
+      "severity": "critical",
+      "title": "RabbitMQ Messaging Dependency",
+      "description": "Application uses RabbitMQ (spring-boot-starter-amqp) for message queue communication between web and worker modules. Consider migrating to Azure Service Bus for native Azure integration.",
+      "message": "RabbitMQ is used for async messaging. Azure Service Bus provides a managed alternative with better Azure integration.",
+      "effort": "Medium",
+      "locations": [
+        {
+          "file": "web/pom.xml",
+          "line": 31,
+          "snippet": "spring-boot-starter-amqp"
+        },
+        {
+          "file": "worker/pom.xml",
+          "line": 27,
+          "snippet": "spring-boot-starter-amqp"
+        },
+        {
+          "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+          "line": 1,
+          "snippet": "RabbitMQ configuration class"
+        }
+      ],
+      "recommendation": "Migrate from RabbitMQ to Azure Service Bus using spring-cloud-azure-starter-servicebus. Use Azure Managed Identity for authentication.",
+      "remediationPlan": [
+        "Add Azure Service Bus dependency (com.azure.spring:spring-cloud-azure-starter-servicebus)",
+        "Replace RabbitConfig with ServiceBusMessagingConfig",
+        "Update message sending code to use ServiceBusTemplate or JmsTemplate",
+        "Configure Azure Service Bus queue and authentication",
+        "Update worker module to consume messages from Azure Service Bus"
+      ],
+      "tags": ["cloud-migration", "messaging", "rabbitmq", "azure-service-bus"]
+    },
+    {
+      "id": "DB-POSTGRES-001",
+      "category": "Database",
+      "severity": "high",
+      "title": "PostgreSQL Database Dependency",
+      "description": "Application uses PostgreSQL database for metadata storage. Consider migrating to Azure Database for PostgreSQL for managed service benefits.",
+      "message": "PostgreSQL is used for persistence. Azure provides a managed PostgreSQL service with better integration.",
+      "effort": "Low",
+      "locations": [
+        {
+          "file": "web/pom.xml",
+          "line": 63,
+          "snippet": "org.postgresql:postgresql"
+        },
+        {
+          "file": "worker/pom.xml",
+          "line": 52,
+          "snippet": "org.postgresql:postgresql"
+        }
+      ],
+      "recommendation": "Migrate to Azure Database for PostgreSQL. Update connection strings to use Azure PostgreSQL endpoints with Azure AD authentication.",
+      "remediationPlan": [
+        "Provision Azure Database for PostgreSQL Flexible Server",
+        "Update application.properties with Azure PostgreSQL connection string",
+        "Configure Azure AD authentication for database access",
+        "Migrate existing database schema and data",
+        "Test database connectivity and operations"
+      ],
+      "tags": ["database", "postgresql", "azure"]
+    },
+    {
+      "id": "AUTH-001",
+      "category": "Authentication & Security",
+      "severity": "high",
+      "title": "Missing Authentication Mechanism",
+      "description": "Application does not implement authentication or authorization. Public endpoints are exposed without security controls.",
+      "message": "No authentication or authorization is configured. All endpoints are publicly accessible.",
+      "effort": "Medium",
+      "locations": [
+        {
+          "file": "web/src/main/java/com/microsoft/migration/assets/controller/S3Controller.java",
+          "line": 21,
+          "snippet": "@Controller - no security annotations"
+        },
+        {
+          "file": "web/src/main/java/com/microsoft/migration/assets/controller/HomeController.java",
+          "line": 1,
+          "snippet": "No Spring Security configuration"
+        }
+      ],
+      "recommendation": "Implement authentication using Azure AD (Entra ID) with Spring Security and spring-cloud-azure-starter-active-directory.",
+      "remediationPlan": [
+        "Add Spring Security and Azure AD dependencies",
+        "Configure Azure AD authentication in application properties",
+        "Add security annotations to controllers (@PreAuthorize)",
+        "Implement role-based access control (RBAC)",
+        "Test authentication flows"
+      ],
+      "tags": ["security", "authentication", "azure-ad"]
+    },
+    {
+      "id": "PROF-001",
+      "category": "Configuration Management",
+      "severity": "high",
+      "title": "Profile-Based Configuration",
+      "description": "Application uses Spring profiles (!dev) for environment-specific configuration. This pattern works well for cloud migration but needs Azure-specific profile.",
+      "message": "Profile-based configuration is in place but needs Azure profile configuration.",
+      "effort": "Low",
+      "locations": [
+        {
+          "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+          "line": 28,
+          "snippet": "@Profile(\"!dev\")"
+        },
+        {
+          "file": "web/src/main/java/com/microsoft/migration/assets/service/LocalFileStorageService.java",
+          "line": 1,
+          "snippet": "@Profile(\"dev\")"
+        }
+      ],
+      "recommendation": "Add 'azure' profile with Azure-specific service implementations. Maintain 'dev' profile for local development.",
+      "remediationPlan": [
+        "Create application-azure.properties with Azure configuration",
+        "Add @Profile(\"azure\") to Azure-specific service implementations",
+        "Update deployment configuration to activate 'azure' profile",
+        "Document profile usage in README"
+      ],
+      "tags": ["configuration", "profiles"]
+    },
+    {
+      "id": "BOOT-001",
+      "category": "Framework Version",
+      "severity": "medium",
+      "title": "Spring Boot Version",
+      "description": "Application uses Spring Boot 3.2.1. Consider upgrading to latest LTS version (3.4.x) for better Azure integration and security updates.",
+      "message": "Spring Boot 3.2.1 is used. Newer versions provide better cloud features and security patches.",
+      "effort": "Low",
+      "locations": [
+        {
+          "file": "pom.xml",
+          "line": 9,
+          "snippet": "<version>3.2.1</version>"
+        }
+      ],
+      "recommendation": "Upgrade to Spring Boot 3.4.x for latest features, security patches, and improved Azure SDK compatibility.",
+      "remediationPlan": [
+        "Update spring-boot-starter-parent version to 3.4.5",
+        "Test application thoroughly after upgrade",
+        "Update any deprecated APIs if necessary"
+      ],
+      "tags": ["framework", "upgrade", "spring-boot"]
+    },
+    {
+      "id": "MON-001",
+      "category": "Monitoring & Observability",
+      "severity": "medium",
+      "title": "Missing Application Monitoring",
+      "description": "Application lacks comprehensive monitoring and observability features. No integration with Azure Monitor or Application Insights.",
+      "message": "No monitoring or telemetry is configured. Azure Application Insights should be integrated for production readiness.",
+      "effort": "Low",
+      "locations": [
+        {
+          "file": "web/pom.xml",
+          "line": 1,
+          "snippet": "No monitoring dependencies"
+        }
+      ],
+      "recommendation": "Add Azure Application Insights for distributed tracing, logging, and metrics collection.",
+      "remediationPlan": [
+        "Add spring-cloud-azure-starter-monitor dependency",
+        "Configure Application Insights connection string",
+        "Enable auto-instrumentation for requests, dependencies, and exceptions",
+        "Add custom metrics and traces as needed"
+      ],
+      "tags": ["monitoring", "observability", "azure-monitor"]
+    },
+    {
+      "id": "SEC-001",
+      "category": "Security",
+      "severity": "low",
+      "title": "Hardcoded Configuration Values",
+      "description": "Application may contain hardcoded configuration values. Use Azure Key Vault for sensitive configuration.",
+      "message": "Configuration values should be externalized to Azure Key Vault for better security.",
+      "effort": "Low",
+      "locations": [
+        {
+          "file": "web/src/main/resources/application.properties",
+          "line": 1,
+          "snippet": "Configuration properties file"
+        }
+      ],
+      "recommendation": "Migrate sensitive configuration to Azure Key Vault and use spring-cloud-azure-starter-keyvault-secrets for integration.",
+      "remediationPlan": [
+        "Add Azure Key Vault dependency",
+        "Provision Azure Key Vault instance",
+        "Move sensitive configuration to Key Vault",
+        "Configure application to read from Key Vault",
+        "Use Managed Identity for Key Vault access"
+      ],
+      "tags": ["security", "configuration", "key-vault"]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "spring-boot-starter-parent",
+      "version": "3.2.1",
+      "type": "parent",
+      "scope": "compile",
+      "cloudCompatibility": "compatible"
+    },
+    {
+      "name": "spring-boot-starter-web",
+      "version": "3.2.1",
+      "type": "starter",
+      "scope": "compile",
+      "cloudCompatibility": "compatible"
+    },
+    {
+      "name": "spring-boot-starter-thymeleaf",
+      "version": "3.2.1",
+      "type": "starter",
+      "scope": "compile",
+      "cloudCompatibility": "compatible"
+    },
+    {
+      "name": "spring-boot-starter-data-jpa",
+      "version": "3.2.1",
+      "type": "starter",
+      "scope": "compile",
+      "cloudCompatibility": "compatible"
+    },
+    {
+      "name": "spring-boot-starter-amqp",
+      "version": "3.2.1",
+      "type": "starter",
+      "scope": "compile",
+      "cloudCompatibility": "needs-replacement",
+      "recommendation": "Replace with spring-cloud-azure-starter-servicebus"
+    },
+    {
+      "name": "software.amazon.awssdk:s3",
+      "version": "2.25.13",
+      "type": "library",
+      "scope": "compile",
+      "cloudCompatibility": "incompatible",
+      "recommendation": "Replace with com.azure:azure-storage-blob"
+    },
+    {
+      "name": "postgresql",
+      "version": "auto",
+      "type": "driver",
+      "scope": "runtime",
+      "cloudCompatibility": "compatible",
+      "recommendation": "Use with Azure Database for PostgreSQL"
+    },
+    {
+      "name": "lombok",
+      "version": "auto",
+      "type": "library",
+      "scope": "compile",
+      "cloudCompatibility": "compatible"
+    }
+  ],
+  "recommendations": {
+    "immediate": [
+      "Replace AWS S3 SDK with Azure Blob Storage SDK",
+      "Migrate RabbitMQ to Azure Service Bus",
+      "Implement Azure AD authentication"
+    ],
+    "shortTerm": [
+      "Upgrade Spring Boot to 3.4.x",
+      "Add Azure Application Insights monitoring",
+      "Configure Azure Key Vault for secrets"
+    ],
+    "longTerm": [
+      "Migrate to Azure Database for PostgreSQL",
+      "Implement comprehensive logging strategy",
+      "Add health checks and readiness probes for AKS"
+    ]
+  },
+  "architecture": {
+    "pattern": "Multi-Module Microservices",
+    "modules": [
+      {
+        "name": "web",
+        "type": "Spring Boot Web Application",
+        "description": "Web module handles file uploads, viewing, and user interface",
+        "dependencies": ["worker", "storage", "database", "messaging"]
+      },
+      {
+        "name": "worker",
+        "type": "Spring Boot Worker Application",
+        "description": "Worker module processes uploaded images and generates thumbnails",
+        "dependencies": ["storage", "database", "messaging"]
+      }
+    ],
+    "externalDependencies": [
+      "AWS S3 (to be migrated to Azure Blob Storage)",
+      "RabbitMQ (to be migrated to Azure Service Bus)",
+      "PostgreSQL (to be migrated to Azure Database for PostgreSQL)"
+    ]
+  },
+  "migrationPath": {
+    "approach": "Lift and Shift with Modernization",
+    "targetPlatform": "Azure Container Apps or Azure Kubernetes Service",
+    "estimatedDuration": "2-3 weeks",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Infrastructure Setup",
+        "duration": "3-5 days",
+        "tasks": [
+          "Provision Azure Blob Storage",
+          "Provision Azure Service Bus",
+          "Provision Azure Database for PostgreSQL",
+          "Configure Azure AD application registration"
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Application Migration",
+        "duration": "5-7 days",
+        "tasks": [
+          "Replace AWS S3 SDK with Azure Blob Storage SDK",
+          "Migrate RabbitMQ to Azure Service Bus",
+          "Update database connection strings",
+          "Implement Azure AD authentication",
+          "Add Application Insights"
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "Testing & Validation",
+        "duration": "3-4 days",
+        "tasks": [
+          "Execute unit tests",
+          "Execute integration tests",
+          "Perform security testing",
+          "Load testing",
+          "User acceptance testing"
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Deployment & Optimization",
+        "duration": "2-3 days",
+        "tasks": [
+          "Deploy to Azure Container Apps/AKS",
+          "Configure CI/CD pipeline",
+          "Monitor application performance",
+          "Optimize resource utilization"
+        ]
+      }
+    ]
+  }
+}
