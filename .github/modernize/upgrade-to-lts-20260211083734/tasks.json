@@ -48,7 +48,7 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "completed"
     },
     {
       "type": "upgrade",
