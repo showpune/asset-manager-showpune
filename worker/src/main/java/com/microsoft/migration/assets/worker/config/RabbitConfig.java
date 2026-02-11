@@ -21,17 +21,17 @@ public class RabbitConfig {
     public static final int MAX_ATTEMPTS = 3; // Maximum number of retry attempts
 
     @Bean
-    public Queue imageProcessingQueue() {
+    Queue imageProcessingQueue() {
         return QueueBuilder.durable(QUEUE_NAME).build();
     }
 
     @Bean
-    public MessageConverter jsonMessageConverter() {
+    MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+    SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory,
             SimpleRabbitListenerContainerFactoryConfigurer configurer) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
@@ -40,9 +40,9 @@ public class RabbitConfig {
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return factory;
     }
-    
+
     @Bean
-    public RetryTemplate retryTemplate() {
+    RetryTemplate retryTemplate() {
         RetryTemplate retryTemplate = new RetryTemplate();
         
         // Configure retry policy (number of attempts)
