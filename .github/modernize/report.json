@@ -1,0 +1,540 @@
+{
+  "summary": {
+    "applicationName": "assets-manager",
+    "repositoryUrl": "https://github.com/showpune/asset-manager-showpune",
+    "assessmentDate": "2026-02-12T03:45:00Z",
+    "totalIncidents": 34,
+    "totalEffort": 18,
+    "cloudReadinessScore": 62,
+    "description": "Spring Boot application for asset management with file upload, storage, and thumbnail generation capabilities"
+  },
+  "technology": {
+    "framework": "Spring Boot 3.2.1",
+    "javaVersion": "17",
+    "buildTool": "Maven",
+    "dependencies": [
+      "spring-boot-starter-web",
+      "spring-boot-starter-thymeleaf",
+      "spring-boot-starter-amqp",
+      "spring-boot-starter-data-jpa",
+      "software.amazon.awssdk:s3:2.25.13",
+      "org.postgresql:postgresql"
+    ]
+  },
+  "incidents": [
+    {
+      "id": "AWS_S3_CLIENT_001",
+      "category": "Cloud Service Migration",
+      "severity": "mandatory",
+      "effort": 2,
+      "title": "AWS S3Client usage in AwsS3Service",
+      "description": "Direct usage of AWS S3Client that needs to be replaced with Azure Blob Storage SDK",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "line": 13,
+      "snippet": "private final S3Client s3Client;",
+      "recommendation": "Replace with Azure Blob Storage BlobServiceClient",
+      "azureEquivalent": "com.azure.storage.blob.BlobServiceClient"
+    },
+    {
+      "id": "AWS_S3_LISTOBJECTS_001",
+      "category": "Cloud Service Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "S3 ListObjectsV2 operation",
+      "description": "AWS S3 list objects operation needs Azure equivalent",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "line": 30,
+      "snippet": "ListObjectsV2Response response = s3Client.listObjectsV2(request);",
+      "recommendation": "Replace with BlobContainerClient.listBlobs()",
+      "azureEquivalent": "blobContainerClient.listBlobs()"
+    },
+    {
+      "id": "AWS_S3_PUTOBJECT_001",
+      "category": "Cloud Service Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "S3 PutObject operation",
+      "description": "AWS S3 put object operation needs Azure equivalent",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "line": 50,
+      "snippet": "s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));",
+      "recommendation": "Replace with BlobClient.upload()",
+      "azureEquivalent": "blobClient.upload(inputStream, length)"
+    },
+    {
+      "id": "AWS_S3_GETOBJECT_001",
+      "category": "Cloud Service Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "S3 GetObject operation",
+      "description": "AWS S3 get object operation needs Azure equivalent",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "line": 60,
+      "snippet": "return s3Client.getObject(request);",
+      "recommendation": "Replace with BlobClient.downloadContent()",
+      "azureEquivalent": "blobClient.downloadContent()"
+    },
+    {
+      "id": "AWS_S3_DELETEOBJECT_001",
+      "category": "Cloud Service Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "S3 DeleteObject operation",
+      "description": "AWS S3 delete object operation needs Azure equivalent",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "line": 70,
+      "snippet": "s3Client.deleteObject(request);",
+      "recommendation": "Replace with BlobClient.delete()",
+      "azureEquivalent": "blobClient.delete()"
+    },
+    {
+      "id": "AWS_S3_DEPENDENCY_001",
+      "category": "Dependency Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "AWS SDK S3 dependency in web module",
+      "description": "AWS SDK for S3 dependency needs to be replaced with Azure Blob Storage SDK",
+      "file": "web/pom.xml",
+      "line": 34,
+      "snippet": "software.amazon.awssdk:s3",
+      "recommendation": "Replace with com.azure:azure-storage-blob",
+      "azureEquivalent": "com.azure:azure-storage-blob:12.25.0"
+    },
+    {
+      "id": "AWS_S3_DEPENDENCY_002",
+      "category": "Dependency Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "AWS SDK S3 dependency in worker module",
+      "description": "AWS SDK for S3 dependency needs to be replaced with Azure Blob Storage SDK",
+      "file": "worker/pom.xml",
+      "line": 30,
+      "snippet": "software.amazon.awssdk:s3",
+      "recommendation": "Replace with com.azure:azure-storage-blob",
+      "azureEquivalent": "com.azure:azure-storage-blob:12.25.0"
+    },
+    {
+      "id": "AWS_S3_CONFIG_001",
+      "category": "Configuration Migration",
+      "severity": "mandatory",
+      "effort": 0.5,
+      "title": "AWS S3 configuration properties in web",
+      "description": "AWS S3 configuration needs to be updated for Azure Blob Storage",
+      "file": "web/src/main/resources/application.properties",
+      "line": 3,
+      "snippet": "aws.s3.bucket=your-bucket-name",
+      "recommendation": "Replace with azure.storage.blob.container-name and azure.storage.blob.connection-string or use Managed Identity",
+      "azureEquivalent": "azure.storage.blob.container-name"
+    },
+    {
+      "id": "AWS_S3_CONFIG_002",
+      "category": "Configuration Migration",
+      "severity": "mandatory",
+      "effort": 0.5,
+      "title": "AWS S3 configuration properties in worker",
+      "description": "AWS S3 configuration needs to be updated for Azure Blob Storage",
+      "file": "worker/src/main/resources/application.properties",
+      "line": 1,
+      "snippet": "aws.s3.bucket=your-bucket-name",
+      "recommendation": "Replace with azure.storage.blob.container-name and azure.storage.blob.connection-string or use Managed Identity",
+      "azureEquivalent": "azure.storage.blob.container-name"
+    },
+    {
+      "id": "AWS_S3_MODEL_001",
+      "category": "Code Refactoring",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "S3-specific model fields",
+      "description": "Model contains S3-specific field names that should be made cloud-agnostic",
+      "file": "web/src/main/java/com/microsoft/migration/assets/model/ImageMetadata.java",
+      "line": 10,
+      "snippet": "private String s3Key; private String s3Url;",
+      "recommendation": "Rename to storageKey and storageUrl for cloud-agnostic naming",
+      "azureEquivalent": "storageKey, storageUrl or blobName, blobUrl"
+    },
+    {
+      "id": "AWS_S3_WORKER_CLIENT_001",
+      "category": "Cloud Service Migration",
+      "severity": "mandatory",
+      "effort": 2,
+      "title": "AWS S3 client usage in worker module",
+      "description": "Worker module uses AWS S3 for thumbnail storage",
+      "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/AbstractFileProcessingService.java",
+      "line": 1,
+      "snippet": "AWS S3 operations for thumbnail generation",
+      "recommendation": "Migrate to Azure Blob Storage SDK",
+      "azureEquivalent": "com.azure.storage.blob.BlobServiceClient"
+    },
+    {
+      "id": "RABBITMQ_TEMPLATE_001",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "RabbitTemplate usage in AwsS3Service",
+      "description": "Direct usage of Spring RabbitTemplate for message sending",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "line": 15,
+      "snippet": "private final RabbitTemplate rabbitTemplate;",
+      "recommendation": "Replace with Azure Service Bus JmsTemplate or ServiceBusSenderClient",
+      "azureEquivalent": "com.azure.messaging.servicebus.ServiceBusSenderClient"
+    },
+    {
+      "id": "RABBITMQ_TEMPLATE_002",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "RabbitTemplate usage in LocalFileStorageService",
+      "description": "Direct usage of Spring RabbitTemplate for message sending",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/LocalFileStorageService.java",
+      "line": 12,
+      "snippet": "private final RabbitTemplate rabbitTemplate;",
+      "recommendation": "Replace with Azure Service Bus JmsTemplate or ServiceBusSenderClient",
+      "azureEquivalent": "com.azure.messaging.servicebus.ServiceBusSenderClient"
+    },
+    {
+      "id": "RABBITMQ_LISTENER_001",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "RabbitListener annotation usage",
+      "description": "@RabbitListener annotation for message consumption",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/BackupMessageProcessor.java",
+      "line": 15,
+      "snippet": "@RabbitListener(queues = QUEUE_NAME)",
+      "recommendation": "Replace with @JmsListener for Azure Service Bus",
+      "azureEquivalent": "@JmsListener(destination = queueName)"
+    },
+    {
+      "id": "RABBITMQ_CHANNEL_001",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "RabbitMQ Channel usage",
+      "description": "Direct usage of RabbitMQ Channel for message acknowledgment",
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/BackupMessageProcessor.java",
+      "line": 20,
+      "snippet": "Channel channel",
+      "recommendation": "Azure Service Bus handles acknowledgment differently",
+      "azureEquivalent": "ServiceBusReceivedMessageContext"
+    },
+    {
+      "id": "RABBITMQ_CONFIG_001",
+      "category": "Configuration Migration",
+      "severity": "mandatory",
+      "effort": 0.5,
+      "title": "RabbitMQ configuration in web",
+      "description": "RabbitMQ connection configuration needs migration",
+      "file": "web/src/main/resources/application.properties",
+      "line": 14,
+      "snippet": "spring.rabbitmq.host=localhost",
+      "recommendation": "Replace with Azure Service Bus connection string",
+      "azureEquivalent": "spring.jms.servicebus.connection-string"
+    },
+    {
+      "id": "RABBITMQ_CONFIG_002",
+      "category": "Configuration Migration",
+      "severity": "mandatory",
+      "effort": 0.5,
+      "title": "RabbitMQ configuration in worker",
+      "description": "RabbitMQ connection configuration needs migration",
+      "file": "worker/src/main/resources/application.properties",
+      "line": 14,
+      "snippet": "spring.rabbitmq.host=localhost",
+      "recommendation": "Replace with Azure Service Bus connection string",
+      "azureEquivalent": "spring.jms.servicebus.connection-string"
+    },
+    {
+      "id": "RABBITMQ_DEPENDENCY_001",
+      "category": "Dependency Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "Spring Boot AMQP starter dependency",
+      "description": "spring-boot-starter-amqp dependency for RabbitMQ",
+      "file": "web/pom.xml",
+      "line": 31,
+      "snippet": "spring-boot-starter-amqp",
+      "recommendation": "Replace with spring-jms and azure-servicebus-jms-spring-boot-starter",
+      "azureEquivalent": "com.azure.spring:spring-cloud-azure-starter-servicebus-jms"
+    },
+    {
+      "id": "RABBITMQ_CONFIG_CLASS_001",
+      "category": "Configuration Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "RabbitMQ configuration class",
+      "description": "RabbitConfig class with RabbitMQ-specific configuration",
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+      "line": 1,
+      "snippet": "SimpleRabbitListenerContainerFactory configuration",
+      "recommendation": "Replace with Azure Service Bus JMS configuration",
+      "azureEquivalent": "DefaultJmsListenerContainerFactory configuration"
+    },
+    {
+      "id": "HARDCODED_CREDS_001",
+      "category": "Security",
+      "severity": "critical",
+      "effort": 1,
+      "title": "Hardcoded AWS credentials in web config",
+      "description": "AWS access key and secret key hardcoded in configuration file",
+      "file": "web/src/main/resources/application.properties",
+      "line": 4,
+      "snippet": "aws.accessKey=your-access-key\naws.secretKey=your-secret-key",
+      "recommendation": "Use Azure Managed Identity for authentication instead of hardcoded credentials",
+      "azureEquivalent": "DefaultAzureCredential"
+    },
+    {
+      "id": "HARDCODED_CREDS_002",
+      "category": "Security",
+      "severity": "critical",
+      "effort": 1,
+      "title": "Hardcoded AWS credentials in worker config",
+      "description": "AWS access key and secret key hardcoded in configuration file",
+      "file": "worker/src/main/resources/application.properties",
+      "line": 2,
+      "snippet": "aws.accessKeyId=your-access-key-Id\naws.secretKey=your-secret-key",
+      "recommendation": "Use Azure Managed Identity for authentication instead of hardcoded credentials",
+      "azureEquivalent": "DefaultAzureCredential"
+    },
+    {
+      "id": "HARDCODED_CREDS_003",
+      "category": "Security",
+      "severity": "potential",
+      "effort": 0.5,
+      "title": "Hardcoded database credentials in web",
+      "description": "Database username and password in plain text configuration",
+      "file": "web/src/main/resources/application.properties",
+      "line": 21,
+      "snippet": "spring.datasource.username=postgres\nspring.datasource.password=postgres",
+      "recommendation": "Use Azure Key Vault for sensitive configuration or Managed Identity for Azure PostgreSQL",
+      "azureEquivalent": "Azure Key Vault references or Managed Identity"
+    },
+    {
+      "id": "HARDCODED_CREDS_004",
+      "category": "Security",
+      "severity": "potential",
+      "effort": 0.5,
+      "title": "Hardcoded database credentials in worker",
+      "description": "Database username and password in plain text configuration",
+      "file": "worker/src/main/resources/application.properties",
+      "line": 21,
+      "snippet": "spring.datasource.username=postgres\nspring.datasource.password=postgres",
+      "recommendation": "Use Azure Key Vault for sensitive configuration or Managed Identity for Azure PostgreSQL",
+      "azureEquivalent": "Azure Key Vault references or Managed Identity"
+    },
+    {
+      "id": "DB_CONFIG_001",
+      "category": "Database Migration",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "PostgreSQL JDBC URL configuration",
+      "description": "PostgreSQL connection string pointing to localhost",
+      "file": "web/src/main/resources/application.properties",
+      "line": 20,
+      "snippet": "spring.datasource.url=jdbc:postgresql://localhost:5432/assets_manager",
+      "recommendation": "Update to Azure Database for PostgreSQL Flexible Server endpoint",
+      "azureEquivalent": "jdbc:postgresql://<server-name>.postgres.database.azure.com:5432/<database>"
+    },
+    {
+      "id": "DB_CONFIG_002",
+      "category": "Database Migration",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "PostgreSQL JDBC URL configuration in worker",
+      "description": "PostgreSQL connection string pointing to localhost",
+      "file": "worker/src/main/resources/application.properties",
+      "line": 20,
+      "snippet": "spring.datasource.url=jdbc:postgresql://localhost:5432/assets_manager",
+      "recommendation": "Update to Azure Database for PostgreSQL Flexible Server endpoint",
+      "azureEquivalent": "jdbc:postgresql://<server-name>.postgres.database.azure.com:5432/<database>"
+    },
+    {
+      "id": "FRAMEWORK_UPDATE_001",
+      "category": "Framework Upgrade",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "Spring Boot version upgrade recommended",
+      "description": "Current Spring Boot version 3.2.1 should be upgraded to latest LTS",
+      "file": "pom.xml",
+      "line": 9,
+      "snippet": "<version>3.2.1</version>",
+      "recommendation": "Upgrade to Spring Boot 3.4.x LTS for better Azure integration",
+      "azureEquivalent": "3.4.2 or later"
+    },
+    {
+      "id": "FRAMEWORK_UPDATE_002",
+      "category": "Framework Upgrade",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "Java version upgrade recommended",
+      "description": "Current Java version 17 should be upgraded to latest LTS",
+      "file": "pom.xml",
+      "line": 19,
+      "snippet": "<java.version>17</java.version>",
+      "recommendation": "Upgrade to Java 21 LTS for better performance and features",
+      "azureEquivalent": "21"
+    },
+    {
+      "id": "MONITORING_001",
+      "category": "Observability",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "Add Azure Application Insights",
+      "description": "No distributed tracing or monitoring configured",
+      "file": "pom.xml",
+      "line": 1,
+      "snippet": "No Application Insights dependency",
+      "recommendation": "Add Azure Application Insights for monitoring and diagnostics",
+      "azureEquivalent": "com.azure.spring:spring-cloud-azure-starter-monitor"
+    },
+    {
+      "id": "AZURE_SDK_001",
+      "category": "Azure Integration",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "Add Azure SDK BOM",
+      "description": "Use Azure SDK BOM for consistent Azure dependency versions",
+      "file": "pom.xml",
+      "line": 1,
+      "snippet": "No Azure BOM configured",
+      "recommendation": "Add Azure SDK BOM dependency management",
+      "azureEquivalent": "com.azure:azure-sdk-bom:1.2.25"
+    },
+    {
+      "id": "SPRING_CLOUD_AZURE_001",
+      "category": "Azure Integration",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "Add Spring Cloud Azure BOM",
+      "description": "Use Spring Cloud Azure BOM for Spring-Azure integration",
+      "file": "pom.xml",
+      "line": 1,
+      "snippet": "No Spring Cloud Azure BOM",
+      "recommendation": "Add Spring Cloud Azure BOM for better integration",
+      "azureEquivalent": "com.azure.spring:spring-cloud-azure-dependencies:5.18.0"
+    },
+    {
+      "id": "WORKER_AMQP_001",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "Worker module AMQP dependency",
+      "description": "Worker module uses AMQP for message processing",
+      "file": "worker/pom.xml",
+      "line": 27,
+      "snippet": "spring-boot-starter-amqp",
+      "recommendation": "Replace with Azure Service Bus JMS starter",
+      "azureEquivalent": "com.azure.spring:spring-cloud-azure-starter-servicebus-jms"
+    },
+    {
+      "id": "WORKER_CHANNEL_001",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 1,
+      "title": "RabbitMQ Channel in worker service",
+      "description": "Worker uses RabbitMQ Channel for message acknowledgment",
+      "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/AbstractFileProcessingService.java",
+      "line": 1,
+      "snippet": "Channel usage for manual acknowledgment",
+      "recommendation": "Update to Service Bus message settlement",
+      "azureEquivalent": "ServiceBusReceivedMessageContext.complete()"
+    },
+    {
+      "id": "ENABLE_RABBIT_001",
+      "category": "Messaging Migration",
+      "severity": "mandatory",
+      "effort": 0.5,
+      "title": "@EnableRabbit annotation",
+      "description": "@EnableRabbit annotation in main application class",
+      "file": "web/src/main/java/com/microsoft/migration/assets/AssetsManagerApplication.java",
+      "line": 1,
+      "snippet": "@EnableRabbit",
+      "recommendation": "Replace with @EnableJms for Azure Service Bus",
+      "azureEquivalent": "@EnableJms"
+    },
+    {
+      "id": "MESSAGE_CONVERTER_001",
+      "category": "Messaging Migration",
+      "severity": "optional",
+      "effort": 0.5,
+      "title": "Jackson2JsonMessageConverter for AMQP",
+      "description": "Custom message converter configured for RabbitMQ",
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+      "line": 25,
+      "snippet": "Jackson2JsonMessageConverter",
+      "recommendation": "Configure MappingJackson2MessageConverter for JMS",
+      "azureEquivalent": "MappingJackson2MessageConverter"
+    }
+  ],
+  "migrationRoadmap": {
+    "totalStoryPoints": 18,
+    "estimatedDuration": "3-4 weeks",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Security and Messaging Migration",
+        "storyPoints": 8,
+        "duration": "1-2 weeks",
+        "tasks": [
+          {
+            "task": "Implement Azure Managed Identity authentication",
+            "effort": 3,
+            "incidents": ["HARDCODED_CREDS_001", "HARDCODED_CREDS_002", "HARDCODED_CREDS_003", "HARDCODED_CREDS_004"]
+          },
+          {
+            "task": "Migrate from RabbitMQ to Azure Service Bus",
+            "effort": 5,
+            "incidents": ["RABBITMQ_TEMPLATE_001", "RABBITMQ_TEMPLATE_002", "RABBITMQ_LISTENER_001", "RABBITMQ_CHANNEL_001", "RABBITMQ_CONFIG_001", "RABBITMQ_CONFIG_002", "RABBITMQ_DEPENDENCY_001", "RABBITMQ_CONFIG_CLASS_001", "WORKER_AMQP_001", "WORKER_CHANNEL_001", "ENABLE_RABBIT_001", "MESSAGE_CONVERTER_001"]
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Storage Migration",
+        "storyPoints": 7,
+        "duration": "1-2 weeks",
+        "tasks": [
+          {
+            "task": "Migrate from AWS S3 to Azure Blob Storage - Web Module",
+            "effort": 4,
+            "incidents": ["AWS_S3_CLIENT_001", "AWS_S3_LISTOBJECTS_001", "AWS_S3_PUTOBJECT_001", "AWS_S3_GETOBJECT_001", "AWS_S3_DELETEOBJECT_001", "AWS_S3_DEPENDENCY_001", "AWS_S3_CONFIG_001", "AWS_S3_MODEL_001"]
+          },
+          {
+            "task": "Migrate from AWS S3 to Azure Blob Storage - Worker Module",
+            "effort": 3,
+            "incidents": ["AWS_S3_WORKER_CLIENT_001", "AWS_S3_DEPENDENCY_002", "AWS_S3_CONFIG_002"]
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "Database and Optimization",
+        "storyPoints": 3,
+        "duration": "1 week",
+        "tasks": [
+          {
+            "task": "Configure Azure Database for PostgreSQL",
+            "effort": 1,
+            "incidents": ["DB_CONFIG_001", "DB_CONFIG_002"]
+          },
+          {
+            "task": "Add Azure Application Insights and optimize configuration",
+            "effort": 2,
+            "incidents": ["FRAMEWORK_UPDATE_001", "FRAMEWORK_UPDATE_002", "MONITORING_001", "AZURE_SDK_001", "SPRING_CLOUD_AZURE_001"]
+          }
+        ]
+      }
+    ]
+  },
+  "recommendations": [
+    "Use Azure Managed Identity for all Azure service authentication to eliminate credential management",
+    "Leverage Spring Cloud Azure starters for simplified Azure service integration",
+    "Implement Azure Application Insights for comprehensive monitoring and diagnostics",
+    "Consider using Azure Key Vault for managing application secrets",
+    "Upgrade to Spring Boot 3.4.x and Java 21 LTS before migration for better Azure support",
+    "Use Azure Service Bus JMS integration for minimal code changes from RabbitMQ",
+    "Test migration in non-production environments before production deployment",
+    "Implement proper error handling and retry logic for Azure services",
+    "Consider using Azure Container Apps or Azure Spring Apps for deployment",
+    "Set up CI/CD pipeline with Azure DevOps or GitHub Actions for automated deployments"
+  ]
+}
