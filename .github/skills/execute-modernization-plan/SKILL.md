@@ -67,6 +67,6 @@ Given that modernization description, do this:
         ```
 
 5. Output of plan execution:
-   - You needn't generate any other documents except the modernization-summary.md for each task
+   - You needn't generate any other documents except the "modernization-summary.md" for each task
    - Just make sure the tasks.json is updated with the final status of each task
    - Make a commit when all tasks are completed with the changes made in the modernization plan.
