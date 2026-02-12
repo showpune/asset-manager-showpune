@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "success",
+      "taskSummary": "Java upgraded from version 17 to 21 (LTS). Build successful, all unit tests passed. Code migrated using OpenRewrite recipes. Summary: .github/modernize/upgrade-to-lts-20260212034119/001-upgrade-java-version/modernization-summary.md",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "upgrade",
