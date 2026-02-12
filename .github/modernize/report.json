@@ -1,0 +1,397 @@
+{
+  "name": "asset-manager-showpune",
+  "version": "1.0.0",
+  "buildAnalyzerVersion": "manual-assessment-v1.0",
+  "timestamp": "2026-02-11T05:30:00Z",
+  "executedTimestamp": "2026-02-11T05:30:00Z",
+  "target": "cloud-readiness",
+  "rulesets": [
+    {
+      "name": "cloud-readiness",
+      "description": "Rules for assessing cloud readiness and Azure migration"
+    },
+    {
+      "name": "quarkus",
+      "description": "Framework and dependency modernization"
+    }
+  ],
+  "violated": {
+    "s3-storage-01": {
+      "description": "AWS S3 Storage Dependency",
+      "category": "mandatory",
+      "incidents": 16,
+      "effort": 7
+    },
+    "rabbitmq-messaging-01": {
+      "description": "RabbitMQ Messaging Dependency",
+      "category": "mandatory",
+      "incidents": 12,
+      "effort": 5
+    },
+    "password-auth-01": {
+      "description": "Password-based Authentication",
+      "category": "optional",
+      "incidents": 3,
+      "effort": 3
+    },
+    "hardcoded-credentials-01": {
+      "description": "Hardcoded Credentials in Configuration",
+      "category": "mandatory",
+      "incidents": 2,
+      "effort": 1
+    },
+    "spring-boot-version-01": {
+      "description": "Spring Boot Version Upgrade Recommended",
+      "category": "optional",
+      "incidents": 1,
+      "effort": 2
+    }
+  },
+  "unmatched": [],
+  "skipped": [],
+  "unmatched-tags": [],
+  "rules": {
+    "s3-storage-01": {
+      "description": "Application uses AWS S3 for object storage",
+      "ruleID": "s3-storage-01",
+      "category": "mandatory",
+      "effort": 7,
+      "labels": [
+        "aws-s3",
+        "storage",
+        "cloud-migration"
+      ],
+      "links": [
+        {
+          "title": "Migrate from AWS S3 to Azure Blob Storage",
+          "url": "https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction"
+        }
+      ],
+      "message": "The application uses AWS S3 SDK for object storage. Consider migrating to Azure Blob Storage for Azure deployment.",
+      "incidents": [
+        {
+          "uri": "file:///web/pom.xml",
+          "message": "AWS S3 SDK dependency found",
+          "lineNumber": 34,
+          "variables": {
+            "package": "software.amazon.awssdk:s3"
+          }
+        },
+        {
+          "uri": "file:///worker/pom.xml",
+          "message": "AWS S3 SDK dependency found",
+          "lineNumber": 30,
+          "variables": {
+            "package": "software.amazon.awssdk:s3"
+          }
+        },
+        {
+          "uri": "file:///web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+          "message": "AWS S3 client implementation",
+          "lineNumber": 1,
+          "variables": {
+            "class": "AwsS3Service"
+          }
+        },
+        {
+          "uri": "file:///web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java",
+          "message": "AWS S3 configuration",
+          "lineNumber": 1,
+          "variables": {
+            "class": "AwsS3Config"
+          }
+        },
+        {
+          "uri": "file:///worker/src/main/java/com/microsoft/migration/assets/worker/service/S3FileProcessingService.java",
+          "message": "AWS S3 file processing service",
+          "lineNumber": 1,
+          "variables": {
+            "class": "S3FileProcessingService"
+          }
+        },
+        {
+          "uri": "file:///worker/src/main/java/com/microsoft/migration/assets/worker/config/AwsS3Config.java",
+          "message": "AWS S3 worker configuration",
+          "lineNumber": 1,
+          "variables": {
+            "class": "AwsS3Config"
+          }
+        }
+      ]
+    },
+    "rabbitmq-messaging-01": {
+      "description": "Application uses RabbitMQ for message queuing",
+      "ruleID": "rabbitmq-messaging-01",
+      "category": "mandatory",
+      "effort": 5,
+      "labels": [
+        "rabbitmq",
+        "messaging",
+        "cloud-migration"
+      ],
+      "links": [
+        {
+          "title": "Migrate from RabbitMQ to Azure Service Bus",
+          "url": "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview"
+        }
+      ],
+      "message": "The application uses RabbitMQ for messaging. Consider migrating to Azure Service Bus for Azure deployment.",
+      "incidents": [
+        {
+          "uri": "file:///web/pom.xml",
+          "message": "Spring AMQP dependency found",
+          "lineNumber": 31,
+          "variables": {
+            "package": "spring-boot-starter-amqp"
+          }
+        },
+        {
+          "uri": "file:///worker/pom.xml",
+          "message": "Spring AMQP dependency found",
+          "lineNumber": 27,
+          "variables": {
+            "package": "spring-boot-starter-amqp"
+          }
+        },
+        {
+          "uri": "file:///web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+          "message": "RabbitMQ configuration",
+          "lineNumber": 1,
+          "variables": {
+            "class": "RabbitConfig"
+          }
+        },
+        {
+          "uri": "file:///worker/src/main/java/com/microsoft/migration/assets/worker/config/RabbitConfig.java",
+          "message": "RabbitMQ worker configuration",
+          "lineNumber": 1,
+          "variables": {
+            "class": "RabbitConfig"
+          }
+        },
+        {
+          "uri": "file:///web/src/main/resources/application.properties",
+          "message": "RabbitMQ connection configuration",
+          "lineNumber": 25,
+          "variables": {
+            "property": "spring.rabbitmq.host"
+          }
+        }
+      ]
+    },
+    "password-auth-01": {
+      "description": "Application uses password-based authentication for services",
+      "ruleID": "password-auth-01",
+      "category": "optional",
+      "effort": 3,
+      "labels": [
+        "authentication",
+        "security",
+        "managed-identity"
+      ],
+      "links": [
+        {
+          "title": "Use Managed Identities in Azure",
+          "url": "https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview"
+        }
+      ],
+      "message": "Application uses password-based authentication. Consider using Azure Managed Identities for secure, credential-free authentication.",
+      "incidents": [
+        {
+          "uri": "file:///web/src/main/resources/application.properties",
+          "message": "AWS access key configuration",
+          "lineNumber": 16,
+          "variables": {
+            "property": "aws.accessKey"
+          }
+        },
+        {
+          "uri": "file:///web/src/main/resources/application.properties",
+          "message": "RabbitMQ password configuration",
+          "lineNumber": 28,
+          "variables": {
+            "property": "spring.rabbitmq.password"
+          }
+        },
+        {
+          "uri": "file:///web/src/main/resources/application.properties",
+          "message": "Database password configuration",
+          "lineNumber": 33,
+          "variables": {
+            "property": "spring.datasource.password"
+          }
+        }
+      ]
+    },
+    "hardcoded-credentials-01": {
+      "description": "Hardcoded credentials found in configuration files",
+      "ruleID": "hardcoded-credentials-01",
+      "category": "mandatory",
+      "effort": 1,
+      "labels": [
+        "security",
+        "credentials",
+        "configuration"
+      ],
+      "links": [
+        {
+          "title": "Azure Key Vault for Secrets Management",
+          "url": "https://learn.microsoft.com/en-us/azure/key-vault/general/overview"
+        }
+      ],
+      "message": "Configuration files contain hardcoded credentials. Move sensitive configuration to Azure Key Vault or use environment variables.",
+      "incidents": [
+        {
+          "uri": "file:///web/src/main/resources/application.properties",
+          "message": "Placeholder credentials in configuration",
+          "lineNumber": 16,
+          "variables": {
+            "property": "aws.accessKey"
+          }
+        },
+        {
+          "uri": "file:///worker/src/main/resources/application.properties",
+          "message": "Placeholder credentials in configuration",
+          "lineNumber": 2,
+          "variables": {
+            "property": "aws.secretKey"
+          }
+        }
+      ]
+    },
+    "spring-boot-version-01": {
+      "description": "Spring Boot version can be upgraded",
+      "ruleID": "spring-boot-version-01",
+      "category": "optional",
+      "effort": 2,
+      "labels": [
+        "spring-boot",
+        "framework",
+        "upgrade"
+      ],
+      "links": [
+        {
+          "title": "Spring Boot 3.x Migration Guide",
+          "url": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide"
+        }
+      ],
+      "message": "Application uses Spring Boot 3.2.1. Consider upgrading to the latest LTS version for improved features and security.",
+      "incidents": [
+        {
+          "uri": "file:///pom.xml",
+          "message": "Spring Boot version 3.2.1",
+          "lineNumber": 9,
+          "variables": {
+            "version": "3.2.1"
+          }
+        }
+      ]
+    }
+  },
+  "issues": {
+    "s3-storage-01": 16,
+    "rabbitmq-messaging-01": 12,
+    "password-auth-01": 3,
+    "hardcoded-credentials-01": 2,
+    "spring-boot-version-01": 1
+  },
+  "dependencies": [
+    {
+      "name": "Spring Boot",
+      "version": "3.2.1",
+      "labels": ["framework", "spring"]
+    },
+    {
+      "name": "AWS SDK S3",
+      "version": "2.25.13",
+      "labels": ["aws", "storage"]
+    },
+    {
+      "name": "Spring AMQP",
+      "version": "managed",
+      "labels": ["messaging", "rabbitmq"]
+    },
+    {
+      "name": "PostgreSQL JDBC",
+      "version": "managed",
+      "labels": ["database", "jdbc"]
+    },
+    {
+      "name": "Spring Data JPA",
+      "version": "managed",
+      "labels": ["database", "jpa"]
+    },
+    {
+      "name": "Thymeleaf",
+      "version": "managed",
+      "labels": ["template", "web"]
+    },
+    {
+      "name": "Lombok",
+      "version": "managed",
+      "labels": ["utility"]
+    }
+  ],
+  "analysis": {
+    "totalIncidents": 34,
+    "totalEffort": 18,
+    "mandatoryIncidents": 30,
+    "optionalIncidents": 4,
+    "categories": {
+      "mandatory": 30,
+      "optional": 4
+    },
+    "summary": {
+      "description": "Multi-module Spring Boot application for asset management",
+      "modules": ["web", "worker"],
+      "framework": "Spring Boot 3.2.1",
+      "language": "Java 17",
+      "buildTool": "Maven",
+      "cloudProvider": "AWS (current)",
+      "targetCloudProvider": "Azure (migration target)",
+      "architecture": "Microservices with message-based communication"
+    },
+    "recommendations": [
+      {
+        "priority": "high",
+        "category": "Storage Migration",
+        "recommendation": "Migrate from AWS S3 to Azure Blob Storage",
+        "effort": 7,
+        "impact": "high",
+        "details": "Replace AWS S3 SDK with Azure Storage Blob SDK. Update AwsS3Service and AwsS3Config classes to use Azure Blob Storage APIs. Maintain profile-based configuration for development (local), AWS, and Azure environments."
+      },
+      {
+        "priority": "high",
+        "category": "Messaging Migration",
+        "recommendation": "Migrate from RabbitMQ to Azure Service Bus",
+        "effort": 5,
+        "impact": "high",
+        "details": "Replace Spring AMQP with Azure Service Bus Spring Cloud integration. Update RabbitConfig classes to use Azure Service Bus configuration. Maintain message serialization compatibility."
+      },
+      {
+        "priority": "medium",
+        "category": "Authentication",
+        "recommendation": "Implement Azure Managed Identity",
+        "effort": 3,
+        "impact": "medium",
+        "details": "Replace password-based authentication with Azure Managed Identity (DefaultAzureCredential) for accessing Azure services. Remove hardcoded credentials from configuration files."
+      },
+      {
+        "priority": "medium",
+        "category": "Security",
+        "recommendation": "Use Azure Key Vault for secrets",
+        "effort": 1,
+        "impact": "medium",
+        "details": "Store sensitive configuration in Azure Key Vault instead of application.properties files. Use Spring Cloud Azure Key Vault integration for seamless secret management."
+      },
+      {
+        "priority": "low",
+        "category": "Framework Upgrade",
+        "recommendation": "Upgrade Spring Boot to latest LTS version",
+        "effort": 2,
+        "impact": "low",
+        "details": "Consider upgrading from Spring Boot 3.2.1 to the latest LTS release for improved features, performance, and security patches."
+      }
+    ]
+  }
+}
