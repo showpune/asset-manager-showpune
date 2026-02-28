@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "success",
+      "taskSummary": "Upgraded Java from 17 to 21. Updated pom.xml java.version to 21. Applied OpenRewrite migration recipes (Path.of() instead of Paths.get()). Build and all unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": null
+      }
     },
     {
       "type": "upgrade",
@@ -48,7 +57,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "success",
+      "taskSummary": "Upgraded Spring Boot from 3.2.1 to 3.4.5 via milestone upgrades (3.3.13 then 3.4.5). Fixed CVE-2025-49146 by upgrading PostgreSQL driver to 42.7.7. Build and all unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "true"
+      }
     }
   ],
   "metadata": {
@@ -59,3 +77,4 @@
     "version": "1.0"
   }
 }
+
