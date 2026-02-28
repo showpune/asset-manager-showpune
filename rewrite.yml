@@ -1,6 +1,6 @@
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: com.microsoft.migration.UpgradeSpringBoot33
-displayName: Upgrade Spring Boot to 3.3
+name: com.microsoft.migration.UpgradeSpringBoot34
+displayName: Upgrade Spring Boot to 3.4
 recipeList:
-  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4
