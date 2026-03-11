@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-spring-boot",
+      "description": "Upgrade the application to Spring Boot 3.x to meet the requirements for Azure SDK integration and modernization",
+      "requirements": "Upgrade Spring Boot from 2.7.14 to the latest 3.x version. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).",
+      "dependencies": [],
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-spring-boot-upgrade",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "taskSummary": "Successfully upgraded Spring Boot from 2.7.14 to 3.4.2 with Java 17 and Jakarta EE migration. All builds pass, unit tests pass (1/1), and no security vulnerabilities detected.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "generateNewIntegrationTests": "true",
+        "passUnitTests": "true",
+        "passIntegrationTests": "true"
+      },
+      "completedAt": "2026-02-09T03:27:27Z"
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-s3-to-azure-blob",
+      "description": "Migrate object storage from AWS S3 to Azure Blob Storage for both web and worker modules",
+      "requirements": "Migrate all S3 storage operations (upload, download, list, delete) to Azure Blob Storage. Maintain existing functionality while replacing AWS SDK with Azure SDK.",
+      "dependencies": ["001-upgrade-spring-boot"],
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "taskSummary": "Successfully migrated from AWS S3 to Azure Blob Storage for both web and worker modules. All storage operations (list, upload, download, delete) migrated to Azure SDK. Build passes, unit tests pass (1/1), and no security vulnerabilities detected.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "generateNewIntegrationTests": "true",
+        "passUnitTests": "true",
+        "passIntegrationTests": "true"
+      },
+      "completedAt": "2026-02-09T03:34:58Z"
+    }
+  ],
+  "metadata": {
+    "planName": "001-modernization-plan",
+    "projectName": "asset-manager-kit",
+    "language": "java",
+    "createdAt": "2026-02-09T02:19:38.962Z",
+    "version": "1.0"
+  }
+}
