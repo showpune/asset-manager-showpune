@@ -1,11 +1,18 @@
 package com.microsoft.migration.assets.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity representing metadata for uploaded images.
+ * Note: Field names 's3Key' and 's3Url' are retained from the original AWS S3 implementation
+ * for backward compatibility with existing database schema. These fields are now used for
+ * Azure Blob Storage keys and URLs. A future database migration could rename these to
+ * storage-agnostic names like 'storageKey' and 'storageUrl'.
+ */
 @Entity
 @Data
 @NoArgsConstructor

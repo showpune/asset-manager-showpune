@@ -1,7 +1,7 @@
 package com.microsoft.migration.assets.service;
 
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.BlobStorageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 
 @Service
-@Profile("dev") // Only active when dev profile is active
+@Profile("dev")
 public class LocalFileStorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalFileStorageService.class);
@@ -43,7 +43,6 @@ public class LocalFileStorageService implements StorageService {
         rootLocation = Paths.get(storageDirectory).toAbsolutePath().normalize();
         logger.info("Local storage directory: {}", rootLocation);
         
-        // Create directory if it doesn't exist
         if (!Files.exists(rootLocation)) {
             Files.createDirectories(rootLocation);
             logger.info("Created local storage directory");
@@ -51,7 +50,7 @@ public class LocalFileStorageService implements StorageService {
     }
 
     @Override
-    public List<S3StorageItem> listObjects() {
+    public List<BlobStorageItem> listObjects() {
         try {
             return Files.walk(rootLocation, 1)
                 .filter(path -> !path.equals(rootLocation))
@@ -59,7 +58,7 @@ public class LocalFileStorageService implements StorageService {
                     try {
                         String filename = path.getFileName().toString();
                         BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
-                        return new S3StorageItem(
+                        return new BlobStorageItem(
                             filename,
                             filename,
                             Files.size(path),
@@ -72,7 +71,7 @@ public class LocalFileStorageService implements StorageService {
                         return null;
                     }
                 })
-                .filter(s3StorageItem -> s3StorageItem != null)
+                .filter(blobStorageItem -> blobStorageItem != null)
                 .collect(Collectors.toList());
         } catch (IOException e) {
             logger.error("Failed to list files", e);
@@ -95,7 +94,6 @@ public class LocalFileStorageService implements StorageService {
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         logger.info("Stored file: {}", targetLocation);
 
-        // Send message to queue for thumbnail generation
         ImageProcessingMessage message = new ImageProcessingMessage(
             filename,
             file.getContentType(),
@@ -116,7 +114,6 @@ public class LocalFileStorageService implements StorageService {
 
     @Override
     public void deleteObject(String key) throws IOException {
-        // Delete both original and thumbnail if it exists
         Path file = rootLocation.resolve(key);
         if (!Files.exists(file)) {
             throw new FileNotFoundException("File not found: " + key);
@@ -124,7 +121,6 @@ public class LocalFileStorageService implements StorageService {
         Files.delete(file);
         logger.info("Deleted file: {}", file);
 
-        // Try to delete thumbnail if it exists
         try {
             Path thumbnailFile = rootLocation.resolve(getThumbnailKey(key));
             if (Files.exists(thumbnailFile)) {
@@ -132,7 +128,6 @@ public class LocalFileStorageService implements StorageService {
                 logger.info("Deleted thumbnail file: {}", thumbnailFile);
             }
         } catch (Exception e) {
-            // Ignore if thumbnail doesn't exist or can't be deleted
             logger.warn("Could not delete thumbnail for {}: {}", key, e.getMessage());
         }
     }
@@ -143,7 +138,6 @@ public class LocalFileStorageService implements StorageService {
     }
     
     private String generateUrl(String key) {
-        // Generate a URL for the object (simplified path)
         return "/s3/view/" + key;
     }
 }

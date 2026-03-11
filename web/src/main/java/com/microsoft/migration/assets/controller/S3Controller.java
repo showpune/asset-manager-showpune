@@ -1,6 +1,6 @@
 package com.microsoft.migration.assets.controller;
 
-import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.model.BlobStorageItem;
 import com.microsoft.migration.assets.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -27,7 +27,7 @@ public class S3Controller {
 
     @GetMapping
     public String listObjects(Model model) {
-        List<S3StorageItem> objects = storageService.listObjects();
+        List<BlobStorageItem> objects = storageService.listObjects();
         model.addAttribute("objects", objects);
         return "list";
     }
@@ -57,8 +57,7 @@ public class S3Controller {
     @GetMapping("/view-page/{key}")
     public String viewObjectPage(@PathVariable String key, Model model, RedirectAttributes redirectAttributes) {
         try {
-            // Find the object in the list of objects
-            Optional<S3StorageItem> foundObject = storageService.listObjects().stream()
+            Optional<BlobStorageItem> foundObject = storageService.listObjects().stream()
                     .filter(obj -> obj.getKey().equals(key))
                     .findFirst();
             
@@ -81,7 +80,6 @@ public class S3Controller {
             InputStream inputStream = storageService.getObject(key);
             
             HttpHeaders headers = new HttpHeaders();
-            // Use a generic content type if we don't know the exact type
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             
             return ResponseEntity.ok()
