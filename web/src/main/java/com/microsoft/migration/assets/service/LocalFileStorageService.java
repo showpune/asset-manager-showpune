@@ -4,14 +4,15 @@ import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.config.ServiceBusConfig.QUEUE_NAME;
 
 @Service
 @Profile("dev") // Only active when dev profile is active
@@ -27,17 +28,14 @@ public class LocalFileStorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalFileStorageService.class);
     
-    private final RabbitTemplate rabbitTemplate;
+    @Autowired(required = false)
+    private JmsTemplate jmsTemplate;
     
     @Value("${local.storage.directory:../storage}")
     private String storageDirectory;
     
     private Path rootLocation;
 
-    public LocalFileStorageService(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
-    
     @PostConstruct
     public void init() throws IOException {
         rootLocation = Paths.get(storageDirectory).toAbsolutePath().normalize();
@@ -96,13 +94,15 @@ public class LocalFileStorageService implements StorageService {
         logger.info("Stored file: {}", targetLocation);
 
         // Send message to queue for thumbnail generation
-        ImageProcessingMessage message = new ImageProcessingMessage(
-            filename,
-            file.getContentType(),
-            getStorageType(),
-            file.getSize()
-        );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        if (jmsTemplate != null) {
+            ImageProcessingMessage message = new ImageProcessingMessage(
+                filename,
+                file.getContentType(),
+                getStorageType(),
+                file.getSize()
+            );
+            jmsTemplate.convertAndSend(QUEUE_NAME, message);
+        }
     }
 
     @Override

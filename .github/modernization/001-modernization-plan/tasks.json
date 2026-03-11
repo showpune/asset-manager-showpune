@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-spring-boot",
+      "description": "Upgrade Spring Boot from 2.7.14 to 3.x to meet Azure SDK compatibility requirements and prepare for Azure Service Bus migration.",
+      "requirements": "This upgrade is required because the current Java 11 and Spring Boot 2.7.14 versions are below the minimum requirements for Azure Service Bus SDK. This upgrade includes JDK 17, Spring Framework 6.x, and migration from JavaEE (javax.*) to Jakarta EE (jakarta.*).",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-spring-boot-upgrade",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "startedAt": "2026-02-06T15:18:04.261Z",
+      "completedAt": "2026-02-06T15:20:07.858Z",
+      "summary": "Successfully upgraded Spring Boot from 2.7.14 to 3.2.5 and Java from 11 to 17. Migrated all JavaEE (javax.*) imports to Jakarta EE (jakarta.*). All dependencies are compatible with Spring Boot 3.x. Build compiles successfully and all unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "passed",
+        "generateNewUnitTests": "skipped",
+        "generateNewIntegrationTests": "skipped",
+        "passUnitTests": "passed",
+        "passIntegrationTests": "skipped"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-migration-amqp-rabbitmq-servicebus",
+      "dependencies": ["001-upgrade-spring-boot"],
+      "description": "Migrate messaging infrastructure from RabbitMQ with AMQP to Azure Service Bus for cloud-native, managed messaging service.",
+      "requirements": "Replace all RabbitMQ AMQP-based messaging with Azure Service Bus in both web and worker modules. Use managed identity for authentication. Maintain existing message formats and asynchronous processing patterns.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "status": "success",
+      "startedAt": "2026-02-06T15:28:34.647Z",
+      "completedAt": "2026-02-06T15:28:34.647Z",
+      "summary": "Successfully migrated messaging infrastructure from RabbitMQ to Azure Service Bus. Removed all RabbitMQ dependencies (spring-boot-starter-amqp) and replaced with Azure Service Bus JMS (spring-cloud-azure-starter-servicebus-jms). Created ServiceBusConfig classes for both web and worker modules with JMS configuration. Replaced RabbitTemplate with JmsTemplate and @RabbitListener with @JmsListener. Updated application properties to use Azure Service Bus namespace. Maintained existing message formats and asynchronous processing patterns. All builds compile successfully and unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "passed",
+        "generateNewUnitTests": "skipped",
+        "generateNewIntegrationTests": "skipped",
+        "passUnitTests": "passed",
+        "passIntegrationTests": "skipped"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "001-modernization-plan",
+    "projectName": "Asset Manager Kit",
+    "language": "Java",
+    "createdAt": "2026-02-05T03:25:15.362Z",
+    "version": "1.0"
+  }
+}

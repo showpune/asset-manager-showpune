@@ -2,17 +2,18 @@ package com.microsoft.migration.assets.worker.service;
 
 import com.microsoft.migration.assets.worker.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.worker.util.StorageUtil;
-import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.support.RetryTemplate;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.IIOImage;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.microsoft.migration.assets.worker.config.RabbitConfig.QUEUE_NAME;
+import static com.microsoft.migration.assets.worker.config.ServiceBusConfig.QUEUE_NAME;
 
 @Slf4j
 public abstract class AbstractFileProcessingService implements FileProcessor {
@@ -28,10 +29,8 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
     @Autowired
     private RetryTemplate retryTemplate;
 
-    @RabbitListener(queues = QUEUE_NAME)
-    public void processImage(final ImageProcessingMessage message, 
-                           Channel channel, 
-                           @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+    @JmsListener(destination = QUEUE_NAME)
+    public void processImage(final ImageProcessingMessage message) {
         try {
             retryTemplate.execute(new RetryCallback<Void, Exception>() {
                 @Override
@@ -45,20 +44,10 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
                 }
             });
             
-            // Success - acknowledge the message
-            log.debug("Acknowledging message after successful processing: {}", message.getKey());
-            channel.basicAck(deliveryTag, false);
+            log.debug("Successfully processed message: {}", message.getKey());
         } catch (Exception e) {
             log.error("All retry attempts failed for image: " + message.getKey(), e);
-            
-            try {
-                // After all retries are exhausted, reject the message
-                // to retry later, use basicNack with requeue=true
-                log.debug("Rejecting message after all retry attempts failed: {}", message.getKey());
-                channel.basicNack(deliveryTag, false, true);
-            } catch (IOException ackEx) {
-                log.error("Error handling RabbitMQ acknowledgment for: {}", message.getKey(), ackEx);
-            }
+            throw new RuntimeException("Failed to process image after retries", e);
         }
     }
     
@@ -160,33 +149,33 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
         // Write the thumbnail with optimized settings for different formats
         if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")) {
             // For JPEG, we need to set compression quality
-            javax.imageio.ImageWriter jpgWriter = javax.imageio.ImageIO.getImageWritersByFormatName("jpg").next();
-            javax.imageio.ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
-            jpgWriteParam.setCompressionMode(javax.imageio.ImageWriteParam.MODE_EXPLICIT);
+            ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+            ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+            jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             // Higher compression quality (0.95 for maximum clarity)
             jpgWriteParam.setCompressionQuality(0.95f);
             
-            javax.imageio.IIOImage outputImage = new javax.imageio.IIOImage(resultImage, null, null);
-            javax.imageio.stream.ImageOutputStream outputStream = 
-                javax.imageio.ImageIO.createImageOutputStream(output.toFile());
+            IIOImage outputImage = new IIOImage(resultImage, null, null);
+            ImageOutputStream outputStream = 
+                ImageIO.createImageOutputStream(output.toFile());
             jpgWriter.setOutput(outputStream);
             jpgWriter.write(null, outputImage, jpgWriteParam);
             jpgWriter.dispose();
             outputStream.close();
         } else {
             // For PNG, use compression level 0 (no compression) for best quality
-            javax.imageio.ImageWriteParam pngWriteParam = null;
+            ImageWriteParam pngWriteParam = null;
             if (extension.equalsIgnoreCase("png")) {
-                javax.imageio.ImageWriter pngWriter = ImageIO.getImageWritersByFormatName("png").next();
+                ImageWriter pngWriter = ImageIO.getImageWritersByFormatName("png").next();
                 pngWriteParam = pngWriter.getDefaultWriteParam();
                 if (pngWriteParam.canWriteCompressed()) {
-                    pngWriteParam.setCompressionMode(javax.imageio.ImageWriteParam.MODE_EXPLICIT);
+                    pngWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                     pngWriteParam.setCompressionType("Deflate");
                     pngWriteParam.setCompressionQuality(0.0f); // 0 = best quality for PNG
                     
-                    javax.imageio.IIOImage outputImage = new javax.imageio.IIOImage(resultImage, null, null);
-                    javax.imageio.stream.ImageOutputStream outputStream = 
-                        javax.imageio.ImageIO.createImageOutputStream(output.toFile());
+                    IIOImage outputImage = new IIOImage(resultImage, null, null);
+                    ImageOutputStream outputStream = 
+                        ImageIO.createImageOutputStream(output.toFile());
                     pngWriter.setOutput(outputStream);
                     pngWriter.write(null, outputImage, pngWriteParam);
                     pngWriter.dispose();
