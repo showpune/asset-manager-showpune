@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "002-transform-s3-to-azure-blob",
+      "description": "Migrate object storage from AWS S3 to Azure Blob Storage for both web and worker modules",
+      "requirements": "Migrate all S3 storage operations (upload, download, list, delete) to Azure Blob Storage. Maintain existing functionality while replacing AWS SDK with Azure SDK.",
+      "dependencies": [],
+      "environmentConfiguration": null,
+      "status": "success",
+      "taskSummary": "Successfully migrated from AWS S3 to Azure Blob Storage. Replaced AWS SDK with Azure SDK in both web and worker modules. All S3 operations (upload, download, list, delete) migrated to Azure Blob operations. Build passes, unit tests pass, functionality maintained. Fixed N+1 query performance issue. Zero security vulnerabilities found.",
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false"
+      },
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "generateNewIntegrationTests": "true",
+        "passUnitTests": "true",
+        "passIntegrationTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "001-modernization-plan",
+    "projectName": "asset-manager-kit",
+    "language": "java",
+    "createdAt": "2026-02-09T02:19:38.962Z",
+    "version": "1.0"
+  }
+}
