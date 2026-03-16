@@ -73,7 +73,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Migrated messaging from RabbitMQ to Azure Service Bus JMS. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter-servicebus-jms (4.19.0 BOM, Spring Boot 2.7.x compatible). Updated RabbitConfig to JMS config beans (JmsTemplate, DefaultJmsListenerContainerFactory, MappingJackson2MessageConverter). Changed @RabbitListener to @JmsListener, @EnableRabbit to @EnableJms. Configured Managed Identity authentication in application.properties. Build passes, unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "transform",
@@ -88,6 +97,16 @@
         }
       ],
       "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": "success",
+      "taskSummary": "Migrated database connectivity to Azure Database for PostgreSQL with Managed Identity authentication. Added com.azure:azure-identity-extensions:1.2.2 to both web and worker modules. Updated JDBC URL to use Azure PostgreSQL Flexible Server with sslmode=require and AzurePostgresqlAuthenticationPlugin. Replaced username with AZURE_MI_NAME environment variable and removed password property for credential-free access. Build passes, unit tests pass.",
+      "successCriteriaStatus": {
         "passBuild": "true",
         "generateNewUnitTests": "false",
         "generateNewIntegrationTests": "false",
