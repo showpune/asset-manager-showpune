@@ -42,8 +42,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started",
-      "taskSummary": ""
+      "status": "success",
+      "taskSummary": "Migrated AWS S3 to Azure Blob Storage: replaced software.amazon.awssdk:s3 with azure-storage-blob and azure-identity SDKs in both web and worker modules. Updated AwsS3Config/AwsS3Service to AzureBlobConfig/AzureBlobService using DefaultAzureCredential (Managed Identity). Replaced aws.* properties with azure.storage.blob.endpoint/container. Build passed, all unit tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "transform",
@@ -64,7 +72,9 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
-      }
+      },
+      "status": "started",
+      "taskSummary": ""
     },
     {
       "type": "transform",
