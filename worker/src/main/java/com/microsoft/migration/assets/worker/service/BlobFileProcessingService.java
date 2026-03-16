@@ -47,8 +47,9 @@ public class BlobFileProcessingService extends AbstractFileProcessingService {
 
         ImageMetadata metadata = imageMetadataRepository.findById(extractOriginalKey(key))
                 .orElseGet(() -> {
+                    String originalKey = extractOriginalKey(key);
                     ImageMetadata newMetadata = new ImageMetadata();
-                    newMetadata.setId(extractOriginalKey(key));
+                    newMetadata.setId(originalKey);
                     return newMetadata;
                 });
 
