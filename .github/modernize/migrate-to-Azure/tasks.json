@@ -58,7 +58,16 @@
                 "passIntegrationTests": "false",
                 "securityComplianceCheck": "false"
             },
-            "status": "started"
+            "status": "success",
+            "taskSummary": "Migrated RabbitMQ to Azure Service Bus JMS. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter-servicebus-jms and BOM in both modules. Replaced AMQP beans with JMS configuration (MappingJackson2MessageConverter, JmsTemplate, DefaultJmsListenerContainerFactory). Removed @EnableRabbit, added @EnableJms. Updated message producers to use JmsTemplate and consumers to use @JmsListener. Configured Managed Identity authentication. Updated Bicep servicebus.bicep to Premium tier (required for JMS). Build passing, unit tests passing, 0 CodeQL alerts.",
+            "successCriteriaStatus": {
+                "passBuild": "true",
+                "generateNewUnitTests": "false",
+                "generateNewIntegrationTests": "false",
+                "passUnitTests": "true",
+                "passIntegrationTests": "false",
+                "securityComplianceCheck": "false"
+            }
         },
         {
             "type": "transform",
@@ -73,6 +82,16 @@
                 }
             ],
             "successCriteria": {
+                "passBuild": "true",
+                "generateNewUnitTests": "false",
+                "generateNewIntegrationTests": "false",
+                "passUnitTests": "true",
+                "passIntegrationTests": "false",
+                "securityComplianceCheck": "false"
+            },
+            "status": "success",
+            "taskSummary": "Migrated database connectivity to Azure Database for PostgreSQL with Managed Identity. Added com.azure:azure-identity-extensions:1.2.2 to both web and worker pom.xml. Updated JDBC URL in application.properties to use Azure PostgreSQL FQDN with sslmode=require and AzurePostgresqlAuthenticationPlugin. Removed hardcoded password and replaced username with ${POSTGRESQL_USER} environment variable. Authentication is now credential-free via Azure AD token exchange. Build passing, unit tests passing.",
+            "successCriteriaStatus": {
                 "passBuild": "true",
                 "generateNewUnitTests": "false",
                 "generateNewIntegrationTests": "false",
