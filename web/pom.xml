@@ -11,6 +11,7 @@
 
     <properties>
         <azure.version>1.2.24</azure.version>
+        <spring-cloud-azure.version>4.19.0</spring-cloud-azure.version>
     </properties>
 
     <artifactId>assets-manager-web</artifactId>
@@ -27,8 +28,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-servicebus-jms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
@@ -83,6 +84,13 @@
                 <groupId>com.azure</groupId>
                 <artifactId>azure-sdk-bom</artifactId>
                 <version>1.2.24</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${spring-cloud-azure.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

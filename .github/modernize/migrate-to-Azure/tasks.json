@@ -65,7 +65,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Replaced spring-boot-starter-amqp with spring-cloud-azure-starter-servicebus-jms (v4.19.0 BOM for Spring Boot 2.x) in both web and worker pom.xml. Added spring-retry dependency explicitly in worker. Created ServiceBusJmsConfig.java in both modules (replaces RabbitConfig) with JmsTemplate, MessageConverter (MappingJackson2MessageConverter/JSON), and JmsListenerContainerFactory. Removed RabbitConfig.java from both modules. Updated AzureBlobService, LocalFileStorageService to use JmsTemplate. Replaced @RabbitListener with @JmsListener in AbstractFileProcessingService and BackupMessageProcessor. Removed @EnableRabbit from both application classes. Added Service Bus JMS properties (managed-identity, namespace, passwordless-enabled) to application.properties. Added TestJmsConfig with mock ConnectionFactory for unit tests. Build and unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "transform",
@@ -86,7 +95,8 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
-      }
+      },
+      "status": "started"
     }
   ],
   "metadata": {
