@@ -16,7 +16,16 @@
       ],
       "iacType": "bicep",
       "provision": false,
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Generated Bicep IaC files in ./infra/: main.bicep orchestrates all modules, modules for managedidentity, storage (Azure Blob Storage + assets container + RBAC), servicebus (namespace + image-processing queue + RBAC), and postgresql (flexible server + assets_manager DB + AAD admin). Also generated deploy.sh, deploy.ps1, README.md and compliance.md.",
+      "successCriteriaStatus": {
+        "passBuild": null,
+        "generateNewUnitTests": null,
+        "generateNewIntegrationTests": null,
+        "passUnitTests": null,
+        "passIntegrationTests": null,
+        "securityComplianceCheck": null
+      }
     },
     {
       "type": "transform",
@@ -32,6 +41,16 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
+      },
+      "status": "success",
+      "taskSummary": "Migrated storage from AWS S3 to Azure Blob Storage. Replaced software.amazon.awssdk:s3 (2.25.13) with com.azure:azure-storage-blob:12.25.4 and com.azure:azure-identity:1.13.3. Deleted AwsS3Config and AwsS3Service in web module; created AzureBlobConfig (DefaultAzureCredential/Managed Identity) and AzureBlobService. Deleted AwsS3Config and S3FileProcessingService in worker module; created AzureBlobConfig and BlobFileProcessingService. Updated application.properties in both modules to use azure.storage.blob.endpoint and azure.storage.blob.container-name. Added findByS3Key to ImageMetadataRepository for efficient lookups. Upgraded Lombok to 1.18.30 for JDK 21 compatibility. All unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": true,
+        "generateNewUnitTests": null,
+        "generateNewIntegrationTests": null,
+        "passUnitTests": true,
+        "passIntegrationTests": null,
+        "securityComplianceCheck": null
       }
     },
     {
