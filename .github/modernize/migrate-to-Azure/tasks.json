@@ -33,6 +33,16 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
+      },
+      "status": "success",
+      "taskSummary": "Replaced AWS S3 SDK (software.amazon.awssdk:s3) with Azure Storage Blob SDK (com.azure:azure-storage-blob:12.25.0) and Azure Identity (com.azure:azure-identity:1.11.4) in both web and worker pom.xml files. Created AzureBlobConfig.java (uses DefaultAzureCredential for Managed Identity) and AzureBlobService.java in web module replacing AwsS3Service. Created AzureBlobConfig.java and AzureBlobFileProcessingService.java in worker module replacing S3FileProcessingService. Removed old AwsS3Config.java and S3FileProcessingService.java. Updated application.properties in both modules. Build and unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
       }
     },
     {
@@ -54,7 +64,8 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
-      }
+      },
+      "status": "started"
     },
     {
       "type": "transform",
