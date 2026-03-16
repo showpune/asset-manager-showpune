@@ -4,7 +4,7 @@ import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -27,15 +27,15 @@ public class LocalFileStorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalFileStorageService.class);
     
-    private final RabbitTemplate rabbitTemplate;
+    private final JmsTemplate jmsTemplate;
     
     @Value("${local.storage.directory:../storage}")
     private String storageDirectory;
     
     private Path rootLocation;
 
-    public LocalFileStorageService(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
+    public LocalFileStorageService(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
     }
     
     @PostConstruct
@@ -102,7 +102,7 @@ public class LocalFileStorageService implements StorageService {
             getStorageType(),
             file.getSize()
         );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        jmsTemplate.convertAndSend(QUEUE_NAME, message);
     }
 
     @Override
