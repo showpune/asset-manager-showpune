@@ -102,4 +102,4 @@ output serverFqdn string = postgresServer.properties.fullyQualifiedDomainName
 output databaseName string = database.name
 
 @description('JDBC connection string using the Azure AD passwordless plugin')
-output jdbcConnectionString string = 'jdbc:postgresql://${postgresServer.properties.fullyQualifiedDomainName}:5432/${databaseName}?sslmode=require&authPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin&azure.clientId=${managedIdentityClientId}'
+output jdbcConnectionString string = 'jdbc:postgresql://${postgresServer.properties.fullyQualifiedDomainName}:5432/${databaseName}?sslmode=require&authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin&azure.clientId=${managedIdentityClientId}'

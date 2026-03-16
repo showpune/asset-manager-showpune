@@ -3,7 +3,6 @@ package com.microsoft.migration.assets.service;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.models.BlobItem;
 import com.microsoft.migration.assets.model.ImageMetadata;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
@@ -18,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -41,13 +42,20 @@ public class AzureBlobService implements StorageService {
     public List<S3StorageItem> listObjects() {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
+        // Load all metadata once to avoid N+1 queries inside the stream
+        Map<String, Instant> uploadTimeByKey = imageMetadataRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        m -> m.getS3Key(),
+                        m -> m.getUploadedAt().atZone(ZoneId.systemDefault()).toInstant(),
+                        (existing, replacement) -> existing
+                ));
+
         return StreamSupport.stream(containerClient.listBlobs().spliterator(), false)
                 .map(blobItem -> {
-                    Instant uploadedAt = imageMetadataRepository.findAll().stream()
-                            .filter(metadata -> metadata.getS3Key().equals(blobItem.getName()))
-                            .map(metadata -> metadata.getUploadedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .findFirst()
-                            .orElse(blobItem.getProperties().getLastModified().toInstant());
+                    Instant uploadedAt = uploadTimeByKey.getOrDefault(
+                            blobItem.getName(),
+                            blobItem.getProperties().getLastModified().toInstant()
+                    );
 
                     return new S3StorageItem(
                             blobItem.getName(),
@@ -118,9 +126,7 @@ public class AzureBlobService implements StorageService {
         }
 
         // Delete metadata from database
-        imageMetadataRepository.findAll().stream()
-                .filter(metadata -> metadata.getS3Key().equals(key))
-                .findFirst()
+        imageMetadataRepository.findByS3Key(key)
                 .ifPresent(imageMetadataRepository::delete);
     }
 

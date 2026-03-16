@@ -61,7 +61,7 @@ resource serviceBusDataOwnerAssignment 'Microsoft.Authorization/roleAssignments@
 }
 
 @description('Resource ID of the Service Bus namespace')
-output namespaceid string = serviceBusNamespace.id
+output namespaceId string = serviceBusNamespace.id
 
 @description('Name of the Service Bus namespace')
 output namespaceName string = serviceBusNamespace.name
