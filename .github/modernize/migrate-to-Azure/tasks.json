@@ -15,7 +15,9 @@
         }
       ],
       "iacType": "bicep",
-      "provision": false
+      "provision": false,
+      "status": "success",
+      "taskSummary": "Generated Bicep IaC files in ./infra/: main.bicep orchestrates modules for user-assigned managed identity, Azure Blob Storage (assets container, TLS1.2, public access disabled, Storage Blob Data Contributor RBAC), Azure Service Bus Standard namespace (thumbnail-requests queue, dead-lettering enabled, Service Bus Data Owner RBAC), and Azure Database for PostgreSQL Flexible Server (v16, Azure AD auth enabled, passwordless JDBC output). Deployment scripts (deploy.sh, deploy.ps1) and documentation (README.md, compliance.md) included."
     },
     {
       "type": "transform",
