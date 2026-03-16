@@ -27,7 +27,7 @@ by the **assets-manager** application (web + worker modules).
 │  │  Azure Blob      │  │ Azure Service Bus │  │ PostgreSQL   │  │
 │  │  Storage         │  │ Namespace         │  │ Flexible     │  │
 │  │  (assets-manager │  │  Queue:           │  │ Server       │  │
-│  │   container)     │  │  image-processing │  │ DB: assets   │  │
+│  │   container)     │  │  image-processing │  │assets_manager│  │
 │  └──────────────────┘  └──────────────────┘  └──────────────┘  │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -157,19 +157,30 @@ the Spring Boot applications:
 ## Application Configuration
 
 After provisioning, update the Spring Boot `application.properties` as follows.
+The exact property names depend on which Azure Spring Cloud starter you add
+during the migration from AWS SDK / RabbitMQ:
+
+- **Storage** → `com.azure.spring:spring-cloud-azure-starter-storage-blob`
+- **Service Bus (JMS)** → `com.azure.spring:spring-cloud-azure-starter-servicebus-jms`  
+  (preserves the JMS API used by the existing `spring-boot-starter-amqp` code)
+- **PostgreSQL (passwordless)** → `com.azure.identity:azure-identity` +  
+  `com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql`
 
 ### web module
 
 ```properties
 # Azure Blob Storage (replaces AWS S3)
-azure.storage.account-name=${storageAccountName}
-azure.storage.container-name=${storageContainerName}
+# Requires: spring-cloud-azure-starter-storage-blob
+spring.cloud.azure.storage.blob.account-name=${storageAccountName}
+spring.cloud.azure.storage.blob.container-name=${storageContainerName}
 
-# Azure Service Bus (replaces RabbitMQ)
+# Azure Service Bus via JMS API (replaces RabbitMQ)
+# Requires: spring-cloud-azure-starter-servicebus-jms
 spring.jms.servicebus.namespace=${serviceBusNamespace}
 spring.jms.servicebus.pricing-tier=standard
+spring.jms.servicebus.passwordless-enabled=true
 
-# PostgreSQL
+# PostgreSQL (password-based, migration phase)
 spring.datasource.url=${postgresJdbcUrl}
 spring.datasource.username=pgadmin
 spring.datasource.password=<admin-password>
