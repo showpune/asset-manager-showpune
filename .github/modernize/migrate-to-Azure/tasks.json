@@ -73,8 +73,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started",
-      "taskSummary": ""
+      "status": "success",
+      "taskSummary": "Migrated RabbitMQ to Azure Service Bus JMS: replaced spring-boot-starter-amqp with spring-cloud-azure-starter-servicebus-jms (BOM 4.19.0). Updated RabbitConfig to JMS beans, @EnableRabbit to @EnableJms, RabbitTemplate to JmsTemplate, @RabbitListener to @JmsListener. Added Managed Identity config. Message format compatibility maintained. Build passed, all tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "transform",
@@ -95,7 +103,9 @@
         "passUnitTests": "true",
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
-      }
+      },
+      "status": "started",
+      "taskSummary": ""
     }
   ],
   "metadata": {
