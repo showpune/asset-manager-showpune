@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo No workflow files found:*)"
+    ]
+  }
+}

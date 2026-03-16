@@ -1,0 +1,3 @@
+com\microsoft\migration\assets\service\AzureBlobServiceIntegrationTest.class
+com\microsoft\migration\assets\integration\ServiceBusMessagingIntegrationTest.class
+com\microsoft\migration\assets\AssetsManagerApplicationTests.class
