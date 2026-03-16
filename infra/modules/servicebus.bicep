@@ -41,8 +41,8 @@ resource imageProcessingQueue 'Microsoft.ServiceBus/namespaces/queues@2021-11-01
   parent: serviceBusNamespace
   name: imageProcessingQueueName
   properties: {
-    // Lock duration matches the worker retry delay (PT1M = 1 minute)
-    lockDuration: 'PT1M'
+    // Lock duration accommodates the full retry cycle (3 attempts × 60s backoff + processing time)
+    lockDuration: 'PT5M'
     // maxDeliveryCount matches the worker max attempts (3)
     maxDeliveryCount: 3
     deadLetteringOnMessageExpiration: true

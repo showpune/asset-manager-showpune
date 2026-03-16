@@ -18,7 +18,7 @@
       "value": "Standard_LRS"
     },
     "serviceBusSku": {
-      "value": "Standard"
+      "value": "Premium"
     },
     "postgresSkuName": {
       "value": "Standard_B2s"

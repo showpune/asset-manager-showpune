@@ -153,16 +153,16 @@ azure.storage.blob-endpoint=<storageBlobEndpoint>
 azure.storage.container-name=assets
 
 # Azure Service Bus (replaces RabbitMQ)
-azure.servicebus.namespace-hostname=<serviceBusHostname>
-azure.servicebus.queue-name=image-processing
+spring.jms.servicebus.namespace=<serviceBusHostname>
+spring.jms.servicebus.pricing-tier=premium
+spring.jms.servicebus.passwordless-enabled=true
+spring.cloud.azure.credential.managed-identity-enabled=true
+spring.cloud.azure.credential.client-id=<managedIdentityClientId>
 
 # PostgreSQL
 spring.datasource.url=jdbc:postgresql://<postgresFqdn>:5432/assets_manager
 spring.datasource.username=pgadmin
 spring.datasource.password=<password>
-
-# Managed Identity client ID
-azure.client-id=<managedIdentityClientId>
 ```
 
 ### worker/src/main/resources/application.properties
