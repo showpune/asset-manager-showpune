@@ -57,7 +57,8 @@
                 "passUnitTests": "true",
                 "passIntegrationTests": "false",
                 "securityComplianceCheck": "false"
-            }
+            },
+            "status": "started"
         },
         {
             "type": "transform",
