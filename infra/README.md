@@ -183,7 +183,7 @@ The templates automatically create the following role assignments for the manage
 
 The managed identity is also attached to the PostgreSQL server for future Azure AD authentication support (`activeDirectoryAuth: Enabled`).
 
-## Customisation
+## Customization
 
 To deploy to a different environment, override parameters at deploy time:
 

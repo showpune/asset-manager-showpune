@@ -10,8 +10,8 @@ param location string
 @description('Name of the Service Bus namespace.')
 param namespaceName string
 
-@description('Service Bus namespace pricing tier.')
-@allowed(['Basic', 'Standard', 'Premium'])
+@description('Service Bus namespace pricing tier. Basic does not support queues and is excluded.')
+@allowed(['Standard', 'Premium'])
 param serviceBusSku string
 
 @description('Principal ID of the managed identity to assign Service Bus Data Owner role.')
