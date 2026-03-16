@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "environmentName": {
+      "value": "dev"
+    },
+    "projectName": {
+      "value": "assetmgr"
+    },
+    "postgresAdminLogin": {
+      "value": "pgadmin"
+    },
+    "storageSku": {
+      "value": "Standard_LRS"
+    },
+    "serviceBusSku": {
+      "value": "Standard"
+    },
+    "postgresSkuName": {
+      "value": "Standard_B2s"
+    },
+    "postgresSkuTier": {
+      "value": "Burstable"
+    },
+    "postgresStorageSizeGB": {
+      "value": 32
+    }
+  }
+}
