@@ -104,8 +104,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started",
-      "taskSummary": ""
+      "status": "success",
+      "taskSummary": "Migrated database connectivity to Azure Database for PostgreSQL with Managed Identity: added azure-identity-extensions:1.2.2 to both modules, updated JDBC URLs to use AzurePostgresqlAuthenticationPlugin, replaced username with AZURE_MANAGED_IDENTITY_NAME, removed hardcoded password. Build passed, all tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     }
   ],
   "metadata": {
