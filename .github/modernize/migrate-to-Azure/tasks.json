@@ -15,7 +15,9 @@
         }
       ],
       "iacType": "bicep",
-      "provision": false
+      "provision": false,
+      "status": "started",
+      "taskSummary": ""
     },
     {
       "type": "transform",

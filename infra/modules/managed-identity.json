@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.41.2.15936",
+      "templateHash": "9661876604829293658"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for the managed identities"
+      }
+    },
+    "webAppIdentityName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the web app managed identity"
+      }
+    },
+    "workerIdentityName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the worker managed identity"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Tags to apply to resources"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[parameters('webAppIdentityName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[parameters('workerIdentityName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]"
+    }
+  ],
+  "outputs": {
+    "webAppIdentityId": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app managed identity resource ID"
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('webAppIdentityName'))]"
+    },
+    "webAppPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app managed identity principal ID"
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('webAppIdentityName')), '2023-01-31').principalId]"
+    },
+    "webAppClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app managed identity client ID"
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('webAppIdentityName')), '2023-01-31').clientId]"
+    },
+    "webAppObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app managed identity object ID (same as principal ID)"
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('webAppIdentityName')), '2023-01-31').principalId]"
+    },
+    "webAppIdentityName": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app managed identity name"
+      },
+      "value": "[parameters('webAppIdentityName')]"
+    },
+    "workerIdentityId": {
+      "type": "string",
+      "metadata": {
+        "description": "Worker managed identity resource ID"
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('workerIdentityName'))]"
+    },
+    "workerPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Worker managed identity principal ID"
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('workerIdentityName')), '2023-01-31').principalId]"
+    },
+    "workerClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Worker managed identity client ID"
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('workerIdentityName')), '2023-01-31').clientId]"
+    },
+    "workerIdentityName": {
+      "type": "string",
+      "metadata": {
+        "description": "Worker managed identity name"
+      },
+      "value": "[parameters('workerIdentityName')]"
+    }
+  }
+}
