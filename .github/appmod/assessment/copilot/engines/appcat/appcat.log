@@ -1,0 +1,15 @@
+time="2026-03-11T15:08:44+08:00" level=info msg="running analysis for input: c:\\projects\\asset-manager-kit"
+time="2026-03-11T15:08:44+08:00" level=info msg="creating provider config"
+time="2026-03-11T15:08:44+08:00" level=info msg="setting provider from provider config" provider=java
+time="2026-03-11T15:08:44+08:00" level=info msg="setting provider from provider config" provider=builtin
+time="2026-03-11T15:08:44+08:00" level=info msg="collecting application properties"
+time="2026-03-11T15:08:46+08:00" level=info msg="loading rules for analysis" rules="C:\\Users\\zhiyongli.FAREAST\\.appcat\\rulesets"
+time="2026-03-11T15:08:53+08:00" level=info msg="starting provider" provider=java
+time="2026-03-11T15:09:08+08:00" level=info msg="starting provider" provider=builtin
+time="2026-03-11T15:09:08+08:00" level=info msg="evaluating rules for violations. see analysis.log for more info"
+time="2026-03-11T15:09:21+08:00" level=info msg="[1/286] processed rule" ruleID=azure-aws-config-region-02000
+time="2026-03-11T15:09:21+08:00" level=info msg="[2/286] processed rule" ruleID=azure-aws-config-credential-01000
+time="2026-03-11T15:09:21+08:00" level=info msg="progressive report updated"
+time="2026-03-11T15:09:22+08:00" level=info msg="[3/286] processed rule" ruleID=hardcoded-ip-address
+time="2026-03-11T15:09:32+08:00" level=info msg="[4/286] processed rule" ruleID=azure-aws-config-sqs-04004
+time="2026-03-11T15:09:32+08:00" level=info msg="[5/286] processed rule" ruleID=azure-cache-redis-01000

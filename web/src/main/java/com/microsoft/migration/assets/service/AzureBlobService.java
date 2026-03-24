@@ -1,0 +1,151 @@
+package com.microsoft.migration.assets.service;
+
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.microsoft.migration.assets.model.ImageMetadata;
+import com.microsoft.migration.assets.model.ImageProcessingMessage;
+import com.microsoft.migration.assets.model.S3StorageItem;
+import com.microsoft.migration.assets.repository.ImageMetadataRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static com.microsoft.migration.assets.config.ServiceBusJmsConfig.QUEUE_NAME;
+
+@Service
+@RequiredArgsConstructor
+@Profile("!dev")
+public class AzureBlobService implements StorageService {
+
+    private final BlobServiceClient blobServiceClient;
+    private final JmsTemplate jmsTemplate;
+    private final ImageMetadataRepository imageMetadataRepository;
+
+    @Value("${azure.storage.container-name}")
+    private String containerName;
+
+    @Override
+    public List<S3StorageItem> listObjects() {
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+
+        // Load all metadata once to avoid N+1 queries inside the stream
+        Map<String, Instant> uploadTimeByKey = imageMetadataRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        m -> m.getS3Key(),
+                        m -> m.getUploadedAt().atZone(ZoneId.systemDefault()).toInstant(),
+                        (existing, replacement) -> existing
+                ));
+
+        return StreamSupport.stream(containerClient.listBlobs().spliterator(), false)
+                .map(blobItem -> {
+                    Instant uploadedAt = uploadTimeByKey.getOrDefault(
+                            blobItem.getName(),
+                            blobItem.getProperties().getLastModified().toInstant()
+                    );
+
+                    return new S3StorageItem(
+                            blobItem.getName(),
+                            extractFilename(blobItem.getName()),
+                            blobItem.getProperties().getContentLength(),
+                            blobItem.getProperties().getLastModified().toInstant(),
+                            uploadedAt,
+                            generateUrl(blobItem.getName())
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void uploadObject(MultipartFile file) throws IOException {
+        String key = generateKey(file.getOriginalFilename());
+
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.getBlobClient(key);
+        blobClient.upload(file.getInputStream(), file.getSize(), true);
+
+        // Send message to queue for thumbnail generation
+        ImageProcessingMessage message = new ImageProcessingMessage(
+                key,
+                file.getContentType(),
+                getStorageType(),
+                file.getSize()
+        );
+        jmsTemplate.convertAndSend(QUEUE_NAME, message);
+
+        // Create and save metadata to database
+        ImageMetadata metadata = new ImageMetadata();
+        metadata.setId(UUID.randomUUID().toString());
+        metadata.setFilename(file.getOriginalFilename());
+        metadata.setContentType(file.getContentType());
+        metadata.setSize(file.getSize());
+        metadata.setS3Key(key);
+        metadata.setS3Url(generateUrl(key));
+
+        imageMetadataRepository.save(metadata);
+    }
+
+    @Override
+    public InputStream getObject(String key) throws IOException {
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.getBlobClient(key);
+        return blobClient.openInputStream();
+    }
+
+    @Override
+    public void deleteObject(String key) throws IOException {
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+
+        // Delete the original blob
+        BlobClient blobClient = containerClient.getBlobClient(key);
+        if (blobClient.exists()) {
+            blobClient.delete();
+        }
+
+        // Try to delete the thumbnail blob if it exists
+        try {
+            BlobClient thumbnailBlobClient = containerClient.getBlobClient(getThumbnailKey(key));
+            if (thumbnailBlobClient.exists()) {
+                thumbnailBlobClient.delete();
+            }
+        } catch (Exception e) {
+            // Ignore if thumbnail does not exist
+        }
+
+        // Delete metadata from database
+        imageMetadataRepository.findByS3Key(key)
+                .ifPresent(imageMetadataRepository::delete);
+    }
+
+    @Override
+    public String getStorageType() {
+        return "azure-blob";
+    }
+
+    private String extractFilename(String key) {
+        int lastSlashIndex = key.lastIndexOf('/');
+        return lastSlashIndex >= 0 ? key.substring(lastSlashIndex + 1) : key;
+    }
+
+    private String generateUrl(String key) {
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        return containerClient.getBlobClient(key).getBlobUrl();
+    }
+
+    private String generateKey(String filename) {
+        return UUID.randomUUID().toString() + "-" + filename;
+    }
+}

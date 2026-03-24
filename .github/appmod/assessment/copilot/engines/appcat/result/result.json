@@ -1,0 +1,89 @@
+{
+  "manifestVersion": "1.1.0",
+  "properties": {
+    "appName": "assets-manager-parent",
+    "jdkVersion": "11",
+    "targets": [],
+    "tools": [
+      "Maven"
+    ],
+    "frameworks": [
+      "Spring Boot",
+      "Spring"
+    ],
+    "languages": [
+      "Java"
+    ]
+  },
+  "ruleSets": [
+    {
+      "name": "azure/springboot",
+      "violations": {
+        "azure-aws-config-region-02000": {
+          "description": "AWS region configuration",
+          "category": "mandatory",
+          "labels": [
+            "target=azure-appservice",
+            "target=azure-aks",
+            "target=azure-container-apps",
+            "source",
+            "domain=cloud-readiness",
+            "category=region-configuration",
+            "AWS",
+            "os=windows",
+            "os=linux"
+          ],
+          "incidents": [
+            {
+              "uri": "file:///c:/projects/asset-manager-kit/worker/src/main/resources/application.properties",
+              "message": "The application contains AWS region configuration.\n\n * Identify **Azure regions**: Determine the Azure regions that align with your application's requirements for availability, latency, compliance, and data residency. Azure provides a wide range of regions globally.\n\n * Update **configuration settings**: Modify the Java application's configuration to replace the AWS region configuration with the corresponding Azure region configuration. Update the code or configuration files to reflect the Azure region names or identifiers.",
+              "lineNumber": 4,
+              "variables": {
+                "matchingText": "aws.region"
+              }
+            },
+            {
+              "uri": "file:///c:/projects/asset-manager-kit/web/src/main/resources/application.properties",
+              "message": "The application contains AWS region configuration.\n\n * Identify **Azure regions**: Determine the Azure regions that align with your application's requirements for availability, latency, compliance, and data residency. Azure provides a wide range of regions globally.\n\n * Update **configuration settings**: Modify the Java application's configuration to replace the AWS region configuration with the corresponding Azure region configuration. Update the code or configuration files to reflect the Azure region names or identifiers.",
+              "lineNumber": 6,
+              "variables": {
+                "matchingText": "aws.region"
+              }
+            },
+            {
+              "uri": "file:///c:/projects/asset-manager-kit/web/src/test/resources/application.properties",
+              "message": "The application contains AWS region configuration.\n\n * Identify **Azure regions**: Determine the Azure regions that align with your application's requirements for availability, latency, compliance, and data residency. Azure provides a wide range of regions globally.\n\n * Update **configuration settings**: Modify the Java application's configuration to replace the AWS region configuration with the corresponding Azure region configuration. Update the code or configuration files to reflect the Azure region names or identifiers.",
+              "lineNumber": 12,
+              "variables": {
+                "matchingText": "aws.region"
+              }
+            },
+            {
+              "uri": "file:///c:/projects/asset-manager-kit/worker/src/main/java/com/microsoft/migration/assets/worker/config/AwsS3Config.java",
+              "message": "The application contains AWS region configuration.\n\n * Identify **Azure regions**: Determine the Azure regions that align with your application's requirements for availability, latency, compliance, and data residency. Azure provides a wide range of regions globally.\n\n * Update **configuration settings**: Modify the Java application's configuration to replace the AWS region configuration with the corresponding Azure region configuration. Update the code or configuration files to reflect the Azure region names or identifiers.",
+              "lineNumber": 19,
+              "variables": {
+                "matchingText": "aws.region"
+              }
+            },
+            {
+              "uri": "file:///c:/projects/asset-manager-kit/web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java",
+              "message": "The application contains AWS region configuration.\n\n * Identify **Azure regions**: Determine the Azure regions that align with your application's requirements for availability, latency, compliance, and data residency. Azure provides a wide range of regions globally.\n\n * Update **configuration settings**: Modify the Java application's configuration to replace the AWS region configuration with the corresponding Azure region configuration. Update the code or configuration files to reflect the Azure region names or identifiers.",
+              "lineNumber": 21,
+              "variables": {
+                "matchingText": "aws.region"
+              }
+            }
+          ],
+          "links": [
+            {
+              "url": "https://azure.microsoft.com/explore/global-infrastructure/geographies",
+              "title": "Azure geographies"
+            }
+          ],
+          "effort": 1
+        }
+      }
+    }
+  ]
+}

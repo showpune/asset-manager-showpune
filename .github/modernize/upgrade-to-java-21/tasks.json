@@ -1,0 +1,29 @@
+{
+  "$schema": "./tasks-schema.json",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-jdk-to-java-21",
+      "description": "Upgrade the project from Java 11 to Java 21",
+      "requirements": "Upgrade the JDK version from 11 to 21. Update the pom.xml to set java.version property to 21. Update any Java version-specific configurations in build files. Ensure all dependencies are compatible with Java 21. Address any deprecated API usage that may have been removed in Java 21. Maintain backward compatibility with existing application functionality.",
+      "environmentConfiguration": null,
+      "skills": [],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "upgrade-to-java-21",
+    "projectName": "Asset Manager Kit",
+    "language": "java",
+    "createdAt": "2026-03-12T01:51:39.002Z",
+    "version": "1.0"
+  }
+}
