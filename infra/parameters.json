@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "environmentName": {
+      "value": "dev"
+    },
+    "appName": {
+      "value": "asset-manager"
+    },
+    "postgresAdminLogin": {
+      "value": "pgadmin"
+    },
+    "postgresAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.KeyVault/vaults/<keyvault-name>"
+        },
+        "secretName": "postgres-admin-password"
+      }
+    },
+    "postgresSkuName": {
+      "value": "Standard_D2s_v3"
+    },
+    "postgresSkuTier": {
+      "value": "GeneralPurpose"
+    },
+    "postgresStorageSizeGB": {
+      "value": 32
+    },
+    "postgresVersion": {
+      "value": "16"
+    },
+    "storageSku": {
+      "value": "Standard_LRS"
+    },
+    "serviceBusSku": {
+      "value": "Standard"
+    },
+    "tags": {
+      "value": {
+        "environment": "dev",
+        "application": "asset-manager",
+        "managedBy": "bicep"
+      }
+    }
+  }
+}

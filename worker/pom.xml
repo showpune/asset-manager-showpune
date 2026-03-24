@@ -10,7 +10,8 @@
     </parent>
 
     <properties>
-        <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-storage-blob.version>12.25.1</azure-storage-blob.version>
+        <azure-identity.version>1.12.2</azure-identity.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
@@ -23,12 +24,24 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-servicebus-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -53,14 +66,24 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity-extensions</artifactId>
+            <version>1.2.2</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>s3</artifactId>
-                <version>${aws-sdk.version}</version>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-storage-blob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
