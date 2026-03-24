@@ -1,0 +1,100 @@
+[
+	{
+		"name": "builtin",
+		"initConfig": [
+			{
+				"location": "c:\\projects\\asset-manager-kit",
+				"analysisMode": "source-only",
+				"providerSpecificConfig": {
+					"excludePatterns": [
+						"**/.git/**",
+						"**/README.*",
+						"**/LICENSE",
+						"**/.appcat-ignore",
+						"**/.migrate-copilot/**",
+						"**/target/**",
+						"**/mvnw.cmd",
+						"**/.mvn/**",
+						"**/*.jpg",
+						"**/.devops/**",
+						"**/.github/**",
+						"**/.metadata/**",
+						"**/org.eclipse.core.runtime/**",
+						"**/org.eclipse.equinox.app/**",
+						"**/org.eclipse.equinox.launcher/**",
+						"**/org.eclipse.osgi/**",
+						"**/gradlew",
+						"**/mvnw",
+						"**/gradlew.bat",
+						"**/.gradle/**",
+						"**/*.svg",
+						"**/*.png",
+						"**/.devcontainer/**",
+						"**/.idea/**",
+						"**/.editorconfig",
+						"**/.git*",
+						"**/gradle/**",
+						"**/migrate-copilot/**"
+					],
+					"excludedPaths": [
+						"c:\\projects\\asset-manager-kit\\.github\\appmod"
+					]
+				}
+			}
+		],
+		"ContextLines": 100
+	},
+	{
+		"name": "java",
+		"binaryPath": "C:\\Users\\zhiyongli.FAREAST\\.appcat\\jdtls\\bin\\jdtls",
+		"initConfig": [
+			{
+				"location": "c:\\projects\\asset-manager-kit",
+				"analysisMode": "source-only",
+				"providerSpecificConfig": {
+					"bundles": "C:\\Users\\zhiyongli.FAREAST\\.appcat\\jdtls\\java-analyzer-bundle\\java-analyzer-bundle.core\\target\\java-analyzer-bundle.core-1.0.0-SNAPSHOT.jar",
+					"cleanExplodedBin": true,
+					"depOpenSourceLabelsFile": "C:\\Users\\zhiyongli.FAREAST\\.appcat\\maven.default.index",
+					"excludePatterns": [
+						"**/org.eclipse.equinox.launcher/**",
+						"**/org.eclipse.osgi/**",
+						"**/migrate-copilot/**",
+						"**/target/**",
+						"**/mvnw",
+						"**/.devcontainer/**",
+						"**/.devops/**",
+						"**/.github/**",
+						"**/gradlew",
+						"**/mvnw.cmd",
+						"**/.mvn/**",
+						"**/*.svg",
+						"**/*.jpg",
+						"**/.idea/**",
+						"**/.editorconfig",
+						"**/.appcat-ignore",
+						"**/.metadata/**",
+						"**/gradlew.bat",
+						"**/.gradle/**",
+						"**/.git/**",
+						"**/.git*",
+						"**/LICENSE",
+						"**/org.eclipse.equinox.app/**",
+						"**/.migrate-copilot/**",
+						"**/gradle/**",
+						"**/*.png",
+						"**/README.*",
+						"**/org.eclipse.core.runtime/**"
+					],
+					"excludedPaths": [
+						"c:\\projects\\asset-manager-kit\\.github\\appmod"
+					],
+					"fernFlowerPath": "C:\\Users\\zhiyongli.FAREAST\\.appcat\\fernflower.jar",
+					"lspServerName": "java",
+					"lspServerPath": "C:\\Users\\zhiyongli.FAREAST\\.appcat\\jdtls\\bin\\jdtls",
+					"workspace": "C:\\Users\\zhiyongli.FAREAST\\.appcat\\.jdtls-workspace\\531ba1b4cb08fb95"
+				}
+			}
+		],
+		"ContextLines": 100
+	}
+]
