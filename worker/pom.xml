@@ -10,7 +10,10 @@
     </parent>
 
     <properties>
-        <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-storage-blob.version>12.25.0</azure-storage-blob.version>
+        <azure-identity.version>1.11.4</azure-identity.version>
+        <azure-identity-extensions.version>1.2.2</azure-identity-extensions.version>
+        <spring-cloud-azure.version>4.19.0</spring-cloud-azure.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
@@ -23,12 +26,20 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-servicebus-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -53,14 +64,31 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity-extensions</artifactId>
+            <version>${azure-identity-extensions.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>s3</artifactId>
-                <version>${aws-sdk.version}</version>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${spring-cloud-azure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-storage-blob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
