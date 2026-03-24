@@ -1,0 +1,126 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/app-service-linux-docs/master/modernization/tasks-schema.json",
+  "description": "Tasks template for Azure migration of Asset Manager Kit application",
+  "tasks": [
+    {
+      "type": "infrastructure",
+      "id": "001-infrastructure-bicep-generation",
+      "description": "Generate Bicep IaC files to provision Azure infrastructure resources",
+      "requirements": "Generate Bicep templates to provision: Azure Blob Storage account for asset storage, Azure Service Bus namespace with queues for message processing between web and worker modules, Azure Database for PostgreSQL flexible server. Configure Managed Identity for all services to enable secure authentication. Include all necessary parameters and outputs for service integration.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "infrastructure-bicep-generation",
+          "location": "builtin"
+        }
+      ],
+      "iacType": "bicep",
+      "provision": false,
+      "status": "success",
+      "taskSummary": "Generated Bicep IaC files in ./infra/: main.bicep orchestrates all modules, modules for managedidentity, storage (Azure Blob Storage + assets container + RBAC), servicebus (namespace + image-processing queue + RBAC), and postgresql (flexible server + assets_manager DB + AAD admin). Also generated deploy.sh, deploy.ps1, README.md and compliance.md.",
+      "successCriteriaStatus": {
+        "passBuild": null,
+        "generateNewUnitTests": null,
+        "generateNewIntegrationTests": null,
+        "passUnitTests": null,
+        "passIntegrationTests": null,
+        "securityComplianceCheck": null
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-storage-s3-to-blob",
+      "description": "Migrate storage operations from AWS S3 to Azure Blob Storage",
+      "requirements": "Migrate all file storage operations from AWS S3 to Azure Blob Storage in both web and worker modules. Replace AWS SDK (software.amazon.awssdk:s3) with Azure Storage Blobs SDK. Update file upload logic in web module and file access logic in worker module for thumbnail generation. Use Managed Identity for authentication to Azure Blob Storage. Maintain consistent storage access patterns across both modules.",
+      "environmentConfiguration": null,
+      "skills": [],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": "success",
+      "taskSummary": "Migrated storage from AWS S3 to Azure Blob Storage. Replaced software.amazon.awssdk:s3 (2.25.13) with com.azure:azure-storage-blob:12.25.4 and com.azure:azure-identity:1.13.3. Deleted AwsS3Config and AwsS3Service in web module; created AzureBlobConfig (DefaultAzureCredential/Managed Identity) and AzureBlobService. Deleted AwsS3Config and S3FileProcessingService in worker module; created AzureBlobConfig and BlobFileProcessingService. Updated application.properties in both modules to use azure.storage.blob.endpoint and azure.storage.blob.container-name. Added findByS3Key to ImageMetadataRepository for efficient lookups. Upgraded Lombok to 1.18.30 for JDK 21 compatibility. All unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": true,
+        "generateNewUnitTests": null,
+        "generateNewIntegrationTests": null,
+        "passUnitTests": true,
+        "passIntegrationTests": null,
+        "securityComplianceCheck": null
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-messaging-rabbitmq-to-servicebus",
+      "description": "Migrate messaging from RabbitMQ to Azure Service Bus",
+      "requirements": "Migrate message processing from RabbitMQ (spring-boot-starter-amqp) to Azure Service Bus. Update web module to send thumbnail generation messages to Azure Service Bus. Update worker module to consume messages from Azure Service Bus for processing. Use Azure Service Bus JMS integration to minimize code changes. Configure Managed Identity for authentication. Maintain message format compatibility between producer and consumer.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-spring-jms-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": "success",
+      "taskSummary": "Migrated messaging from RabbitMQ to Azure Service Bus JMS. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter-servicebus-jms (4.19.0 BOM, Spring Boot 2.7.x compatible). Updated RabbitConfig to JMS config beans (JmsTemplate, DefaultJmsListenerContainerFactory, MappingJackson2MessageConverter). Changed @RabbitListener to @JmsListener, @EnableRabbit to @EnableJms. Configured Managed Identity authentication in application.properties. Build passes, unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-database-postgresql-to-azure",
+      "description": "Migrate database connectivity to Azure Database for PostgreSQL",
+      "requirements": "Update database configuration to connect to Azure Database for PostgreSQL flexible server. Configure Managed Identity authentication using Azure AD for secure, credential-free database access. Update JDBC connection strings and Spring Data JPA configuration in both web and worker modules. Ensure compatibility with existing entity mappings and repository interfaces.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-mi-postgresql-azure-sdk-public-cloud",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": "success",
+      "taskSummary": "Migrated database connectivity to Azure Database for PostgreSQL with Managed Identity authentication. Added com.azure:azure-identity-extensions:1.2.2 to both web and worker modules. Updated JDBC URL to use Azure PostgreSQL Flexible Server with sslmode=require and AzurePostgresqlAuthenticationPlugin. Replaced username with AZURE_MI_NAME environment variable and removed password property for credential-free access. Build passes, unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "migrate-to-azure",
+    "projectName": "Asset Manager Kit",
+    "language": "java",
+    "createdAt": "2026-03-13T08:09:01.254Z",
+    "version": "1.0"
+  }
+}

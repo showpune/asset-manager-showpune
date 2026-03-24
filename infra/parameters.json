@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "appName": {
+      "value": "assets-manager"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "storageSkuName": {
+      "value": "Standard_LRS"
+    },
+    "serviceBusTier": {
+      "value": "Standard"
+    },
+    "postgresSkuName": {
+      "value": "Standard_D2ds_v4"
+    },
+    "postgresSkuTier": {
+      "value": "GeneralPurpose"
+    },
+    "postgresStorageSizeGB": {
+      "value": 32
+    },
+    "postgresVersion": {
+      "value": "16"
+    },
+    "postgresAdminLogin": {
+      "value": "pgadmin"
+    },
+    "postgresBackupRetentionDays": {
+      "value": 7
+    }
+  }
+}

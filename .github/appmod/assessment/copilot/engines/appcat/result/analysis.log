@@ -1,0 +1,49 @@
+time="2026-03-11T15:08:53+08:00" level=info msg="maven wrapper path" mvnwPath="c:\\projects\\asset-manager-kit\\mvnw.cmd" provider=java wrapperPaths="[]"
+time="2026-03-11T15:08:53+08:00" level=info msg="setting parallelism parameters" java.util.concurrent.ForkJoinPool.common.parallelism=8 provider=java runtime.NumCPU=8
+time="2026-03-11T15:08:53+08:00" level=info msg="Stderr pipe created successfully" provider=java
+time="2026-03-11T15:08:53+08:00" level=info msg="preparing to start JDTLS language server process" provider=java
+time="2026-03-11T15:08:53+08:00" level=info msg="JDTLS process started successfully" provider=java
+time="2026-03-11T15:08:53+08:00" level=info msg="configuring RPC concurrency limit" forkJoinParallelism=8 provider=java rpcConcurrencyLimit=5
+time="2026-03-11T15:08:53+08:00" level=info msg="Starting RPC connection run loop" provider=java
+time="2026-03-11T15:09:00+08:00" level=info msg="[JDTLS]" output="Mar 11, 2026 3:09:00 PM org.apache.aries.spifly.BaseActivator log" provider=java
+time="2026-03-11T15:09:00+08:00" level=info msg="[JDTLS]" output="INFO: Registered provider ch.qos.logback.classic.servlet.LogbackServletContainerInitializer of service jakarta.servlet.ServletContainerInitializer in bundle ch.qos.logback.classic" provider=java
+time="2026-03-11T15:09:00+08:00" level=info msg="[JDTLS]" output="Mar 11, 2026 3:09:00 PM org.apache.aries.spifly.BaseActivator log" provider=java
+time="2026-03-11T15:09:00+08:00" level=info msg="[JDTLS]" output="INFO: Registered provider ch.qos.logback.classic.spi.LogbackServiceProvider of service org.slf4j.spi.SLF4JServiceProvider in bundle ch.qos.logback.classic" provider=java
+time="2026-03-11T15:09:08+08:00" level=info msg="inject span info" carrier="{}"
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=6
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=0
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=7
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=2
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=4
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=5
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=1
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=3
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=8
+time="2026-03-11T15:09:10+08:00" level=info msg="Adding Carrier span info to context" worker=9
+time="2026-03-11T15:09:21+08:00" level=info msg="Adding Carrier span info to context" worker=1
+time="2026-03-11T15:09:21+08:00" level=info msg="rule returned" ruleID=azure-aws-config-region-02000
+time="2026-03-11T15:09:21+08:00" level=info msg="processed rule" logger=process-rule processed=1 ruleID=azure-aws-config-region-02000 total=286
+time="2026-03-11T15:09:21+08:00" level=info msg="rule returned" ruleID=azure-aws-config-credential-01000
+time="2026-03-11T15:09:21+08:00" level=info msg="processed rule" logger=process-rule processed=2 ruleID=azure-aws-config-credential-01000 total=286
+time="2026-03-11T15:09:21+08:00" level=info msg="Adding Carrier span info to context" worker=0
+time="2026-03-11T15:09:22+08:00" level=info msg="Adding Carrier span info to context" worker=4
+time="2026-03-11T15:09:22+08:00" level=info msg="rule returned" ruleID=hardcoded-ip-address
+time="2026-03-11T15:09:22+08:00" level=info msg="processed rule" logger=process-rule processed=3 ruleID=hardcoded-ip-address total=286
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: source-only analysis mode only scoping to Sources\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: source-only analysis mode only scoping to Sources\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: source-only analysis mode only scoping to Sources\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: found errors: [] warnings: []\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: found errors: [] warnings: []\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: found errors: [] warnings: []\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: found errors: [] warnings: []\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: found errors: [] warnings: []\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: found errors: [] warnings: []\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: pattern: PackageDeclarationPattern: <com.amazonaws.services.sqs*>, pattern match, case insensitive, generic full match, fine grain: none | PackageReferencePattern: <com.amazonaws.services.sqs*>, pattern match, case insensitive, generic full match, fine grain: none\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: pattern: PackageDeclarationPattern: <software.amazon.awssdk.services.s3.presigner*>, pattern match, case insensitive, generic full match, fine grain: none | PackageReferencePattern: <software.amazon.awssdk.services.s3.presigner*>, pattern match, case insensitive, generic full match, fine grain: none\r" provider=java
+time="2026-03-11T15:09:26+08:00" level=info msg="language server log" line="!MESSAGE KONVEYOR_LOG: pattern: PackageDeclarationPattern: <software.amazon.awssdk.services.sqs*>, pattern match, case insensitive, generic full match, fine grain: none | PackageReferencePattern: <software.amazon.awssdk.services.sqs*>, pattern match, case insensitive, generic full match, fine grain: none\r" provider=java
+time="2026-03-11T15:09:32+08:00" level=info msg="Adding Carrier span info to context" worker=1
+time="2026-03-11T15:09:32+08:00" level=info msg="rule returned" ruleID=azure-aws-config-sqs-04004
+time="2026-03-11T15:09:32+08:00" level=info msg="processed rule" logger=process-rule processed=4 ruleID=azure-aws-config-sqs-04004 total=286
+time="2026-03-11T15:09:32+08:00" level=info msg="Adding Carrier span info to context" worker=1
+time="2026-03-11T15:09:32+08:00" level=info msg="rule returned" ruleID=azure-cache-redis-01000
+time="2026-03-11T15:09:32+08:00" level=info msg="processed rule" logger=process-rule processed=5 ruleID=azure-cache-redis-01000 total=286
