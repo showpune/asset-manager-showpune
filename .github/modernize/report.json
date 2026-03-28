@@ -1,0 +1,680 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-02-11T06:07:42.203Z",
+  "tool": "Manual AppCAT Assessment",
+  "summary": {
+    "totalIncidents": 34,
+    "criticalIncidents": 7,
+    "highIncidents": 15,
+    "mediumIncidents": 9,
+    "lowIncidents": 3,
+    "totalEffort": 18,
+    "cloudReadinessScore": 62
+  },
+  "applicationProfile": {
+    "name": "Asset Manager Application",
+    "type": "Java Spring Boot Multi-Module",
+    "version": "0.0.1-SNAPSHOT",
+    "framework": "Spring Boot 3.2.1",
+    "javaVersion": "17",
+    "buildTool": "Maven",
+    "modules": [
+      {
+        "name": "assets-manager-web",
+        "description": "Web module for assets manager that handles file uploads and viewing"
+      },
+      {
+        "name": "assets-manager-worker",
+        "description": "Worker module for assets manager that handles thumbnail generation"
+      }
+    ]
+  },
+  "dependencies": {
+    "cloud": [
+      {
+        "name": "AWS SDK S3",
+        "version": "2.25.13",
+        "type": "storage",
+        "modules": ["web", "worker"]
+      }
+    ],
+    "messaging": [
+      {
+        "name": "Spring AMQP (RabbitMQ)",
+        "artifact": "spring-boot-starter-amqp",
+        "modules": ["web", "worker"]
+      }
+    ],
+    "database": [
+      {
+        "name": "PostgreSQL",
+        "type": "relational",
+        "modules": ["web", "worker"]
+      }
+    ],
+    "framework": [
+      {
+        "name": "Spring Boot",
+        "version": "3.2.1",
+        "type": "application-framework"
+      },
+      {
+        "name": "Spring Web",
+        "modules": ["web"]
+      },
+      {
+        "name": "Spring Data JPA",
+        "modules": ["web", "worker"]
+      },
+      {
+        "name": "Thymeleaf",
+        "modules": ["web"]
+      }
+    ]
+  },
+  "incidents": [
+    {
+      "id": "AWS-S3-001",
+      "category": "cloud-storage",
+      "severity": "critical",
+      "title": "AWS S3 SDK Usage in Web Module",
+      "description": "Application uses AWS S3 SDK (software.amazon.awssdk:s3) for cloud storage in the web module. This needs to be migrated to Azure Blob Storage.",
+      "effort": 2,
+      "file": "web/pom.xml",
+      "lineNumber": 34,
+      "recommendation": "Replace AWS S3 SDK with Azure Blob Storage SDK (com.azure:azure-storage-blob). Update AwsS3Service to use Azure Blob Storage client.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-java"
+      ]
+    },
+    {
+      "id": "AWS-S3-002",
+      "category": "cloud-storage",
+      "severity": "critical",
+      "title": "AWS S3 SDK Usage in Worker Module",
+      "description": "Application uses AWS S3 SDK (software.amazon.awssdk:s3) for cloud storage in the worker module. This needs to be migrated to Azure Blob Storage.",
+      "effort": 2,
+      "file": "worker/pom.xml",
+      "lineNumber": 30,
+      "recommendation": "Replace AWS S3 SDK with Azure Blob Storage SDK (com.azure:azure-storage-blob). Update S3FileProcessingService to use Azure Blob Storage client.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-java"
+      ]
+    },
+    {
+      "id": "AWS-S3-003",
+      "category": "cloud-storage",
+      "severity": "high",
+      "title": "AWS S3 Service Implementation",
+      "description": "AwsS3Service class in web module uses AWS S3Client directly for file operations. Needs migration to Azure Blob Storage.",
+      "effort": 1,
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+      "lineNumber": 1,
+      "recommendation": "Refactor AwsS3Service to AzureBlobStorageService using BlobServiceClient and BlobContainerClient.",
+      "links": [
+        "https://learn.microsoft.com/en-us/java/api/overview/azure/storage-blob-readme"
+      ]
+    },
+    {
+      "id": "AWS-S3-004",
+      "category": "cloud-storage",
+      "severity": "high",
+      "title": "AWS S3 Configuration Class",
+      "description": "AwsS3Config class configures AWS S3Client with access keys and region. Needs to be replaced with Azure Blob Storage configuration.",
+      "effort": 1,
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java",
+      "lineNumber": 13,
+      "recommendation": "Replace with Azure Blob Storage configuration using BlobServiceClientBuilder and DefaultAzureCredential for authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-create-java"
+      ]
+    },
+    {
+      "id": "AWS-S3-005",
+      "category": "cloud-storage",
+      "severity": "high",
+      "title": "AWS S3 File Processing Service",
+      "description": "S3FileProcessingService in worker module uses AWS S3Client for thumbnail generation and storage.",
+      "effort": 1,
+      "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/S3FileProcessingService.java",
+      "lineNumber": 1,
+      "recommendation": "Refactor to use Azure Blob Storage client for file operations in worker module.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-download-java"
+      ]
+    },
+    {
+      "id": "AWS-S3-006",
+      "category": "cloud-storage",
+      "severity": "high",
+      "title": "AWS S3 Configuration in Worker",
+      "description": "Worker module has its own AwsS3Config for S3Client configuration.",
+      "effort": 1,
+      "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/AwsS3Config.java",
+      "lineNumber": 1,
+      "recommendation": "Replace with Azure Blob Storage configuration using DefaultAzureCredential.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/developer/java/sdk/identity"
+      ]
+    },
+    {
+      "id": "AWS-S3-007",
+      "category": "cloud-storage",
+      "severity": "medium",
+      "title": "S3StorageItem Model",
+      "description": "S3StorageItem model is AWS-specific and needs to be renamed/refactored for Azure.",
+      "effort": 0.5,
+      "file": "web/src/main/java/com/microsoft/migration/assets/model/S3StorageItem.java",
+      "lineNumber": 1,
+      "recommendation": "Rename to BlobStorageItem or StorageItem to be cloud-agnostic.",
+      "links": []
+    },
+    {
+      "id": "AWS-S3-008",
+      "category": "cloud-storage",
+      "severity": "medium",
+      "title": "S3 Controller Endpoints",
+      "description": "S3Controller uses AWS-specific naming and needs to be updated for Azure.",
+      "effort": 0.5,
+      "file": "web/src/main/java/com/microsoft/migration/assets/controller/S3Controller.java",
+      "lineNumber": 1,
+      "recommendation": "Rename controller and update endpoints to be cloud-agnostic (e.g., StorageController).",
+      "links": []
+    },
+    {
+      "id": "AWS-CONFIG-001",
+      "category": "configuration",
+      "severity": "medium",
+      "title": "AWS Configuration Properties in Web",
+      "description": "Application properties contain AWS-specific configuration (aws.accessKey, aws.secretKey, aws.region, aws.s3.bucket) in web module.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 3,
+      "recommendation": "Replace with Azure-specific properties (azure.storage.account-name, azure.storage.container-name). Use Managed Identity instead of access keys.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string"
+      ]
+    },
+    {
+      "id": "AWS-CONFIG-002",
+      "category": "configuration",
+      "severity": "medium",
+      "title": "AWS Configuration Properties in Worker",
+      "description": "Application properties contain AWS-specific configuration in worker module.",
+      "effort": 0.5,
+      "file": "worker/src/main/resources/application.properties",
+      "lineNumber": 1,
+      "recommendation": "Replace with Azure-specific properties. Use Managed Identity for authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string"
+      ]
+    },
+    {
+      "id": "AWS-AUTH-001",
+      "category": "authentication",
+      "severity": "critical",
+      "title": "Static AWS Credentials Provider",
+      "description": "AwsS3Config uses StaticCredentialsProvider with AwsBasicCredentials, which is not recommended for production.",
+      "effort": 1,
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java",
+      "lineNumber": 26,
+      "recommendation": "Replace with Azure Managed Identity using DefaultAzureCredential for secure, credential-less authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/developer/java/sdk/identity-azure-hosted-auth"
+      ]
+    },
+    {
+      "id": "RABBITMQ-001",
+      "category": "messaging",
+      "severity": "critical",
+      "title": "RabbitMQ AMQP Dependency in Web",
+      "description": "Application uses spring-boot-starter-amqp (RabbitMQ) for messaging in web module. Needs migration to Azure Service Bus.",
+      "effort": 1.5,
+      "file": "web/pom.xml",
+      "lineNumber": 31,
+      "recommendation": "Replace with Azure Service Bus (com.azure.spring:spring-cloud-azure-starter-servicebus). Update configuration and message handling code.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-java-how-to-use-queues"
+      ]
+    },
+    {
+      "id": "RABBITMQ-002",
+      "category": "messaging",
+      "severity": "critical",
+      "title": "RabbitMQ AMQP Dependency in Worker",
+      "description": "Application uses spring-boot-starter-amqp (RabbitMQ) for messaging in worker module. Needs migration to Azure Service Bus.",
+      "effort": 1.5,
+      "file": "worker/pom.xml",
+      "lineNumber": 27,
+      "recommendation": "Replace with Azure Service Bus. Update message listener configuration.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-java-how-to-use-queues"
+      ]
+    },
+    {
+      "id": "RABBITMQ-003",
+      "category": "messaging",
+      "severity": "high",
+      "title": "RabbitMQ Configuration Class",
+      "description": "RabbitConfig class in web module configures RabbitMQ queues and connection factory.",
+      "effort": 1,
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+      "lineNumber": 15,
+      "recommendation": "Replace with Azure Service Bus configuration. Use ServiceBusClientBuilder and configure queue processor.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-java-how-to-use-queues"
+      ]
+    },
+    {
+      "id": "RABBITMQ-004",
+      "category": "messaging",
+      "severity": "high",
+      "title": "RabbitMQ Configuration in Worker",
+      "description": "Worker module has RabbitMQ configuration for message consumption.",
+      "effort": 1,
+      "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/RabbitConfig.java",
+      "lineNumber": 1,
+      "recommendation": "Replace with Azure Service Bus message receiver configuration.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-java-how-to-use-queues"
+      ]
+    },
+    {
+      "id": "RABBITMQ-005",
+      "category": "messaging",
+      "severity": "high",
+      "title": "RabbitMQ Connection Properties in Web",
+      "description": "Application properties contain RabbitMQ connection configuration (host, port, username, password).",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 13,
+      "recommendation": "Replace with Azure Service Bus connection string or use DefaultAzureCredential with fully qualified namespace.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-java-how-to-use-queues"
+      ]
+    },
+    {
+      "id": "RABBITMQ-006",
+      "category": "messaging",
+      "severity": "high",
+      "title": "RabbitMQ Connection Properties in Worker",
+      "description": "Worker module contains RabbitMQ connection configuration.",
+      "effort": 0.5,
+      "file": "worker/src/main/resources/application.properties",
+      "lineNumber": 13,
+      "recommendation": "Replace with Azure Service Bus configuration.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-java-how-to-use-queues"
+      ]
+    },
+    {
+      "id": "RABBITMQ-007",
+      "category": "messaging",
+      "severity": "medium",
+      "title": "Manual Acknowledge Mode",
+      "description": "RabbitConfig uses manual acknowledge mode for message processing.",
+      "effort": 0.5,
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+      "lineNumber": 35,
+      "recommendation": "Update to use Azure Service Bus message settlement modes (complete/abandon).",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement"
+      ]
+    },
+    {
+      "id": "RABBITMQ-008",
+      "category": "messaging",
+      "severity": "medium",
+      "title": "Message Converter Configuration",
+      "description": "Uses Jackson2JsonMessageConverter for RabbitMQ messages.",
+      "effort": 0.5,
+      "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+      "lineNumber": 24,
+      "recommendation": "Azure Service Bus supports JSON natively. Update message serialization to use Service Bus message format.",
+      "links": []
+    },
+    {
+      "id": "RABBITMQ-009",
+      "category": "messaging",
+      "severity": "low",
+      "title": "BackupMessageProcessor",
+      "description": "BackupMessageProcessor service likely uses RabbitMQ annotations or interfaces.",
+      "effort": 0.5,
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/BackupMessageProcessor.java",
+      "lineNumber": 1,
+      "recommendation": "Update to use Azure Service Bus @ServiceBusListener or ServiceBusProcessorClient.",
+      "links": []
+    },
+    {
+      "id": "CREDENTIAL-001",
+      "category": "security",
+      "severity": "critical",
+      "title": "Hardcoded AWS Access Key",
+      "description": "AWS access key is hardcoded in application.properties with placeholder value 'your-access-key'.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 4,
+      "recommendation": "Remove hardcoded credentials. Use Azure Managed Identity with DefaultAzureCredential for authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/developer/java/sdk/identity"
+      ]
+    },
+    {
+      "id": "CREDENTIAL-002",
+      "category": "security",
+      "severity": "critical",
+      "title": "Hardcoded AWS Secret Key",
+      "description": "AWS secret key is hardcoded in application.properties with placeholder value 'your-secret-key'.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 5,
+      "recommendation": "Remove hardcoded credentials. Use Azure Managed Identity for secure authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/developer/java/sdk/identity"
+      ]
+    },
+    {
+      "id": "CREDENTIAL-003",
+      "category": "security",
+      "severity": "high",
+      "title": "Hardcoded Database Password",
+      "description": "PostgreSQL database password is hardcoded in application.properties.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 22,
+      "recommendation": "Use Azure Key Vault or Managed Identity for database authentication. For Azure Database for PostgreSQL, use managed identity.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-connect-with-managed-identity"
+      ]
+    },
+    {
+      "id": "CREDENTIAL-004",
+      "category": "security",
+      "severity": "high",
+      "title": "Hardcoded RabbitMQ Password",
+      "description": "RabbitMQ password is hardcoded in application.properties.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 17,
+      "recommendation": "When migrating to Azure Service Bus, use Managed Identity to eliminate password-based authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-managed-service-identity"
+      ]
+    },
+    {
+      "id": "DATABASE-001",
+      "category": "database",
+      "severity": "medium",
+      "title": "PostgreSQL JDBC URL",
+      "description": "Application uses local PostgreSQL database with JDBC connection string.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 20,
+      "recommendation": "Update to use Azure Database for PostgreSQL connection string. Enable SSL and use managed identity for authentication.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/connect-java"
+      ]
+    },
+    {
+      "id": "DATABASE-002",
+      "category": "database",
+      "severity": "medium",
+      "title": "JPA DDL Auto Update",
+      "description": "Application uses 'spring.jpa.hibernate.ddl-auto=update' which is not recommended for production.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 23,
+      "recommendation": "Use database migration tools like Flyway or Liquibase for production schema management.",
+      "links": [
+        "https://docs.spring.io/spring-boot/reference/howto/data-initialization.html"
+      ]
+    },
+    {
+      "id": "FRAMEWORK-001",
+      "category": "framework",
+      "severity": "medium",
+      "title": "Spring Boot Version",
+      "description": "Application uses Spring Boot 3.2.1 which may not be the latest LTS version.",
+      "effort": 1,
+      "file": "pom.xml",
+      "lineNumber": 9,
+      "recommendation": "Consider upgrading to the latest Spring Boot 3.x LTS version for better security and performance.",
+      "links": [
+        "https://spring.io/projects/spring-boot"
+      ]
+    },
+    {
+      "id": "MONITORING-001",
+      "category": "observability",
+      "severity": "medium",
+      "title": "Missing Application Insights",
+      "description": "Application does not have Azure Application Insights integration for monitoring and telemetry.",
+      "effort": 1,
+      "file": "pom.xml",
+      "lineNumber": 1,
+      "recommendation": "Add Azure Application Insights dependency and configuration for production monitoring.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-in-process-agent"
+      ]
+    },
+    {
+      "id": "LOGGING-001",
+      "category": "observability",
+      "severity": "low",
+      "title": "SQL Logging Enabled",
+      "description": "SQL logging is enabled with 'spring.jpa.show-sql=true' which may impact performance.",
+      "effort": 0.5,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 25,
+      "recommendation": "Disable SQL logging in production or use proper logging framework with appropriate log levels.",
+      "links": []
+    },
+    {
+      "id": "CONFIG-001",
+      "category": "configuration",
+      "severity": "medium",
+      "title": "Missing Profile-Specific Configuration",
+      "description": "Application lacks separate configuration for dev, staging, and production environments.",
+      "effort": 1,
+      "file": "web/src/main/resources/application.properties",
+      "lineNumber": 1,
+      "recommendation": "Create profile-specific properties files (application-dev.properties, application-prod.properties) for environment-specific configuration.",
+      "links": [
+        "https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.files.profile-specific"
+      ]
+    },
+    {
+      "id": "DEPLOYMENT-001",
+      "category": "deployment",
+      "severity": "medium",
+      "title": "Multi-Module Application Structure",
+      "description": "Application has two separate modules (web and worker) that need to be deployed independently.",
+      "effort": 1,
+      "file": "pom.xml",
+      "lineNumber": 22,
+      "recommendation": "Plan for deploying web module to Azure App Service and worker module to Azure Container Apps or separate App Service instance.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/app-service/quickstart-java"
+      ]
+    },
+    {
+      "id": "ARCHITECTURE-001",
+      "category": "architecture",
+      "severity": "low",
+      "title": "Async Processing Pattern",
+      "description": "Application uses message queue for asynchronous image processing between web and worker modules.",
+      "effort": 0,
+      "file": "web/src/main/java/com/microsoft/migration/assets/model/ImageProcessingMessage.java",
+      "lineNumber": 1,
+      "recommendation": "This pattern works well with Azure Service Bus. Ensure message TTL and retry policies are configured appropriately.",
+      "links": [
+        "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues"
+      ]
+    },
+    {
+      "id": "STORAGE-001",
+      "category": "cloud-storage",
+      "severity": "medium",
+      "title": "Local File Storage Implementation",
+      "description": "Application has LocalFileStorageService for development/testing that should be preserved.",
+      "effort": 0.5,
+      "file": "web/src/main/java/com/microsoft/migration/assets/service/LocalFileStorageService.java",
+      "lineNumber": 1,
+      "recommendation": "Keep local storage service for dev profile but ensure production always uses Azure Blob Storage.",
+      "links": []
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "category": "Authentication",
+      "title": "Migrate to Azure Managed Identity",
+      "description": "Replace all credential-based authentication (AWS keys, database passwords) with Azure Managed Identity. This eliminates the need to manage credentials and improves security.",
+      "effort": 3,
+      "benefits": [
+        "Enhanced security by eliminating credential management",
+        "Simplified deployment and configuration",
+        "Automatic credential rotation",
+        "Compliance with Azure security best practices"
+      ]
+    },
+    {
+      "priority": 2,
+      "category": "Messaging",
+      "title": "Migrate from RabbitMQ to Azure Service Bus",
+      "description": "Replace RabbitMQ with Azure Service Bus for message queuing between web and worker modules. Update configuration and message handling code.",
+      "effort": 5,
+      "benefits": [
+        "Fully managed messaging service",
+        "Better integration with Azure ecosystem",
+        "Built-in retry and dead-letter queue support",
+        "Horizontal scaling capabilities"
+      ]
+    },
+    {
+      "priority": 3,
+      "category": "Storage",
+      "title": "Migrate from AWS S3 to Azure Blob Storage (Web Module)",
+      "description": "Replace AWS S3 SDK with Azure Blob Storage SDK in the web module. Update all file operations, configuration, and service classes.",
+      "effort": 3,
+      "benefits": [
+        "Native Azure integration",
+        "Cost-effective storage solution",
+        "Better performance in Azure regions",
+        "Integrated security and compliance features"
+      ]
+    },
+    {
+      "priority": 4,
+      "category": "Storage",
+      "title": "Migrate from AWS S3 to Azure Blob Storage (Worker Module)",
+      "description": "Replace AWS S3 SDK with Azure Blob Storage SDK in the worker module for thumbnail storage and retrieval.",
+      "effort": 4,
+      "benefits": [
+        "Consistent storage solution across modules",
+        "Simplified authentication with Managed Identity",
+        "Better integration with Azure services"
+      ]
+    },
+    {
+      "priority": 5,
+      "category": "Database",
+      "title": "Migrate to Azure Database for PostgreSQL",
+      "description": "Update database configuration to use Azure Database for PostgreSQL Flexible Server with SSL and Managed Identity authentication.",
+      "effort": 1,
+      "benefits": [
+        "Fully managed database service",
+        "Automatic backups and high availability",
+        "Built-in security and compliance",
+        "Performance monitoring and optimization"
+      ]
+    },
+    {
+      "priority": 6,
+      "category": "Observability",
+      "title": "Add Azure Application Insights",
+      "description": "Integrate Azure Application Insights for application monitoring, logging, and telemetry.",
+      "effort": 2,
+      "benefits": [
+        "Real-time application monitoring",
+        "Distributed tracing across modules",
+        "Performance metrics and alerts",
+        "Log aggregation and analysis"
+      ]
+    }
+  ],
+  "migrationRoadmap": {
+    "phase1": {
+      "name": "Foundation and Security",
+      "duration": "1-2 weeks",
+      "effort": 8,
+      "tasks": [
+        {
+          "id": "PHASE1-001",
+          "title": "Implement Azure Managed Identity",
+          "effort": 3,
+          "incidents": ["AWS-AUTH-001", "CREDENTIAL-001", "CREDENTIAL-002", "CREDENTIAL-003", "CREDENTIAL-004"]
+        },
+        {
+          "id": "PHASE1-002",
+          "title": "Migrate to Azure Service Bus",
+          "effort": 5,
+          "incidents": ["RABBITMQ-001", "RABBITMQ-002", "RABBITMQ-003", "RABBITMQ-004", "RABBITMQ-005", "RABBITMQ-006", "RABBITMQ-007", "RABBITMQ-008", "RABBITMQ-009"]
+        }
+      ]
+    },
+    "phase2": {
+      "name": "Storage Migration",
+      "duration": "1-2 weeks",
+      "effort": 7,
+      "tasks": [
+        {
+          "id": "PHASE2-001",
+          "title": "Migrate Web Module to Azure Blob Storage",
+          "effort": 3,
+          "incidents": ["AWS-S3-001", "AWS-S3-003", "AWS-S3-004", "AWS-CONFIG-001"]
+        },
+        {
+          "id": "PHASE2-002",
+          "title": "Migrate Worker Module to Azure Blob Storage",
+          "effort": 4,
+          "incidents": ["AWS-S3-002", "AWS-S3-005", "AWS-S3-006", "AWS-CONFIG-002"]
+        }
+      ]
+    },
+    "phase3": {
+      "name": "Database, Monitoring, and Optimization",
+      "duration": "1 week",
+      "effort": 3,
+      "tasks": [
+        {
+          "id": "PHASE3-001",
+          "title": "Configure Azure Database for PostgreSQL",
+          "effort": 1,
+          "incidents": ["DATABASE-001", "DATABASE-002"]
+        },
+        {
+          "id": "PHASE3-002",
+          "title": "Add Application Insights Integration",
+          "effort": 2,
+          "incidents": ["MONITORING-001"]
+        },
+        {
+          "id": "PHASE3-003",
+          "title": "Update Spring Boot and Final Optimizations",
+          "effort": 2,
+          "incidents": ["FRAMEWORK-001", "CONFIG-001", "LOGGING-001"]
+        }
+      ]
+    }
+  },
+  "notes": [
+    "This assessment was performed through manual code analysis as AppCAT MCP tools are not currently configured.",
+    "The application is well-structured with clear separation between web and worker modules.",
+    "LocalFileStorageService should be preserved for development/testing purposes.",
+    "Consider implementing health checks for both modules before deployment to Azure.",
+    "The multi-module structure allows for independent deployment and scaling of web and worker components.",
+    "Total estimated effort: 18 story points across 3 phases (3-4 weeks total).",
+    "Cloud readiness score of 62/100 indicates moderate migration complexity, primarily due to AWS services replacement."
+  ]
+}
