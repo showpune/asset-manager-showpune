@@ -11,6 +11,9 @@
 
     <properties>
         <aws-sdk.version>2.25.13</aws-sdk.version>
+        <azure-sdk.version>12.29.0</azure-sdk.version>
+        <azure-identity.version>1.14.2</azure-identity.version>
+        <java.version>17</java.version>
     </properties>
 
     <artifactId>assets-manager-worker</artifactId>
@@ -29,6 +32,14 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -61,6 +72,16 @@
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
                 <version>${aws-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
