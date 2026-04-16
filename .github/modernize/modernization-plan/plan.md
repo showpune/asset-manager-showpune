@@ -1,4 +1,4 @@
-# Modernization Plan: Asset Manager Kit - Azure Migration
+# Modernization Plan: modernization-plan
 
 **Project**: assets-manager
 
@@ -8,54 +8,63 @@
 
 - **Language**: Java 17
 - **Framework**: Spring Boot 3.2.1
-- **Build Tool**: Apache Maven 3.9.9
-- **Database**: PostgreSQL (on-premises, localhost:5432)
-- **Key Dependencies**: Spring Data JPA, Spring AMQP (RabbitMQ), AWS SDK v2 (S3), Lombok, Thymeleaf
+- **Build Tool**: Maven
+- **Database**: PostgreSQL (localhost:5432/assets_manager)
+- **Key Dependencies**: Spring Data JPA, Spring AMQP (RabbitMQ), AWS SDK v2 (S3), Hibernate, Lombok, Thymeleaf
 
 ---
 
 ## Overview
 
-This migration moves the Asset Manager Kit application from AWS and on-premises services to Azure managed services. The application currently uses RabbitMQ for messaging, Amazon S3 for file storage, and PostgreSQL for metadata persistence across two modules (web and worker). The new architecture will:
-
-- Upgrade the Java runtime from 17 to 21 to ensure access to the latest LTS performance improvements and long-term security support
-- Replace Amazon S3 with Azure Blob Storage for secure, cloud-native asset management using Managed Identity
-- Replace RabbitMQ (AMQP) with Azure Service Bus for fully managed, enterprise-grade message processing
-- Migrate PostgreSQL to Azure Database for PostgreSQL with Managed Identity for credential-free, scalable database access
-
-The migration follows a phased approach: runtime upgrade first, then service-by-service Azure migration across both modules, validated through comprehensive integration tests.
+> This migration moves the assets-manager application from AWS and self-hosted services to Azure-native managed services. The application currently uses AWS S3 for file storage, RabbitMQ for async messaging between the web and worker services, and a PostgreSQL database for metadata persistence. The new architecture will:
+>
+> - Replace AWS S3 with Azure Blob Storage for scalable, cost-effective asset storage using Managed Identity authentication
+> - Replace RabbitMQ with Azure Service Bus for reliable, managed message brokering without self-hosted infrastructure
+> - Migrate PostgreSQL connections to Azure Database for PostgreSQL using Managed Identity for secure, credential-free authentication
+> - Upgrade the Java runtime from Java 17 to Java 21 to leverage the latest LTS features and performance improvements
+>
+> The migration follows a phased approach: runtime upgrade first, followed by each service migration independently, and validated end-to-end with integration tests.
 
 ---
 
 ## Migration Impact Summary
 
-| Application           | Original Service | New Azure Service              | Authentication   | Comments |
-|-----------------------|------------------|--------------------------------|------------------|----------|
-| assets-manager-web    | Amazon S3        | Azure Blob Storage             | Managed Identity |          |
-| assets-manager-worker | Amazon S3        | Azure Blob Storage             | Managed Identity |          |
-| assets-manager-web    | RabbitMQ (AMQP)  | Azure Service Bus              | Managed Identity |          |
-| assets-manager-worker | RabbitMQ (AMQP)  | Azure Service Bus              | Managed Identity |          |
-| assets-manager-web    | PostgreSQL       | Azure Database for PostgreSQL  | Managed Identity |          |
-| assets-manager-worker | PostgreSQL       | Azure Database for PostgreSQL  | Managed Identity |          |
+| Application        | Original Service | New Azure Service              | Authentication    | Comments                              |
+|--------------------|------------------|--------------------------------|-------------------|---------------------------------------|
+| web, worker        | AWS S3           | Azure Blob Storage             | Managed Identity  | File upload, list, delete, thumbnail  |
+| web, worker        | RabbitMQ (AMQP)  | Azure Service Bus              | Managed Identity  | image-processing queue/topic          |
+| web, worker        | PostgreSQL       | Azure Database for PostgreSQL  | Managed Identity  | Shared assets_manager database        |
 
 ---
 
-## Modernization Tasks
+## Upgrade Tasks
 
-### Upgrade Tasks
+### Task 001 — Upgrade Java to 21
 
-1. **001-upgrade-java** — Upgrade Java runtime from 17 to 21 (latest LTS)
-
-### Transform Tasks
-
-2. **002-transform-rabbitmq-to-servicebus** — Migrate RabbitMQ AMQP messaging to Azure Service Bus
-3. **003-transform-s3-to-azure-blob-storage** — Migrate AWS S3 file storage to Azure Blob Storage
-4. **004-transform-postgresql-to-azure-postgresql** — Migrate PostgreSQL to Azure Database for PostgreSQL with Managed Identity
-
-### Integration Test Tasks
-
-5. **005-integrationTest** — Generate and run integration tests for all Azure service migrations (Layer 1: TestContainers, Layer 2: Smoke Tests)
+Upgrade the Java runtime from Java 17 to Java 21 across both the `web` and `worker` modules to use the latest LTS version with improved performance and language features.
 
 ---
 
-*Plan generated by GitHub Copilot Modernization Tools*
+## Migration Tasks
+
+### Task 002 — Migrate AWS S3 to Azure Blob Storage
+
+Migrate file storage from AWS S3 to Azure Blob Storage in both the `web` module (uploads, listings, deletes) and the `worker` module (download originals, upload thumbnails), using Managed Identity for secure, credential-free access.
+
+### Task 003 — Migrate RabbitMQ to Azure Service Bus
+
+Migrate the asynchronous messaging layer from RabbitMQ (AMQP) to Azure Service Bus in both the `web` module (message publisher) and `worker` module (message consumer with retry logic), using Managed Identity for authentication.
+
+### Task 004 — Migrate PostgreSQL to Azure Database for PostgreSQL
+
+Migrate the database connections in both the `web` and `worker` modules from password-based PostgreSQL to Azure Database for PostgreSQL using Managed Identity for secure, credential-free authentication.
+
+---
+
+## Integration Test Tasks
+
+### Task 005 — Integration Tests
+
+Generate and run integration tests for all Azure service migrations to validate end-to-end correctness across Azure Blob Storage, Azure Service Bus, and Azure Database for PostgreSQL.
+
+---
