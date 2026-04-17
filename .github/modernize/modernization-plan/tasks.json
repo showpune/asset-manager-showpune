@@ -19,6 +19,13 @@
         "passBuild": "true",
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java version from 17 to 21 in the parent pom.xml. Both web and worker modules inherit this property. Build passed and all unit tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": null,
+        "passUnitTests": "true"
       }
     },
     {
@@ -38,7 +45,8 @@
         "passBuild": "true",
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
-      }
+      },
+      "status": "started"
     },
     {
       "type": "transform",
