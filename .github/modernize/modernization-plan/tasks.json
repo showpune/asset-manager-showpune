@@ -20,7 +20,13 @@
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
       },
-      "status": "completed"
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Migrated all RabbitMQ AMQP messaging to Azure Service Bus in both web and worker modules. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter and spring-messaging-azure-servicebus. Updated configuration to use Managed Identity. Replaced RabbitConfig with ServiceBusConfig, RabbitTemplate with ServiceBusTemplate, and @RabbitListener with @ServiceBusListener. Removed all RabbitMQ Docker commands from start/stop scripts. Build passes and all tests pass with no AMQP/RabbitMQ references remaining."
     }
   ],
   "metadata": {
