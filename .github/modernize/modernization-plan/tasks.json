@@ -125,7 +125,9 @@
         "002-transform-s3-to-azure-blob-storage",
         "003-transform-rabbitmq-to-azure-service-bus",
         "004-transform-postgresql-to-azure-postgresql-mi"
-      ]
+      ],
+      "status": "failed",
+      "taskSummary": "Integration test generation (Layer 1 TestContainers and Layer 2 Smoke Tests) was attempted twice but could not complete within the available execution time. No test files were created."
     }
   ],
   "metadata": {
