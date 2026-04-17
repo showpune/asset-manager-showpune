@@ -97,6 +97,13 @@
         "passBuild": "true",
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Successfully migrated PostgreSQL authentication to Azure Managed Identity. Added azure-identity-extensions:1.2.2 to web and worker pom.xml. Updated application.properties in both modules: appended AzurePostgresqlAuthenticationPlugin to JDBC URL, replaced username with ${AZURE_MANAGED_IDENTITY_CLIENT_ID:}, removed plaintext password. Build and unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": null,
+        "passUnitTests": "true"
       }
     },
     {
