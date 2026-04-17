@@ -1,0 +1,72 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Parent POM: spring-cloud-azure-dependencies BOM version 5.22.0 correctly chosen for Spring Boot 3.2.1 (falls within >=5.22.0 and <7.0.0 range). All spring-amqp/rabbitmq dependencies removed. BOM properly declared in dependencyManagement.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Web module POM: spring-cloud-azure-starter and spring-messaging-azure-servicebus dependencies added. No spring-amqp or RabbitMQ dependencies remain.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Worker module POM: spring-cloud-azure-starter and spring-messaging-azure-servicebus dependencies added. No spring-amqp or RabbitMQ dependencies remain.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "RabbitMQ connection properties (spring.rabbitmq.*) removed. Azure Service Bus properties correctly added with managed identity enabled, client-id, namespace, and entity-type=queue.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "RabbitMQ connection properties removed. Azure Service Bus properties correctly added with managed identity configuration matching the web module.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+    "description": "Web RabbitConfig: ConnectionFactory bean removed. @EnableAzureMessaging added. ServiceBusAdministrationClient bean correctly constructed using AzureServiceBusProperties and TokenCredential. QueueProperties bean created for queue provisioning. ProcessorProperties supplier bean configured with autoComplete=false for manual acknowledgment.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The imageProcessingQueue() @Bean method returns null in the catch-all exception block (the final catch(Exception e) branch). Returning null from a @Bean method is an anti-pattern in Spring; if any component ever injects QueueProperties by type it will receive null or fail with a NoSuchBeanDefinitionException. Consider throwing the exception (causing a controlled startup failure) or using a wrapper type rather than returning null."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/RabbitConfig.java",
+    "description": "Worker RabbitConfig: Same structure as web RabbitConfig. Additionally defines a RetryTemplate bean with max 3 attempts and 60-second fixed backoff, correctly preserving the original retry behaviour.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The imageProcessingQueue() @Bean method returns null in the catch-all exception block, the same anti-pattern as in the web module RabbitConfig."
+      }
+    ]
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/BackupMessageProcessor.java",
+    "description": "@RabbitListener migrated to @ServiceBusListener(destination = QUEUE_NAME). Channel parameter correctly replaced with @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) ServiceBusReceivedMessageContext context. Null-checks for context before calling complete() and abandon() are present. All AMQP imports removed.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+    "description": "RabbitTemplate.convertAndSend migrated to ServiceBusTemplate.send. Message constructed with MessageBuilder.withPayload(message).build(). No routing key in original code, so SUBJECT header is correctly omitted. All AMQP imports removed.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/LocalFileStorageService.java",
+    "description": "RabbitTemplate.convertAndSend migrated to ServiceBusTemplate.send using the same MessageBuilder pattern as AwsS3Service. All AMQP imports removed.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/AbstractFileProcessingService.java",
+    "description": "@RabbitListener migrated to @ServiceBusListener(destination = QUEUE_NAME). Channel parameter replaced with @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) ServiceBusReceivedMessageContext. Retry logic preserved using RetryTemplate. context.complete() and context.abandon() called with null-checks. All AMQP imports removed.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Variable name shadowing: the method parameter 'ServiceBusReceivedMessageContext context' is shadowed inside the anonymous RetryCallback by 'RetryContext context' in the doWithRetry method. While currently correct (the outer ServiceBusReceivedMessageContext is only accessed after retryTemplate.execute() completes), the shadowing reduces code clarity and is a potential source of confusion during future maintenance. Renaming the inner parameter (e.g. retryContext) would improve readability."
+      }
+    ]
+  }
+]

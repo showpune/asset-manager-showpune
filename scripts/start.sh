@@ -11,14 +11,8 @@ docker run -d --name assets-postgres \
     -e POSTGRES_PASSWORD=postgres \
     -p 5432:5432 postgres:latest
 
-echo "Starting RabbitMQ container..."
-docker run -d --name assets-rabbitmq \
-    -p 5672:5672 \
-    -p 15672:15672 \
-    rabbitmq:management
-
 echo "Waiting for services to start..."
-sleep 10
+sleep 5
 
 # Create logs directory if it doesn't exist
 mkdir -p "$PROJECT_ROOT/logs"
@@ -35,4 +29,3 @@ cd "$PROJECT_ROOT/worker" && "$PROJECT_ROOT/mvnw" spring-boot:run -Dspring-boot.
 echo "All services started! Check logs directory for output."
 echo "Web application: http://localhost:8080"
 echo "Worker application: http://localhost:8081"
-echo "RabbitMQ Management: http://localhost:15672 (guest/guest)"
