@@ -40,7 +40,7 @@ Your task is to migrate a Java project from password-based authentication to Azu
    + #     azure_us_government: https://ossrdbms-aad.database.usgovcloudapi.net/.default
    + #     azure: https://ossrdbms-aad.database.windows.net/.default
    + # 5. Remember to set the values for the environment variables in the URL below
-   + spring.datasource.url=jdbc:postgresql://${POSTGRESQL_SERVER}$.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?sslMode=REQUIRED
+   + spring.datasource.url=jdbc:postgresql://${POSTGRESQL_SERVER}.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?sslMode=REQUIRED
    + spring.datasource.username=${MANAGED_IDENTITY_NAME}
    + spring.datasource.azure.passwordless-enabled=true
    + spring.cloud.azure.credential.client-id=<your_managed_identity_client_id>
@@ -79,7 +79,7 @@ Your task is to migrate a Java project from password-based authentication to Azu
       + #    azure.clientId
       + #    azure.clientSecret
       + # 4. Remember to set the values for the environment variables in the URL below
-      + url=jdbc:postgresql://${POSTGRESQL_SERVER}$.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?user=${MANAGED_IDENTITY_NAME}&sslMode=REQUIRED&authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin&azure.managedIdentityEnabled=true&azure.clientId=${CLIENT_ID}
+      + url=jdbc:postgresql://${POSTGRESQL_SERVER}.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?user=${MANAGED_IDENTITY_NAME}&sslMode=REQUIRED&authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin&azure.managedIdentityEnabled=true&azure.clientId=${CLIENT_ID}
       ```
 3. In the Java code, comment out all "username" and "password" related content that ONLY corresponds to the PostgreSQL JDBC URL.
    * Example modification 1.

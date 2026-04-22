@@ -1,0 +1,22 @@
+[
+  {
+    "file": "web/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency to enable Azure Managed Identity authentication for PostgreSQL. This dependency provides Spring Boot integration for passwordless authentication.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Migrated from password-based PostgreSQL authentication to Azure Managed Identity-based authentication. Changes include: (1) Removed hardcoded password from configuration, (2) Updated JDBC URL to use Azure PostgreSQL endpoint with environment variables, (3) Added passwordless-enabled property, (4) Changed username from hardcoded to managed identity name via environment variable, (5) Added comprehensive comments for managed identity, service principal, and sovereign cloud deployments.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency to enable Azure Managed Identity authentication for PostgreSQL. This dependency provides Spring Boot integration for passwordless authentication.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Migrated from password-based PostgreSQL authentication to Azure Managed Identity-based authentication. Changes include: (1) Removed hardcoded password from configuration, (2) Updated JDBC URL to use Azure PostgreSQL endpoint with environment variables, (3) Added passwordless-enabled property, (4) Changed username from hardcoded to managed identity name via environment variable, (5) Added comprehensive comments for managed identity, service principal, and sovereign cloud deployments.",
+    "issues": []
+  }
+]
