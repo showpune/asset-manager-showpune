@@ -1,0 +1,37 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Added spring-cloud-azure.version property (5.22.0) and spring-cloud-azure-dependencies BOM in dependencyManagement with import scope. Spring Boot version is 3.2.1 (3.x), and the selected BOM version 5.22.0 meets the requirement of >=5.22.0 and <7.0.0 for Spring Boot 3.x projects.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency without an explicit version, correctly relying on the BOM defined in the parent pom.xml to manage the version.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency without an explicit version, correctly relying on the BOM defined in the parent pom.xml to manage the version.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Replaced password-based PostgreSQL datasource configuration with Azure Managed Identity passwordless authentication. Password property removed; datasource URL updated to use Azure PostgreSQL hostname with environment variables; passwordless-enabled, managed-identity-enabled and client-id properties added; all required instructional comments for sovereign cloud and service principal auth included.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "spring.cloud.azure.credential.client-id is set to the literal placeholder '<your_managed_identity_client_id>' rather than an environment variable (e.g., ${MANAGED_IDENTITY_CLIENT_ID}). While this matches the skill's example, all other dynamic values in the file use environment variable substitution. This value must be manually replaced before deployment, which may be overlooked."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Replaced password-based PostgreSQL datasource configuration with Azure Managed Identity passwordless authentication. Password property removed; datasource URL updated to use Azure PostgreSQL hostname with environment variables; passwordless-enabled, managed-identity-enabled and client-id properties added; all required instructional comments for sovereign cloud and service principal auth included.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "spring.cloud.azure.credential.client-id is set to the literal placeholder '<your_managed_identity_client_id>' rather than an environment variable (e.g., ${MANAGED_IDENTITY_CLIENT_ID}). While this matches the skill's example, all other dynamic values in the file use environment variable substitution. This value must be manually replaced before deployment, which may be overlooked."
+      }
+    ]
+  }
+]
