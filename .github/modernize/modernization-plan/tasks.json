@@ -47,7 +47,13 @@
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Migrated RabbitMQ (AMQP) messaging to Azure Service Bus in both web and worker modules. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter and spring-messaging-azure-servicebus (version 5.22.0 BOM). Removed all spring.rabbitmq.* configuration from both modules and replaced with Azure Service Bus Managed Identity settings. Renamed RabbitConfig to ServiceBusConfig with @EnableAzureMessaging and PropertiesSupplier for manual acknowledgment. Migrated RabbitTemplate to ServiceBusTemplate in AwsS3Service and LocalFileStorageService. Migrated @RabbitListener to @ServiceBusListener in AbstractFileProcessingService and BackupMessageProcessor with context.complete()/abandon() for acknowledgment. Retained RetryTemplate (3 attempts, 60s backoff) for application-level retry. Build and tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
     },
     {
       "type": "transform",

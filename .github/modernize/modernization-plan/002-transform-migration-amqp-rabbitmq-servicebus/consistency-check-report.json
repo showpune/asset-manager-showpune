@@ -1,0 +1,72 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Root pom.xml updated to add spring-cloud-azure dependency management with version 5.22.0, which is compatible with Spring Boot 3.x",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Web module pom.xml updated to replace spring-boot-starter-amqp with spring-cloud-azure-starter and spring-messaging-azure-servicebus dependencies",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Worker module pom.xml updated to replace spring-boot-starter-amqp with spring-cloud-azure-starter, spring-messaging-azure-servicebus, and spring-retry dependencies (for retry functionality)",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/AssetsManagerApplication.java",
+    "description": "Removed @EnableRabbit annotation and import org.springframework.amqp.rabbit.annotation.EnableRabbit, properly cleaning up RabbitMQ-specific configuration",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/WorkerApplication.java",
+    "description": "Removed @EnableRabbit annotation and its import, properly cleaning up RabbitMQ-specific configuration",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/config/ServiceBusConfig.java",
+    "description": "New ServiceBusConfig class created with @EnableAzureMessaging annotation and PropertiesSupplier bean configuration. Sets autoComplete=false for manual acknowledgment, which aligns with the requirement for manual message acknowledgment. The QUEUE_NAME constant properly defines the 'image-processing' queue.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/ServiceBusConfig.java",
+    "description": "New ServiceBusConfig class created with @EnableAzureMessaging annotation, PropertiesSupplier bean for manual acknowledgment, and RetryTemplate bean configured with SimpleRetryPolicy (MAX_ATTEMPTS=3) and FixedBackOffPolicy (RETRY_DELAY_MS=60000). This properly implements the retry requirements: 3 attempts with 60-second backoff.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+    "description": "Migrated RabbitTemplate to ServiceBusTemplate. Changed from rabbitTemplate.convertAndSend(QUEUE_NAME, message) to using MessageBuilder to construct Message<ImageProcessingMessage> and serviceBusTemplate.send(). Updated imports from org.springframework.amqp.rabbit.core.RabbitTemplate to com.azure.spring.messaging.servicebus.core.ServiceBusTemplate and added Message/MessageBuilder imports.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/LocalFileStorageService.java",
+    "description": "Migrated RabbitTemplate to ServiceBusTemplate using the same pattern as AwsS3Service. Constructor updated to accept ServiceBusTemplate instead of RabbitTemplate. Message sending migrated from rabbitTemplate.convertAndSend() to MessageBuilder + serviceBusTemplate.send().",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/BackupMessageProcessor.java",
+    "description": "Migrated @RabbitListener to @ServiceBusListener with destination=QUEUE_NAME. Method parameters changed from (ImageProcessingMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) to (ImageProcessingMessage message, @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) ServiceBusReceivedMessageContext context). Acknowledgment logic updated: channel.basicAck() → context.complete() and channel.basicNack() → context.abandon(). Removed IOException handling and com.rabbitmq.client imports. Added null-check for context before using it.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/AbstractFileProcessingService.java",
+    "description": "Migrated @RabbitListener to @ServiceBusListener with destination=QUEUE_NAME. Method parameters changed from (ImageProcessingMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) to (ImageProcessingMessage message, @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) ServiceBusReceivedMessageContext context). Acknowledgment logic updated: channel.basicAck() → context.complete() and channel.basicNack() → context.abandon(). Renamed retry context parameter from 'context' to 'retryContext' to avoid variable name collision with ServiceBusReceivedMessageContext. Added null-check for context before using it. Removed IOException handling and RabbitMQ imports.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Removed RabbitMQ configuration properties (spring.rabbitmq.host, port, username, password) and replaced with Azure Service Bus configuration (spring.cloud.azure.credential.managed-identity-enabled=true, spring.cloud.azure.servicebus.namespace, spring.cloud.azure.servicebus.entity-type=queue). Properly uses Managed Identity for authentication.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Removed RabbitMQ configuration properties and replaced with identical Azure Service Bus configuration as web module. Uses Managed Identity authentication.",
+    "issues": []
+  },
+  {
+    "file": "web/src/test/resources/application.properties",
+    "description": "Updated test configuration to use Azure Service Bus properties instead of RabbitMQ properties, ensuring test environment is consistent with production configuration.",
+    "issues": []
+  }
+]
