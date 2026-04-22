@@ -26,7 +26,7 @@ Your task is to migrate a Java project from password-based authentication to Azu
    - spring.datasource.url=jdbc:postgresql://localhost:5432/testdb
    - spring.datasource.username=testuser
    - spring.datasource.password=testpass
-   + # 1. Do not set spring.datasource.password, access token will be retrieved automically and used as password.
+   + # 1. Do not set spring.datasource.password, access token will be retrieved automatically and used as password.
    + # 2. For system-assigned managed identity only, "spring.cloud.azure.credential.client-id" can be omitted.
    + # 3. For service principal auth, remove "spring.cloud.azure.credential.managed-identity-enabled" property and add these properties:
    + #   spring.cloud.azure.profile.tenant-id=<your-service-principal-tenant-id>
@@ -40,7 +40,7 @@ Your task is to migrate a Java project from password-based authentication to Azu
    + #     azure_us_government: https://ossrdbms-aad.database.usgovcloudapi.net/.default
    + #     azure: https://ossrdbms-aad.database.windows.net/.default
    + # 5. Remember to set the values for the environment variables in the URL below
-   + spring.datasource.url=jdbc:postgresql://${POSTGRESQL_SERVER}$.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?sslMode=REQUIRED
+   + spring.datasource.url=jdbc:postgresql://${POSTGRESQL_SERVER}.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?sslMode=REQUIRED
    + spring.datasource.username=${MANAGED_IDENTITY_NAME}
    + spring.datasource.azure.passwordless-enabled=true
    + spring.cloud.azure.credential.client-id=<your_managed_identity_client_id>
@@ -72,14 +72,14 @@ Your task is to migrate a Java project from password-based authentication to Azu
       - url=jdbc:postgresql://localhost:5432/testdb
       - username=testuser
       - password=testpass
-      + # 1. Do not set password, access token will be retrieved automically and used as password.
+      + # 1. Do not set password, access token will be retrieved automatically and used as password.
       + # 2. For system-assigned managed identity only, "azure.clientId" can be omitted in the jdbc url parameters.
       + # 3. For service principal auth, delete "azure.managedIdentityEnabled=true" in the jdbc url parameters, and add these dbc url parameters:
       + #    azure.tenantId
       + #    azure.clientId
       + #    azure.clientSecret
       + # 4. Remember to set the values for the environment variables in the URL below
-      + url=jdbc:postgresql://${POSTGRESQL_SERVER}$.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?user=${MANAGED_IDENTITY_NAME}&sslMode=REQUIRED&authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin&azure.managedIdentityEnabled=true&azure.clientId=${CLIENT_ID}
+      + url=jdbc:postgresql://${POSTGRESQL_SERVER}.postgresql.database.azure.com:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}?user=${MANAGED_IDENTITY_NAME}&sslMode=REQUIRED&authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin&azure.managedIdentityEnabled=true&azure.clientId=${CLIENT_ID}
       ```
 3. In the Java code, comment out all "username" and "password" related content that ONLY corresponds to the PostgreSQL JDBC URL.
    * Example modification 1.
