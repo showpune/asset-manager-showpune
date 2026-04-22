@@ -1,0 +1,66 @@
+[
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/config/AwsS3Config.java",
+    "description": "Configuration class migrated from AWS S3Client to Azure BlobServiceClient. Replaced static credentials with DefaultAzureCredential and uses endpoint-based initialization.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/AwsS3Service.java",
+    "description": "Service implementation migrated from AWS S3 operations to Azure Blob Storage operations. All storage operations (list, upload, download, delete) have been converted to equivalent Azure Blob APIs. The getStorageType() method correctly returns 'azure-blob'.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Unused imports: BinaryData, ByteArrayInputStream, and ByteArrayOutputStream are imported but not used in the current implementation. While ByteArrayInputStream and ByteArrayOutputStream are used in the getObject() method, BinaryData is not used in the implementation."
+      },
+      {
+        "severity": "Minor",
+        "description": "Unused import: BlobParallelUploadOptions is imported on line 8 but the code uses BlobParallelUploadOptions on line 78. However, the import for this class should be verified as it appears to be correctly used in the uploadObject() method."
+      }
+    ]
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Configuration file updated to use Azure Blob Storage properties. All AWS S3 properties (aws.accessKey, aws.secretKey, aws.region, aws.s3.bucket) have been removed and replaced with Azure properties (azure.storage.blob.endpoint, azure.storage.blob.container-name).",
+    "issues": []
+  },
+  {
+    "file": "web/src/test/resources/application.properties",
+    "description": "Test configuration file updated with Azure Blob Storage properties for integration testing with in-memory H2 database.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/AwsS3Config.java",
+    "description": "Configuration class migrated from AWS S3Client to Azure BlobServiceClient. Replaces static credentials with DefaultAzureCredential and uses endpoint-based initialization. Identical pattern to web module.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/S3FileProcessingService.java",
+    "description": "Worker service migrated from AWS S3 operations to Azure Blob Storage operations. Download and upload operations have been converted to equivalent Azure Blob APIs. The getStorageType() method correctly returns 'azure-blob'.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The removed imports (Files, StandardCopyOption) were S3-specific utilities that are no longer needed after migration to Azure Blob Storage. The migration correctly removes these unnecessary dependencies."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Configuration file updated to use Azure Blob Storage properties. All AWS S3 properties removed and replaced with Azure equivalents.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Maven dependencies updated to remove AWS SDK S3 and add Azure Blob Storage SDK. Added azure-sdk-bom for version management of Azure dependencies.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Maven dependencies updated to remove AWS SDK S3 and add Azure Blob Storage SDK. Added azure-sdk-bom for version management of Azure dependencies.",
+    "issues": []
+  },
+  {
+    "file": ".github/modernize/modernization-plan/tasks.json",
+    "description": "Task status field added to track migration execution state. Not related to functional code changes.",
+    "issues": []
+  }
+]
