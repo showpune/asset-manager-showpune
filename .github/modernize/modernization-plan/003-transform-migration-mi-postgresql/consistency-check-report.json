@@ -1,0 +1,42 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Parent pom.xml updated to add Spring Cloud Azure BOM dependency management. Added spring-cloud-azure.version property (5.10.0) and imported spring-cloud-azure-dependencies BOM in dependencyManagement section. This enables passwordless authentication for PostgreSQL connections using Azure Managed Identity.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency to enable passwordless JDBC PostgreSQL connections via Azure Managed Identity. The dependency is added without specifying a version, correctly inheriting from the parent BOM's dependencyManagement section, which is the best practice for Maven multi-module projects.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency to enable passwordless JDBC PostgreSQL connections via Azure Managed Identity. The dependency is added without specifying a version, correctly inheriting from the parent BOM's dependencyManagement section, which is the best practice for Maven multi-module projects.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Removed hardcoded credentials (spring.datasource.username=postgres and spring.datasource.password=postgres) and replaced with spring.datasource.azure.passwordless-enabled=true. This enables passwordless authentication using Azure Managed Identity for PostgreSQL connections in the production environment. The JDBC URL remains unchanged (jdbc:postgresql://localhost:5432/assets_manager), which supports both local development and Azure production deployments.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Removed hardcoded credentials and added spring.datasource.azure.passwordless-enabled=true configuration. This enables passwordless authentication using Azure Managed Identity for PostgreSQL connections in the worker module. The configuration is consistent with the web module's main configuration.",
+    "issues": []
+  },
+  {
+    "file": "web/src/test/resources/application.properties",
+    "description": "Added spring.datasource.azure.passwordless-enabled=false to the test application.properties file. This is a critical configuration that prevents Azure Managed Identity authentication from being attempted during unit tests that use H2 in-memory database. The test configuration uses H2 (jdbc:h2:mem:testdb) with standard H2 credentials (username=sa, password=empty), so passwordless authentication must be disabled to avoid authentication errors during test execution.",
+    "issues": []
+  },
+  {
+    "file": ".github/modernize/modernization-plan/tasks.json",
+    "description": "Updated tasks.json to mark the migration task status as 'started'. This is a metadata change for task tracking and does not affect application functionality.",
+    "issues": []
+  },
+  {
+    "file": "mvnw",
+    "description": "File mode changed from 100644 to 100755 (made executable). This is a technical change that allows the Maven wrapper script to be executed directly. No functional impact on the application itself.",
+    "issues": []
+  }
+]
