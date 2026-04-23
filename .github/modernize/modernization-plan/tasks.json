@@ -19,7 +19,13 @@
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
       },
-      "status": "success"
+      "status": "success",
+      "taskSummary": "Migrated PostgreSQL from password-based authentication to Azure Managed Identity in both the web and worker modules. Added spring-cloud-azure-dependencies BOM (v5.22.0) to the root pom.xml and spring-cloud-azure-starter-jdbc-postgresql to the web and worker modules. Removed plaintext credentials (spring.datasource.username, spring.datasource.password) from application.properties in both modules and added passwordless Managed Identity configuration. Build passed and all tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
     }
   ],
   "metadata": {
