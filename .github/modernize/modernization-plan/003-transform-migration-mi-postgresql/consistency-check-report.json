@@ -1,0 +1,27 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Added spring-cloud-azure-dependencies BOM (v5.22.0) via dependencyManagement and defined the spring-cloud-azure.version property. The project uses Spring Boot 3.2.1, which requires spring-cloud-azure-dependencies >= 5.22.0 and < 7.0.0. Version 5.22.0 satisfies this constraint. The BOM is correctly declared with type=pom and scope=import.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency without an explicit version, correctly relying on the parent BOM for version management. This follows best practices for Spring Cloud Azure passwordless PostgreSQL migration.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency without an explicit version, correctly relying on the parent BOM. The worker module already had its own dependencyManagement section for AWS SDK; adding the new dependency under the parent BOM does not conflict with it.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Removed hardcoded credentials (spring.datasource.url with localhost, spring.datasource.username=postgres, spring.datasource.password=postgres). Replaced with Azure-managed-identity-based configuration: datasource URL pointing to Azure Database for PostgreSQL using environment variables, spring.datasource.azure.passwordless-enabled=true, spring.cloud.azure.credential.managed-identity-enabled=true, and spring.cloud.azure.credential.client-id referencing an environment variable. Added required comments for service principal auth and sovereign cloud guidance.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Same pattern of changes as the web module: removed hardcoded PostgreSQL credentials, replaced with Azure Managed Identity configuration using environment variables, passwordless-enabled=true, and sovereign cloud / service principal guidance comments. Changes are consistent with the knowledge base guidance.",
+    "issues": []
+  }
+]
