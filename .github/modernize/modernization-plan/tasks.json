@@ -19,7 +19,7 @@
         "generateNewUnitTests": "false",
         "passUnitTests": "true"
       },
-      "status": "completed"
+      "status": "success"
     }
   ],
   "metadata": {
