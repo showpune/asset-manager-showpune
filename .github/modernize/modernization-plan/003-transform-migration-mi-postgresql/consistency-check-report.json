@@ -1,0 +1,27 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Added spring-cloud-azure-dependencies BOM (version 5.22.0) under dependencyManagement and a corresponding property spring-cloud-azure.version. For Spring Boot 3.x projects the knowledge base requires spring-cloud-azure-dependencies >= 5.22.0 and < 7.0.0; version 5.22.0 satisfies this constraint.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency (version managed by the BOM added in root pom.xml). This is the correct dependency required by the migration knowledge base for Spring Boot projects.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Replaced hardcoded PostgreSQL credentials (plaintext username/password) with Azure Managed Identity passwordless authentication. The JDBC URL was updated to target Azure Database for PostgreSQL using environment variables. The required passwordless and managed identity properties were added, along with instructional comments covering service principal and sovereign cloud alternatives. The placeholder value <your_managed_identity_client_id> for spring.cloud.azure.credential.client-id is intentional and consistent with the knowledge base example; the inline comment correctly notes it can be omitted for system-assigned managed identity.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency (version managed by the BOM added in root pom.xml). This mirrors the change made in web/pom.xml and is correct per the migration knowledge base.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Same changes as web/src/main/resources/application.properties: hardcoded PostgreSQL credentials removed and replaced with Azure Managed Identity passwordless authentication properties. All required properties and comments are present and consistent with the knowledge base guidance.",
+    "issues": []
+  }
+]
