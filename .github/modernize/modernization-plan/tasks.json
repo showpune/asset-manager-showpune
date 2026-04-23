@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-migration-s3-to-azure-blob-storage",
+      "description": "Replace AWS S3 usage with Azure Blob Storage for all file upload, download, and storage operations in both the web and worker modules.",
+      "requirements": "",
+      "environmentConfiguration": null,
+      "dependencies": [],
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": null,
+      "taskSummary": ""
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-migration-amqp-rabbitmq-servicebus",
+      "description": "Replace RabbitMQ (AMQP) with Azure Service Bus for async messaging between the web and worker modules.",
+      "requirements": "",
+      "environmentConfiguration": null,
+      "dependencies": [],
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": null,
+      "taskSummary": ""
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-migration-postgresql-to-azure-db",
+      "description": "Replace the local PostgreSQL database with Azure Database for PostgreSQL using managed identity for secure, credential-free authentication in both the web and worker modules.",
+      "requirements": "",
+      "environmentConfiguration": null,
+      "dependencies": [],
+      "skills": [
+        {
+          "name": "migration-mi-postgresql-azure-sdk-public-cloud",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": null,
+      "taskSummary": ""
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "asset-manager-showpune",
+    "language": "java",
+    "createdAt": "2026-04-23T10:48:13.608Z",
+    "version": "1.0"
+  }
+}
