@@ -16,17 +16,17 @@ public class RabbitConfig {
     public static final String QUEUE_NAME = "image-processing";
 
     @Bean
-    public Queue imageProcessingQueue() {
+    Queue imageProcessingQueue() {
         return QueueBuilder.durable(QUEUE_NAME).build();
     }
 
     @Bean
-    public MessageConverter jsonMessageConverter() {
+    MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+    SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory,
             SimpleRabbitListenerContainerFactoryConfigurer configurer) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
