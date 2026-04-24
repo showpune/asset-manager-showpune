@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-migration-postgresql-to-azure-postgresql-mi",
+      "description": "Migrate assets-manager (web and worker modules) from local PostgreSQL with password-based authentication to Azure Database for PostgreSQL using Azure Managed Identity for passwordless authentication.",
+      "reason": "The application currently uses hardcoded credentials to connect to a self-hosted PostgreSQL instance. Per organizational policy, service-to-service authentication must use Managed Identity, and hardcoded credentials in application.properties or source code are prohibited. Migrating to Azure Database for PostgreSQL with Managed Identity removes the need to manage database passwords and aligns with the Acme Corp security and compliance requirements (SOC 2, PCI-DSS).",
+      "requirements": "Migrate both the web module and the worker module from password-based PostgreSQL authentication to Azure Managed Identity for Azure Database for PostgreSQL. Remove hardcoded database username and password properties from application.properties in both modules. Update Spring Cloud Azure dependencies and datasource configuration to use passwordless Managed Identity authentication. Ensure the migration covers all datasource configuration in both modules.",
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan-postgresql",
+    "projectName": "assets-manager",
+    "language": "java",
+    "createdAt": "2026-04-24T07:39:09.447Z",
+    "version": "1.0"
+  }
+}
