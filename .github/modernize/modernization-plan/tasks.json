@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-s3-to-azure-blob-storage",
+      "description": "Migrate AWS S3 storage to Azure Blob Storage with Managed Identity authentication",
+      "reason": "The application uses AWS S3 with password-based access key/secret key credentials for image storage in both web and worker modules. Per the Acme Corp modernization policy, all storage must be migrated to Azure Blob Storage using Managed Identity for credential-free, secure access.",
+      "requirements": "Migrate all S3 operations (upload, download, list, delete) in both the web and worker modules to Azure Blob Storage. Replace the AWS SDK S3Client with the Azure Blob Storage SDK. Use Managed Identity for authentication instead of access key/secret key. Update configuration to remove all AWS S3 credentials from application.properties.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ]
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-rabbitmq-to-servicebus",
+      "description": "Migrate RabbitMQ messaging to Azure Service Bus with Managed Identity authentication",
+      "reason": "The application uses RabbitMQ with Spring AMQP and password-based authentication for sending and consuming image processing messages in both web and worker modules. Per the Acme Corp modernization policy, all messaging must be migrated to Azure Service Bus using Managed Identity for secure, credential-free messaging.",
+      "requirements": "Migrate all RabbitMQ/Spring AMQP messaging operations in both the web and worker modules to Azure Service Bus. Replace Spring AMQP RabbitTemplate and @RabbitListener with Azure Service Bus SDK or Spring Cloud Azure Service Bus. Use Managed Identity for authentication. Preserve the existing message processing workflow and retry logic.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ]
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-postgresql-to-azure-postgresql",
+      "description": "Migrate PostgreSQL connection to Azure Database for PostgreSQL with Managed Identity",
+      "reason": "The application uses PostgreSQL with hardcoded username/password credentials for metadata storage in both web and worker modules. Per the Acme Corp modernization policy, database connections must use Azure Managed Identity for credential-free, secure authentication.",
+      "requirements": "Migrate the PostgreSQL database connection configuration in both web and worker modules to Azure Database for PostgreSQL using Managed Identity. Remove hardcoded database username and password from application.properties. Configure passwordless authentication via Managed Identity token provider.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "skills": [
+        {
+          "name": "migration-mi-postgresql-azure-sdk-public-cloud",
+          "location": "builtin"
+        }
+      ]
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-plaintext-credentials-to-keyvault",
+      "description": "Migrate remaining plaintext credentials and sensitive configuration to Azure Key Vault",
+      "reason": "The application.properties files in both modules contain hardcoded sensitive values. Per the Acme Corp policy, all sensitive values (credentials, API keys, connection strings) must be stored in Azure Key Vault. After migrating to Azure services with Managed Identity, any remaining credentials or sensitive configuration must be externalized to Key Vault.",
+      "requirements": "Scan both web and worker modules for any remaining hardcoded credentials, API keys, or sensitive configuration values in application.properties and source code. Migrate these values to Azure Key Vault and configure Spring Cloud Azure Key Vault starter to load secrets via Managed Identity. Ensure no sensitive values remain in application.properties or source code.",
+      "dependencies": [
+        "001-transform-s3-to-azure-blob-storage",
+        "002-transform-rabbitmq-to-servicebus",
+        "003-transform-postgresql-to-azure-postgresql"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "skills": [
+        {
+          "name": "migration-plaintext-credential-to-azure-keyvault",
+          "location": "builtin"
+        }
+      ]
+    },
+    {
+      "type": "transform",
+      "id": "005-transform-logging-to-internallogger",
+      "description": "Migrate SLF4J logging to InternalLogger for trace context propagation and structured logging",
+      "reason": "The application uses SLF4J via Lombok @Slf4j annotations which does not integrate with the corporate trace context propagation system. Per Acme Corp policy, all logging must use InternalLogger (com.acme.logging.InternalLogger) for automatic trace correlation, team ownership tags, environment/region tags, and structured JSON output.",
+      "requirements": "Replace all SLF4J @Slf4j Lombok annotations and any LoggerFactory usage with InternalLogger (com.acme.logging.InternalLogger) in both web and worker modules. Update all log statements to use the InternalLogger API. Remove SLF4J/Logback dependencies and add the InternalLogger library dependency.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "containerization",
+      "id": "006-containerization",
+      "description": "Containerize the web and worker applications for deployment to Azure Kubernetes Service",
+      "reason": "Per the Acme Corp charter, the default modernization strategy for Java services is Replatform to Azure Kubernetes Service (AKS). The worker module performs async image processing, making AKS the appropriate deployment target. Both modules need multi-stage Dockerfiles using the approved Microsoft OpenJDK 17 base images.",
+      "requirements": "Create multi-stage Dockerfiles for both web and worker modules. Use mcr.microsoft.com/openjdk/jdk:17-ubuntu as the build stage image and mcr.microsoft.com/openjdk/jdk:17-distroless as the runtime stage image. Ensure all configuration is externalized and no hardcoded credentials are included in the container images.",
+      "dependencies": [
+        "001-transform-s3-to-azure-blob-storage",
+        "002-transform-rabbitmq-to-servicebus",
+        "003-transform-postgresql-to-azure-postgresql",
+        "004-transform-plaintext-credentials-to-keyvault",
+        "005-transform-logging-to-internallogger"
+      ],
+      "dockerfilePath": "web/Dockerfile and worker/Dockerfile (to be created)"
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "asset-manager-showpune",
+    "language": "java",
+    "createdAt": "2026-04-24T05:49:43.714Z",
+    "version": "1.0"
+  }
+}
