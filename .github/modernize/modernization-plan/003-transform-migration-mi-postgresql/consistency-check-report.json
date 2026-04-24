@@ -1,0 +1,27 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Added spring-cloud-azure.version property (5.19.0) and a dependencyManagement block importing the spring-cloud-azure-dependencies BOM. This centralizes version management for all spring-cloud-azure starters across both child modules (web and worker), following Maven multi-module best practices.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency with version managed by the parent BOM. This starter provides auto-configuration to intercept the DataSource creation and supply fresh MI-based access tokens via DefaultAzureCredential, including automatic token refresh before expiry.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency, mirroring the web/pom.xml change. Version is inherited from the parent BOM, ensuring both modules use the same library version.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Removed hardcoded plaintext credentials (spring.datasource.username=postgres, spring.datasource.password=postgres). Replaced username with spring.datasource.username=${SPRING_DATASOURCE_USERNAME} to externalize the MI principal name via an environment variable. Added spring.datasource.azure.passwordless-enabled=true to activate spring-cloud-azure auto-configuration, which intercepts DataSource creation and injects an Azure AD access token (obtained via DefaultAzureCredential) as the JDBC password, with automatic token refresh. The test override in web/src/test/resources/application.properties (H2 in-memory datasource with username=sa) fully overrides the main datasource config, so no Azure credential resolution occurs during tests.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Removed hardcoded plaintext credentials (spring.datasource.username=postgres, spring.datasource.password=postgres). Replaced username with spring.datasource.username=${SPRING_DATASOURCE_USERNAME} and added spring.datasource.azure.passwordless-enabled=true, consistent with the web module. The worker has no test-specific datasource override, but there are also no test source files in worker/src/test, so no Spring context with JPA is started during testing.",
+    "issues": []
+  }
+]
