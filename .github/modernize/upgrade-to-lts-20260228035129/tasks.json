@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-java-version",
+      "description": "Upgrade Java to LTS version 21",
+      "requirements": "Upgrade Java JDK to version 21 (latest LTS), update build configuration (pom.xml/build.gradle), resolve any compatibility issues with newer Java APIs and language features",
+      "dependencies": [],
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "java-version-upgrade",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": "pending"
+    },
+    {
+      "type": "upgrade",
+      "id": "002-upgrade-spring-boot",
+      "description": "Upgrade Spring Boot to version 3.4",
+      "requirements": "Upgrade Spring Boot to version 3.4 (latest stable), upgrade Spring Framework to 6.x, migrate javax.* packages to jakarta.* namespace, update Spring Boot dependencies and configuration properties, resolve breaking changes in Spring Boot 3.x",
+      "dependencies": [
+        "001-upgrade-java-version"
+      ],
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "java-version-upgrade",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      },
+      "status": "pending"
+    }
+  ],
+  "metadata": {
+    "planName": "upgrade-to-lts",
+    "projectName": "application",
+    "language": "java",
+    "createdAt": "2026-02-28T03:51:31.959Z",
+    "version": "1.0"
+  }
+}
