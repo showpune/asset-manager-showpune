@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-migration-postgresql-to-azure-postgresql",
+      "description": "Migrate from local PostgreSQL with password-based authentication to Azure Database for PostgreSQL using Managed Identity for secure, credential-free database access.",
+      "reason": "The application currently connects to a locally hosted PostgreSQL instance using hardcoded credentials in application.properties for both the web and worker modules. This violates the organization's security policy that prohibits hardcoded credentials and requires all sensitive values to be managed via Azure Managed Identity. Migrating to Azure Database for PostgreSQL with Managed Identity eliminates credential exposure and aligns with the Acme Corp Modernization Playbook requirements.",
+      "requirements": "Migrate both assets-manager-web and assets-manager-worker modules from local PostgreSQL with password-based authentication to Azure Database for PostgreSQL using Managed Identity. Remove all hardcoded database credentials (username/password) from application.properties. Ensure passwordless authentication is configured via Managed Identity following Azure best practices for public cloud. Both modules use Spring Data JPA with the PostgreSQL JDBC driver.",
+      "skills": [
+        {
+          "name": "migration-mi-postgresql-azure-sdk-public-cloud",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan-postgresql",
+    "projectName": "Asset Manager (assets-manager-web, assets-manager-worker)",
+    "language": "java",
+    "createdAt": "2026-04-24T05:10:29.157Z",
+    "version": "1.0"
+  }
+}
