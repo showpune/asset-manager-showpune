@@ -8,6 +8,7 @@ import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.options.BlobParallelUploadOptions;
 import com.microsoft.migration.assets.worker.model.ImageMetadata;
 import com.microsoft.migration.assets.worker.repository.ImageMetadataRepository;
+import com.microsoft.migration.assets.worker.util.StorageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -72,7 +73,9 @@ public class AzureBlobStorageFileProcessingService extends AbstractFileProcessin
         String suffix = "_thumbnail";
         int suffixIndex = key.lastIndexOf(suffix);
         if (suffixIndex > 0) {
-            return key.substring(0, suffixIndex);
+            // Preserve the file extension: "base_thumbnail.jpg" → "base.jpg"
+            String ext = StorageUtil.getExtension(key);
+            return key.substring(0, suffixIndex) + ext;
         }
         return key;
     }

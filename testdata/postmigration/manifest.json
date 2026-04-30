@@ -1,0 +1,26 @@
+{
+  "description": "Layer 2 post-migration fixtures. Each entry references a Layer 1 shared fixture by sharedId. Content-type must match the referenced shared fixture (compliance check). These fixtures describe Azure-specific expected values for SDK-call verification.",
+  "fixtures": [
+    {
+      "id": "azure-upload-small-jpg",
+      "sharedId": "sample-small-jpg",
+      "expectedStorageType": "azure-blob",
+      "expectedContentType": "image/jpeg",
+      "expectedUrlPrefix": "/s3/view/"
+    },
+    {
+      "id": "azure-upload-medium-png",
+      "sharedId": "sample-medium-png",
+      "expectedStorageType": "azure-blob",
+      "expectedContentType": "image/png",
+      "expectedUrlPrefix": "/s3/view/"
+    },
+    {
+      "id": "azure-upload-unicode-txt",
+      "sharedId": "sample-unicode-txt",
+      "expectedStorageType": "azure-blob",
+      "expectedContentType": "text/plain",
+      "expectedUrlPrefix": "/s3/view/"
+    }
+  ]
+}
