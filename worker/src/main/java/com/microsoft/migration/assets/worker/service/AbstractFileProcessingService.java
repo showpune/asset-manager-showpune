@@ -23,15 +23,19 @@ import java.nio.file.Path;
 import static com.microsoft.migration.assets.worker.config.RabbitConfig.QUEUE_NAME;
 
 @Slf4j
-public abstract class AbstractFileProcessingService implements FileProcessor {
+public abstract class AbstractFileProcessingService implements FileProcessor, ImageProcessingAdaptor {
 
     @Autowired
     private RetryTemplate retryTemplate;
 
+    /**
+     * RabbitMQ entry point. Delegates processing to {@link #process(ImageProcessingMessage)}
+     * and handles AMQP acknowledgement.
+     */
     @RabbitListener(queues = QUEUE_NAME)
-    public void processImage(final ImageProcessingMessage message, 
-                           Channel channel, 
-                           @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+    public void onMessage(final ImageProcessingMessage message,
+                          Channel channel,
+                          @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         try {
             retryTemplate.execute(new RetryCallback<Void, Exception>() {
                 @Override
@@ -39,21 +43,15 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
                     if (context.getRetryCount() > 0) {
                         log.info("Retry attempt {} for image: {}", context.getRetryCount(), message.getKey());
                     }
-                    
-                    processImageWithRetry(message);
+                    process(message);
                     return null;
                 }
             });
-            
-            // Success - acknowledge the message
             log.debug("Acknowledging message after successful processing: {}", message.getKey());
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
             log.error("All retry attempts failed for image: " + message.getKey(), e);
-            
             try {
-                // After all retries are exhausted, reject the message
-                // to retry later, use basicNack with requeue=true
                 log.debug("Rejecting message after all retry attempts failed: {}", message.getKey());
                 channel.basicNack(deliveryTag, false, true);
             } catch (IOException ackEx) {
@@ -61,8 +59,17 @@ public abstract class AbstractFileProcessingService implements FileProcessor {
             }
         }
     }
-    
-    private void processImageWithRetry(ImageProcessingMessage message) {
+
+    /**
+     * Core image-processing logic. Called by the AMQP listener and directly testable
+     * via {@link ImageProcessingAdaptor} without importing messaging SDK types.
+     */
+    @Override
+    public void process(ImageProcessingMessage message) throws Exception {
+        processImageInternal(message);
+    }
+
+    private void processImageInternal(ImageProcessingMessage message) {
         Path tempDir = null;
         Path originalFile = null;
         Path thumbnailFile = null;

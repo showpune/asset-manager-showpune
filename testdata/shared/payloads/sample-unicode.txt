@@ -1,0 +1,3 @@
+Hello World - Unicode Test
+Line 2: Special chars
+Line 3: Numbers: 12345

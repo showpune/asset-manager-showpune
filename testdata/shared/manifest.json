@@ -1,0 +1,25 @@
+{
+  "fixtures": [
+    {
+      "id": "sample-small-jpg",
+      "filePath": "payloads/sample-small.jpg",
+      "contentType": "image/jpeg",
+      "sha256": "1580b95780affc24d2b9e59c0551ecde8d08bc4c42efc796cf34eee3f2359530",
+      "size": 30287
+    },
+    {
+      "id": "sample-medium-png",
+      "filePath": "payloads/sample-medium.png",
+      "contentType": "image/png",
+      "sha256": "984b1b1989723ba616acda91b7369da0852efd1191e1c64162b256f815fa28fe",
+      "size": 23300
+    },
+    {
+      "id": "sample-unicode-txt",
+      "filePath": "payloads/sample-unicode.txt",
+      "contentType": "text/plain",
+      "sha256": "5e7f0fd46b059eb5caa5eab9802b2d4157efdfbb8991fd26e3dca4fbf0236217",
+      "size": 71
+    }
+  ]
+}

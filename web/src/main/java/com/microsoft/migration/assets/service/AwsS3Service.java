@@ -25,7 +25,7 @@ import static com.microsoft.migration.assets.config.RabbitConfig.QUEUE_NAME;
 
 @Service
 @RequiredArgsConstructor
-@Profile("!dev") // Active when not in dev profile
+@Profile("!dev & !baseline")
 public class AwsS3Service implements StorageService {
 
     private final S3Client s3Client;

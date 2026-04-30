@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "setupBaseline",
+      "id": "000-setupBaseline",
+      "description": "Establish the pre-migration baseline by capturing the current application behavior before any changes are made.",
+      "requirements": "Build integration tests at the API/web layer to capture current behavior of the assets-manager-web and assets-manager-worker modules before migration. Scope covers: (1) AWS S3 file upload, list, download, and delete operations in both modules; (2) RabbitMQ AMQP message production from web and consumption in worker; (3) PostgreSQL image metadata read/write in both modules; (4) end-to-end thumbnail generation flow. Mock all external dependencies (AWS S3, RabbitMQ, PostgreSQL) and produce a shared mock dataset that MUST be reused in the post-migration integration test to validate behavioral equivalence.",
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Baseline established successfully. Created ImageProcessingAdaptor interface in production code for worker. Added @Profile('!baseline') to RabbitConfig (web+worker) and AwsS3Config (web+worker) to prevent startup failures when external services are excluded. Created 13 HTTP-boundary baseline tests (WebBaselineIT) and 5 adaptor-boundary tests (WorkerBaselineIT) with in-memory mocks (MockStorageService, MockFileAdapter). All external dependencies (S3, RabbitMQ, PostgreSQL) are mocked; H2 in-memory database used for PostgreSQL. Testdata fixtures (1200x900 JPEG, 1000x1000 PNG, unicode text) with SHA-256 verification in manifest.json. Coverage matrix documents all operation×bucket scenarios. 18 total baseline tests pass: 13 web + 5 worker.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "001-transform-s3-to-azure-blob-storage",
+      "description": "Migrate AWS S3 object storage to Azure Blob Storage in both the web and worker modules.",
+      "reason": "The application uses AWS S3 (via AWS SDK v2) for storing and retrieving image files and thumbnails. Migrating to Azure Blob Storage consolidates cloud storage on Azure, simplifies access control, and removes the AWS dependency.",
+      "requirements": "Replace AWS S3 SDK usage with Azure Blob Storage SDK in both assets-manager-web and assets-manager-worker modules. Migration must cover: file upload (PutObject), file download/streaming (GetObject), file listing (ListObjectsV2), file deletion (DeleteObject), URL generation, and thumbnail upload/download in the worker. Authenticate using Managed Identity. Remove aws.accessKey, aws.secretKey, aws.region, and aws.s3.bucket configuration properties and replace with Azure Blob Storage connection settings.",
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-rabbitmq-to-azure-service-bus",
+      "description": "Migrate RabbitMQ AMQP messaging to Azure Service Bus in both the web and worker modules.",
+      "reason": "The application uses RabbitMQ via Spring AMQP for asynchronous image-processing messages between the web (producer) and worker (consumer) modules. Migrating to Azure Service Bus provides a fully managed, cloud-native messaging service that eliminates the need to operate a RabbitMQ broker.",
+      "requirements": "Replace Spring AMQP RabbitMQ dependencies (spring-boot-starter-amqp) with Azure Service Bus Spring Messaging in both assets-manager-web and assets-manager-worker modules. Migration must cover: message production using RabbitTemplate in the web module, message consumption via @RabbitListener in the worker module, queue/topic configuration (currently \u0027image-processing\u0027 queue), JSON message conversion (Jackson2JsonMessageConverter), and manual acknowledgement mode. Authenticate using Managed Identity. Remove spring.rabbitmq.* configuration properties and replace with Azure Service Bus connection settings.",
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-postgresql-managed-identity",
+      "description": "Migrate PostgreSQL database authentication from password-based to Azure Managed Identity in both the web and worker modules.",
+      "reason": "Both modules use password-based PostgreSQL authentication with hardcoded credentials (spring.datasource.username/password). Migrating to Azure Managed Identity removes the need to manage database passwords and improves the security posture of the application.",
+      "requirements": "Replace password-based PostgreSQL authentication with Azure Managed Identity for Azure Database for PostgreSQL in both assets-manager-web and assets-manager-worker modules. Migration must cover datasource configuration, Spring Data JPA settings, and removal of hardcoded spring.datasource.password credentials. The database schema (ImageMetadata entity) and JPA repositories must continue to work unchanged. Authenticate using Managed Identity via Spring Cloud Azure.",
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-logging-to-console",
+      "description": "Migrate application logging to console-only output in both the web and worker modules.",
+      "reason": "Cloud-native deployments on Azure expect logs to be written to stdout/stderr for collection by Azure Monitor and Log Analytics. File-based logging is not suitable for containerized or Azure App Service deployments.",
+      "requirements": "Remove any file-based log appenders from logging configuration in both assets-manager-web and assets-manager-worker modules (e.g., logback.xml, logging.xml, or log4j2.xml if present). Ensure all log output is directed to console (stdout). Do not change log levels, logger names, or business logic.",
+      "skills": [
+        {
+          "name": "migration-log-to-console",
+          "location": "builtin"
+        }
+      ],
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "integrationTest",
+      "id": "005-integrationTest",
+      "description": "Build integration tests for migrated Azure services and run post-migration verification.",
+      "requirements": "Run post-migration integration tests using the shared mock dataset created in 000-setupBaseline to verify that the migrated behavior in assets-manager-web and assets-manager-worker matches the pre-migration baseline. Test coverage must include Azure Blob Storage operations, Azure Service Bus message flow, Azure Database for PostgreSQL (Managed Identity) reads/writes, and the end-to-end thumbnail generation flow.",
+      "dependencies": [
+        "001-transform-s3-to-azure-blob-storage",
+        "002-transform-rabbitmq-to-azure-service-bus",
+        "003-transform-postgresql-managed-identity",
+        "004-transform-logging-to-console"
+      ],
+      "layers": [
+        1,
+        2
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "asset-manager-showpune",
+    "language": "java",
+    "createdAt": "2026-04-30T14:13:07\u002B08:00",
+    "version": "1.0"
+  }
+}
