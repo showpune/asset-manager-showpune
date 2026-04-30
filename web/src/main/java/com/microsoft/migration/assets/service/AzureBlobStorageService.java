@@ -3,7 +3,9 @@ package com.microsoft.migration.assets.service;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.options.BlobParallelUploadOptions;
 import com.microsoft.migration.assets.model.ImageMetadata;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
@@ -84,7 +86,10 @@ public class AzureBlobStorageService implements StorageService {
         BlobClient blobClient = containerClient.getBlobClient(key);
 
         try (InputStream inputStream = file.getInputStream()) {
-            blobClient.upload(inputStream, file.getSize(), true);
+            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(file.getContentType());
+            BlobParallelUploadOptions options = new BlobParallelUploadOptions(inputStream, file.getSize())
+                    .setHeaders(headers);
+            blobClient.uploadWithResponse(options, null, null);
         }
 
         // Send message to queue for thumbnail generation
@@ -112,7 +117,7 @@ public class AzureBlobStorageService implements StorageService {
     @Override
     public InputStream getObject(String key) throws IOException {
         BlobClient blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(key);
-        return blobClient.downloadContent().toStream();
+        return blobClient.openInputStream();
     }
 
     @Override
@@ -120,12 +125,7 @@ public class AzureBlobStorageService implements StorageService {
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
         containerClient.getBlobClient(key).deleteIfExists();
-
-        try {
-            containerClient.getBlobClient(getThumbnailKey(key)).deleteIfExists();
-        } catch (Exception e) {
-            // Ignore if thumbnail doesn't exist
-        }
+        containerClient.getBlobClient(getThumbnailKey(key)).deleteIfExists();
 
         // Delete metadata from database
         imageMetadataRepository.findByS3Key(key)

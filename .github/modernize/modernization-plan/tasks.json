@@ -36,11 +36,14 @@
       "successCriteria": {
         "passBuild": "true",
         "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Migrated AWS S3 to Azure Blob Storage in both web and worker modules using DefaultAzureCredential (Managed Identity). Created AzureBlobStorageConfig and AzureBlobStorageService (web) and AzureBlobStorageFileProcessingService (worker). Deleted all AwsS3Config, AwsS3Service, S3FileProcessingService files. Updated application.properties in both modules. Added findByS3Key() to both ImageMetadataRepository interfaces. Key fixes: content-type headers on upload (BlobHttpHeaders), streaming download via openInputStream(), server-side proxy URLs (/s3/view/{key}) for private container access, findByS3Key() for correct thumbnail metadata lookup, N+1 prevention in listObjects(). Build and all unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "passUnitTests": "true"
       }
     },
-    {
-      "type": "transform",
-      "id": "002-transform-rabbitmq-to-azure-service-bus",
       "description": "Migrate RabbitMQ AMQP messaging to Azure Service Bus in both the web and worker modules.",
       "reason": "The application uses RabbitMQ via Spring AMQP for asynchronous image-processing messages between the web (producer) and worker (consumer) modules. Migrating to Azure Service Bus provides a fully managed, cloud-native messaging service that eliminates the need to operate a RabbitMQ broker.",
       "requirements": "Replace Spring AMQP RabbitMQ dependencies (spring-boot-starter-amqp) with Azure Service Bus Spring Messaging in both assets-manager-web and assets-manager-worker modules. Migration must cover: message production using RabbitTemplate in the web module, message consumption via @RabbitListener in the worker module, queue/topic configuration (currently \u0027image-processing\u0027 queue), JSON message conversion (Jackson2JsonMessageConverter), and manual acknowledgement mode. Authenticate using Managed Identity. Remove spring.rabbitmq.* configuration properties and replace with Azure Service Bus connection settings.",

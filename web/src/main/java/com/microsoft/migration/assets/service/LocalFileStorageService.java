@@ -1,11 +1,13 @@
 package com.microsoft.migration.assets.service;
 
+import com.azure.spring.messaging.servicebus.core.ServiceBusTemplate;
 import com.microsoft.migration.assets.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.model.S3StorageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -27,15 +29,15 @@ public class LocalFileStorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalFileStorageService.class);
     
-    private final RabbitTemplate rabbitTemplate;
+    private final ServiceBusTemplate serviceBusTemplate;
     
     @Value("${local.storage.directory:../storage}")
     private String storageDirectory;
     
     private Path rootLocation;
 
-    public LocalFileStorageService(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
+    public LocalFileStorageService(ServiceBusTemplate serviceBusTemplate) {
+        this.serviceBusTemplate = serviceBusTemplate;
     }
     
     @PostConstruct
@@ -102,7 +104,8 @@ public class LocalFileStorageService implements StorageService {
             getStorageType(),
             file.getSize()
         );
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        Message<ImageProcessingMessage> msg = MessageBuilder.withPayload(message).build();
+        serviceBusTemplate.send(QUEUE_NAME, msg);
     }
 
     @Override
