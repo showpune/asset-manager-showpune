@@ -36,8 +36,7 @@
       "successCriteria": {
         "passBuild": "true",
         "passUnitTests": "true"
-      },
-      "status": "started"
+      }
     },
     {
       "type": "transform",
@@ -58,7 +57,12 @@
         "passBuild": "true",
         "passUnitTests": "true"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Migrated both web and worker modules from RabbitMQ AMQP to Azure Service Bus. Replaced spring-boot-starter-amqp with spring-messaging-azure-servicebus (AMQP kept test-scoped in web for frozen baseline tests). Migrated RabbitConfig to ServiceBusAdministrationClient + QueueProperties + PropertiesSupplier with autoComplete=false. Migrated RabbitTemplate to ServiceBusTemplate in AzureBlobStorageService. Migrated @RabbitListener to @ServiceBusListener with ServiceBusReceivedMessageContext for manual ack in BackupMessageProcessor and AbstractFileProcessingService. Removed @EnableRabbit from WorkerApplication. Removed spring.rabbitmq.* and added spring.cloud.azure.servicebus.* properties. Full build and tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
     },
     {
       "type": "transform",
@@ -106,7 +110,7 @@
         "passUnitTests": "true"
       },
       "status": "success",
-      "taskSummary": "No file-based logging configuration found in either the web or worker modules. Both modules rely entirely on Spring Boot's default logging, which already outputs to console (stdout) only. No changes were required. Build and all unit tests pass.",
+      "taskSummary": "No file-based logging configuration found in either the web or worker modules. Both modules rely entirely on Spring Boot\u0027s default logging, which already outputs to console (stdout) only. No changes were required. Build and all unit tests pass.",
       "successCriteriaStatus": {
         "passBuild": "true",
         "passUnitTests": "true"

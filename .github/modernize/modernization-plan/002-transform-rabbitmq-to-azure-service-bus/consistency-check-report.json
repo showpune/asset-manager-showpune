@@ -1,0 +1,101 @@
+[
+  {
+    "file": ".github/modernize/modernization-plan/tasks.json",
+    "description": "Task metadata update marking task status and summary. No logic changes.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Replaced spring-boot-starter-amqp and AWS S3 SDK with spring-cloud-azure-starter, spring-messaging-azure-servicebus, azure-storage-blob, and azure-sdk-bom. Added spring-cloud-azure-starter and spring-messaging-azure-servicebus as required by the migration knowledge base.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The azure-identity dependency is pinned to an explicit version (1.16.3) while azure-sdk-bom is already imported as the BOM for managing Azure SDK versions. An explicit version overrides the BOM-managed version and may cause inconsistencies or conflicts with other Azure SDK libraries whose versions are managed by the BOM. The version for azure-identity should be removed and left to the BOM."
+      }
+    ]
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Same dependency replacements as web/pom.xml: removed spring-boot-starter-amqp and AWS S3 SDK, added spring-cloud-azure-starter, spring-messaging-azure-servicebus, azure-storage-blob, and azure-sdk-bom. Also explicitly added spring-retry which was previously a transitive dependency via spring-amqp.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The azure-identity dependency is pinned to an explicit version (1.16.3) while azure-sdk-bom is already imported as the BOM. Same concern as web/pom.xml: the explicit version should be removed so the BOM manages the azure-identity version consistently with the rest of the Azure SDK."
+      }
+    ]
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/AssetsManagerApplication.java",
+    "description": "Removed @EnableRabbit annotation and its import. This is the correct migration step per the knowledge base (section 3.2: Remove annotation @EnableRabbit).",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/config/RabbitConfig.java",
+    "description": "Migrated from Spring AMQP RabbitMQ beans (Queue, MessageConverter, SimpleRabbitListenerContainerFactory) to Azure Service Bus beans (ServiceBusAdministrationClient, QueueProperties with get-or-create pattern, PropertiesSupplier<ConsumerIdentifier, ProcessorProperties> with autoComplete=false). Added @EnableAzureMessaging. All AMQP imports removed.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The class is still named RabbitConfig after full migration to Azure Service Bus. The name is misleading and should be updated to ServiceBusConfig or MessagingConfig to reflect the current technology stack."
+      }
+    ]
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/AzureBlobService.java",
+    "description": "New service class replacing S3-based storage (task 001 work). Uses ServiceBusTemplate.send with MessageBuilder to dispatch image-processing messages, which correctly replaces the original RabbitTemplate.convertAndSend pattern.",
+    "issues": [
+      {
+        "severity": "Major",
+        "description": "The listObjects() method calls imageMetadataRepository.findAll() inside the stream map closure, once per blob item. This is an N+1 query anti-pattern: if the container has N blobs, N full-table database queries are executed. Performance degrades linearly with the number of stored objects. The metadata should be fetched once before the stream and collected into a Map<String, ImageMetadata> keyed by S3Key for O(1) lookup per blob."
+      },
+      {
+        "severity": "Minor",
+        "description": "The getObject() method uses a background download thread and silently swallows all exceptions in its catch block with no logging or error propagation. If the blob download fails (e.g., network error, missing blob), the PipedOutputStream is closed silently, causing the PipedInputStream returned to the caller to raise an IOException with no diagnostic context. At minimum the exception should be logged."
+      }
+    ]
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/BackupMessageProcessor.java",
+    "description": "Migrated from @RabbitListener to @ServiceBusListener(destination = QUEUE_NAME). Channel + basicAck/basicNack replaced with ServiceBusReceivedMessageContext context.complete()/context.abandon(). Null-check added for context before invocation. All AMQP and RabbitMQ imports removed.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/LocalFileStorageService.java",
+    "description": "Replaced RabbitTemplate with ServiceBusTemplate. Replaced rabbitTemplate.convertAndSend(QUEUE_NAME, message) with MessageBuilder.withPayload(message).build() and serviceBusTemplate.send(QUEUE_NAME, sbMessage). No routing key is used so no SUBJECT header is needed, which is correct.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Removed all spring.rabbitmq.* properties (host, port, username, password). Added spring.cloud.azure.servicebus.namespace=${SERVICE_BUS_NAMESPACE} and spring.cloud.azure.servicebus.entity-type=queue. Managed identity credential settings (spring.cloud.azure.credential.managed-identity-enabled, spring.cloud.azure.credential.client-id) were already present from the PostgreSQL migration (task 003).",
+    "issues": []
+  },
+  {
+    "file": "web/src/test/resources/application.properties",
+    "description": "Replaced dummy AWS credential properties with dummy Azure Blob Storage and Service Bus test configuration (test-namespace, test-container). Appropriate for test context.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/WorkerApplication.java",
+    "description": "Removed @EnableRabbit annotation and its import. Correct migration step per knowledge base section 3.2.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/RabbitConfig.java",
+    "description": "Same migration as web/config/RabbitConfig.java: replaced AMQP beans with ServiceBusAdministrationClient, QueueProperties (get-or-create, @Lazy), and PropertiesSupplier<ConsumerIdentifier, ProcessorProperties> with autoComplete=false. Added @EnableAzureMessaging. The existing RetryTemplate bean is correctly preserved. All AMQP imports removed.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "The class is still named RabbitConfig after full migration to Azure Service Bus. Should be renamed to ServiceBusConfig or MessagingConfig for clarity."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/AbstractFileProcessingService.java",
+    "description": "Migrated from @RabbitListener to @ServiceBusListener(destination = QUEUE_NAME). Channel + basicAck/basicNack replaced with ServiceBusReceivedMessageContext context.complete()/context.abandon() with null-checks. The inner RetryCallback parameter was renamed from 'context' to 'retryContext' to avoid shadowing the outer ServiceBusReceivedMessageContext parameter — this is a correct and necessary fix. All AMQP and RabbitMQ imports removed.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Removed all spring.rabbitmq.* properties and AWS S3 configuration. Added spring.cloud.azure.servicebus.namespace=${SERVICE_BUS_NAMESPACE} and spring.cloud.azure.servicebus.entity-type=queue. Azure Blob Storage endpoint properties added.",
+    "issues": []
+  }
+]

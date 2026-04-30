@@ -1,11 +1,11 @@
 package com.microsoft.migration.assets.worker.service;
 
+import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
+import com.azure.spring.messaging.servicebus.implementation.core.annotation.ServiceBusListener;
+import com.azure.spring.messaging.servicebus.support.ServiceBusMessageHeaders;
 import com.microsoft.migration.assets.worker.model.ImageProcessingMessage;
 import com.microsoft.migration.assets.worker.util.StorageUtil;
-import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.retry.RetryCallback;
@@ -29,13 +29,12 @@ public abstract class AbstractFileProcessingService implements FileProcessor, Im
     private RetryTemplate retryTemplate;
 
     /**
-     * RabbitMQ entry point. Delegates processing to {@link #process(ImageProcessingMessage)}
-     * and handles AMQP acknowledgement.
+     * Service Bus entry point. Delegates processing to {@link #process(ImageProcessingMessage)}
+     * and handles message acknowledgement.
      */
-    @RabbitListener(queues = QUEUE_NAME)
+    @ServiceBusListener(destination = QUEUE_NAME)
     public void onMessage(final ImageProcessingMessage message,
-                          Channel channel,
-                          @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+                          @Header(ServiceBusMessageHeaders.RECEIVED_MESSAGE_CONTEXT) ServiceBusReceivedMessageContext sbContext) {
         try {
             retryTemplate.execute(new RetryCallback<Void, Exception>() {
                 @Override
@@ -48,20 +47,20 @@ public abstract class AbstractFileProcessingService implements FileProcessor, Im
                 }
             });
             log.debug("Acknowledging message after successful processing: {}", message.getKey());
-            channel.basicAck(deliveryTag, false);
+            if (sbContext != null) {
+                sbContext.complete();
+            }
         } catch (Exception e) {
             log.error("All retry attempts failed for image: " + message.getKey(), e);
-            try {
-                log.debug("Rejecting message after all retry attempts failed: {}", message.getKey());
-                channel.basicNack(deliveryTag, false, true);
-            } catch (IOException ackEx) {
-                log.error("Error handling RabbitMQ acknowledgment for: {}", message.getKey(), ackEx);
+            log.debug("Rejecting message after all retry attempts failed: {}", message.getKey());
+            if (sbContext != null) {
+                sbContext.abandon();
             }
         }
     }
 
     /**
-     * Core image-processing logic. Called by the AMQP listener and directly testable
+     * Core image-processing logic. Called by the Service Bus listener and directly testable
      * via {@link ImageProcessingAdaptor} without importing messaging SDK types.
      */
     @Override
