@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "setupBaseline",
+      "id": "000-setupBaseline",
+      "description": "Establish the modernization baseline by capturing the current state of the application before any changes are made.",
+      "reason": "A baseline is required to validate that all migration tasks produce correct results and to enable rollback if needed.",
+      "requirements": "Capture the current build and test state of the asset-manager-showpune project (web and worker modules). The baseline covers: migration of AWS S3 to Azure Blob Storage, migration of RabbitMQ AMQP to Azure Service Bus, and migration of PostgreSQL password authentication to Azure Database for PostgreSQL with Managed Identity.",
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "infrastructure",
+      "id": "001-infrastructure-bicep-generation",
+      "description": "Generate Bicep IaC files for all required Azure resources and provision them.",
+      "reason": "Azure resources (Blob Storage, Service Bus, Azure Database for PostgreSQL, Managed Identity) must be provisioned before the application can connect to Azure services.",
+      "requirements": "Generate Bicep IaC files to provision: Azure Storage Account with a Blob container (assets), Azure Service Bus Namespace (Standard SKU) with a queue named \u0027image-processing\u0027, Azure Database for PostgreSQL Flexible Server, and a User-Assigned Managed Identity with appropriate role assignments for all services. Provision resources after generating IaC files.",
+      "iacType": "bicep",
+      "provision": true,
+      "skills": [
+        {
+          "name": "infrastructure-bicep-generation",
+          "location": "builtin"
+        }
+      ],
+      "status": "success",
+      "taskSummary": "All Azure infrastructure provisioned successfully in subscription 'App Modernization - Infra' (2e62fb5f-4d5d-432f-b89c-85368ba3b878), resource group 'rg-asset-manager-showpune'. Resources: Storage Account 'azsthve4rw7qkv7k4' (eastus2) with blob container 'assets'; Service Bus Namespace 'azsbhve4rw7qkv7k4' (Standard, eastus2) with queue 'image-processing'; PostgreSQL Flexible Server 'azpg6kt67kwkpeqji2' (v17, Burstable B1ms, westus2, DB: asset_manager); User-Assigned Managed Identity 'azmihve4rw7qkv7k4' (clientId: c77e6224-3930-4f82-a0e6-56ee5da4797d, principalId: a150ddf1-b501-4992-ae97-29b99a22b37d). RBAC: Storage Blob Data Contributor and Service Bus Data Owner roles assigned to the MI. Entra admin set on PostgreSQL. PostgreSQL deployed in westus2 (eastus2 restricted for this subscription). Bicep files at ./infra/."
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-s3-to-azure-blob-storage",
+      "description": "Replace AWS S3 with Azure Blob Storage in both the web and worker modules.",
+      "reason": "The application uses AWS S3 SDK with static AWS credentials to store and retrieve asset images and thumbnails. Migrating to Azure Blob Storage with Managed Identity eliminates the need for static credentials and aligns storage with Azure.",
+      "requirements": "In both web and worker modules: replace the AWS SDK S3 dependency with Azure Blob Storage SDK, update AwsS3Config to use Azure BlobServiceClient with Managed Identity, migrate all S3 operations (upload, download, list objects, delete, URL generation) to Azure Blob Storage equivalents in AwsS3Service (web) and S3FileProcessingService (worker). Remove AWS access key and secret key configuration properties.",
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-rabbitmq-amqp-to-azure-service-bus",
+      "description": "Replace RabbitMQ AMQP messaging with Azure Service Bus in both the web and worker modules.",
+      "reason": "The application uses Spring AMQP with RabbitMQ for asynchronous image processing (web produces messages, worker consumes them). Migrating to Azure Service Bus with Managed Identity replaces on-premises messaging infrastructure with a managed Azure service.",
+      "requirements": "In both web and worker modules: replace spring-boot-starter-amqp and RabbitMQ client dependencies with Spring Cloud Azure Service Bus messaging, update RabbitConfig to configure Azure Service Bus connection, migrate the RabbitTemplate message producer (AwsS3Service/web) to Azure Service Bus sender, migrate @RabbitListener consumers (BackupMessageProcessor in web; worker\u0027s consumer) to Azure Service Bus listener, and update connection configuration to use Managed Identity authentication.",
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-postgresql-to-azure-postgresql-mi",
+      "description": "Migrate from password-based PostgreSQL to Azure Database for PostgreSQL with Managed Identity in both the web and worker modules.",
+      "reason": "Both modules connect to a self-hosted PostgreSQL instance using hardcoded username/password credentials. Migrating to Azure Database for PostgreSQL with Managed Identity removes plaintext credentials and provides a fully managed, secure database service.",
+      "requirements": "In both web and worker modules: update Spring Cloud Azure dependencies to include Azure Spring Data support for PostgreSQL, replace the JDBC password-based datasource configuration with Azure Managed Identity passwordless authentication, update application.properties to point to the Azure Database for PostgreSQL Flexible Server endpoint, and remove hardcoded database username and password.",
+      "dependencies": [
+        "000-setupBaseline"
+      ],
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "integrationTest",
+      "id": "005-integrationTest",
+      "description": "Build integration tests for migrated Azure services and run post-migration verification",
+      "reason": "Integration tests validate that the migrated application correctly interacts with Azure Blob Storage, Azure Service Bus, and Azure Database for PostgreSQL after transformation.",
+      "requirements": "Create and run integration tests for all three migrated services: verify Azure Blob Storage upload, list, download, and delete operations; verify Azure Service Bus message send and receive flow between web and worker; verify Azure Database for PostgreSQL connectivity and JPA operations. Use TestContainers or Azure test resources as appropriate.",
+      "dependencies": [
+        "002-transform-s3-to-azure-blob-storage",
+        "003-transform-rabbitmq-amqp-to-azure-service-bus",
+        "004-transform-postgresql-to-azure-postgresql-mi"
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "asset-manager-showpune",
+    "language": "java",
+    "createdAt": "2026-05-07T15:37:06.449\u002B08:00",
+    "version": "1.0"
+  }
+}
