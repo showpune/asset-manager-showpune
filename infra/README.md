@@ -135,3 +135,27 @@ infra/
 ├── README.md               # This file
 └── compliance.md           # IaC rules compliance report
 ```
+
+## Summary
+
+All Azure infrastructure has been provisioned and Bicep IaC files committed to `./infra/`.
+
+### Provisioned Resources (rg-asset-manager-showpune)
+
+| Resource | Name | Region |
+|---|---|---|
+| User-Assigned Managed Identity | `azmihve4rw7qkv7k4` | eastus2 |
+| Storage Account (Standard LRS) | `azsthve4rw7qkv7k4` | eastus2 |
+| Blob Container | `assets` | eastus2 |
+| Service Bus Namespace (Standard) | `azsbhve4rw7qkv7k4` | eastus2 |
+| Service Bus Queue | `image-processing` | eastus2 |
+| PostgreSQL Flexible Server (v17, B1ms) | `azpg6kt67kwkpeqji2` | **westus2**¹ |
+| PostgreSQL Database | `asset_manager` | westus2 |
+
+> ¹ PostgreSQL deployed to `westus2` because `eastus2` was restricted for this subscription. Resource name includes index suffix `2` per IaC rules.
+
+### Key Values for Migration Developers
+- **MI Client ID**: `c77e6224-3930-4f82-a0e6-56ee5da4797d`
+- **Storage Account**: `azsthve4rw7qkv7k4`
+- **Service Bus FQDN**: `azsbhve4rw7qkv7k4.servicebus.windows.net`
+- **PostgreSQL FQDN**: `azpg6kt67kwkpeqji2.postgres.database.azure.com`
