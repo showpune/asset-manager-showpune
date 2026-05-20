@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-s3-to-azure-blob",
+      "description": "Migrate application storage usage from AWS S3 to Azure Blob Storage.",
+      "reason": "The project currently uses AWS S3 and needs Azure-native object storage for modernization.",
+      "requirements": "Migrate S3-based storage operations in impacted modules to Azure Blob Storage while preserving current upload, download, list, and delete behavior. Use managed identity authentication for Azure access.",
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-rabbitmq-to-servicebus",
+      "description": "Migrate message processing from RabbitMQ to Azure Service Bus.",
+      "reason": "The project currently uses RabbitMQ and must align messaging with Azure-managed services.",
+      "requirements": "Migrate RabbitMQ-based message producer and consumer flows in web and worker modules to Azure Service Bus and preserve functional message flow semantics. Use managed identity authentication for Azure access.",
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-postgresql-auth-to-mi",
+      "description": "Migrate PostgreSQL authentication to Azure managed identity.",
+      "reason": "The project uses password-based PostgreSQL access and needs passwordless Azure authentication.",
+      "requirements": "Update PostgreSQL connection authentication from password-based access to managed identity for Azure Database for PostgreSQL while preserving existing data access behavior.",
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "security",
+      "id": "004-security-cve-remediation",
+      "description": "Scan project dependencies for CVEs and remediate vulnerabilities.",
+      "reason": "Security validation is required in every modernization plan before deployment activities.",
+      "requirements": "Scan all project dependencies for known CVEs and remediate identified vulnerabilities. Upgrade vulnerable dependencies to patched versions and verify the project builds and tests pass after remediation.",
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      },
+      "dependencies": [
+        "001-transform-s3-to-azure-blob",
+        "002-transform-rabbitmq-to-servicebus",
+        "003-transform-postgresql-auth-to-mi"
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "plan",
+    "projectName": "asset-manager-showpune",
+    "language": "java",
+    "createdAt": "2026-05-20T03:45:45.748Z",
+    "version": "1.0"
+  }
+}
