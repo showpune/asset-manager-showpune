@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-java-to-21",
+      "description": "Upgrade Java runtime from Java 17 to Java 21 across all modules",
+      "reason": "Java 21 is the latest LTS version with improved performance, virtual threads, and language features. Upgrading ensures the project stays current and eligible for long-term vendor support.",
+      "requirements": "Upgrade the Java version from 17 to 21 in the parent pom.xml and both the web and worker modules. Ensure all build configurations and compiler settings reflect the new version.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "create-java-upgrade-plan",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java version from 17 to 21 in the parent pom.xml. Both web and worker modules inherit this property. Build passed and all unit tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": null,
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-s3-to-azure-blob-storage",
+      "description": "Migrate file storage from AWS S3 to Azure Blob Storage",
+      "reason": "The application currently uses AWS S3 for storing uploaded assets and generated thumbnails. Migrating to Azure Blob Storage removes the dependency on AWS and enables credential-free access using Managed Identity.",
+      "requirements": "Migrate all AWS S3 interactions to Azure Blob Storage in both the web module (file upload, listing, deletion via AwsS3Service/StorageService) and the worker module (download originals, upload thumbnails via S3FileProcessingService). Replace AWS SDK v2 S3 client and configuration (AwsS3Config) with Azure Blob Storage SDK. Use Managed Identity for authentication. Remove AWS access key and secret key configuration properties.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Successfully migrated AWS S3 to Azure Blob Storage. Replaced S3Client with BlobServiceClient using DefaultAzureCredential (Managed Identity). Created AzureBlobStorageConfig, AzureBlobStorageService (web), and AzureBlobStorageFileProcessingService (worker). Updated pom.xml files to use Azure SDK BOM with azure-storage-blob, azure-storage-blob-batch, and azure-identity. Removed all AWS credentials from configuration. Build passed and all unit tests passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": null,
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-rabbitmq-to-azure-service-bus",
+      "description": "Migrate asynchronous messaging from RabbitMQ (AMQP) to Azure Service Bus",
+      "reason": "The application uses RabbitMQ for async image processing jobs between the web and worker modules. Migrating to Azure Service Bus removes the dependency on a self-hosted RabbitMQ broker and provides a fully managed, scalable messaging service with Managed Identity support.",
+      "requirements": "Migrate all RabbitMQ AMQP messaging in both the web module (publisher via RabbitConfig, BackupMessageProcessor) and the worker module (consumer via RabbitConfig, AbstractFileProcessingService with retry logic and manual acknowledgment) to Azure Service Bus. Preserve the existing retry behavior (max 3 attempts, 60-second backoff). Use Managed Identity for authentication. Remove RabbitMQ host, port, username, and password configuration properties.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Successfully migrated RabbitMQ AMQP to Azure Service Bus. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter and spring-messaging-azure-servicebus (BOM 5.22.0). Removed spring.rabbitmq.* properties and added spring.cloud.azure.servicebus.* with Managed Identity config. Migrated RabbitConfig (both modules) to use ServiceBusAdministrationClient, QueueProperties, and ProcessorProperties supplier with autoComplete=false. Replaced @RabbitListener with @ServiceBusListener in BackupMessageProcessor and AbstractFileProcessingService; replaced Channel/deliveryTag with ServiceBusReceivedMessageContext (complete/abandon). Replaced RabbitTemplate with ServiceBusTemplate in AzureBlobStorageService and LocalFileStorageService. Preserved retry logic (3 attempts, 60s backoff). Build passed and unit test passed.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": null,
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-postgresql-to-azure-postgresql-mi",
+      "description": "Migrate PostgreSQL database connections to Azure Database for PostgreSQL with Managed Identity",
+      "reason": "Both the web and worker modules connect to a local PostgreSQL instance using password-based credentials stored in application properties. Migrating to Azure Database for PostgreSQL with Managed Identity eliminates hardcoded credentials and improves security posture.",
+      "requirements": "Migrate the database connection configuration in both the web and worker modules from password-based PostgreSQL (spring.datasource.*) to Azure Database for PostgreSQL using Managed Identity for secure, credential-free authentication. Remove plaintext database username and password from application.properties.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-mi-postgresql-azure-sdk-public-cloud",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Successfully migrated PostgreSQL authentication to Azure Managed Identity. Added azure-identity-extensions:1.2.2 to web and worker pom.xml. Updated application.properties in both modules: appended AzurePostgresqlAuthenticationPlugin to JDBC URL, replaced username with ${AZURE_MANAGED_IDENTITY_CLIENT_ID:}, removed plaintext password. Build and unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": null,
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "integrationTest",
+      "id": "005-integrationTest",
+      "description": "Generate and run integration tests for Azure service migrations",
+      "reason": "Integration tests validate that the migrated services (Azure Blob Storage, Azure Service Bus, Azure Database for PostgreSQL) work correctly end-to-end, providing confidence that the application functions as expected after migration.",
+      "requirements": "Generate Layer 1 (Local Integration with TestContainers) and Layer 2 (Smoke Tests) for all Azure service migrations",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "integration-tests",
+          "location": "builtin"
+        }
+      ],
+      "layers": [1, 2],
+      "dependencies": [
+        "001-upgrade-java-to-21",
+        "002-transform-s3-to-azure-blob-storage",
+        "003-transform-rabbitmq-to-azure-service-bus",
+        "004-transform-postgresql-to-azure-postgresql-mi"
+      ],
+      "status": "failed",
+      "taskSummary": "Integration test generation (Layer 1 TestContainers and Layer 2 Smoke Tests) was attempted twice but could not complete within the available execution time. No test files were created."
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "assets-manager",
+    "language": "java",
+    "createdAt": "2026-04-16T07:18:49.602Z",
+    "version": "1.0"
+  }
+}

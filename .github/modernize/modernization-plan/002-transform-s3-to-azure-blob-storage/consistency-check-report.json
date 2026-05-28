@@ -1,0 +1,51 @@
+[
+  {
+    "file": "web/pom.xml",
+    "description": "Migration of dependencies from AWS S3 SDK to Azure Blob Storage SDK. Removed aws-sdk.version property and software.amazon.awssdk:s3 dependency. Added azure-storage-blob, azure-storage-blob-batch, and azure-identity dependencies with BOM management via azure-sdk-bom:1.2.36.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Migration of dependencies from AWS S3 SDK to Azure Blob Storage SDK. Removed aws-sdk.version property and software.amazon.awssdk:s3 dependency. Added azure-storage-blob, azure-storage-blob-batch, and azure-identity dependencies with BOM management via azure-sdk-bom:1.2.36.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/config/AzureBlobStorageConfig.java",
+    "description": "New configuration class replacing AwsS3Config.java. Creates BlobServiceClient bean using DefaultAzureCredentialBuilder for Managed Identity authentication and endpoint configuration from properties. Follows Azure SDK best practices by using DefaultAzureCredential instead of connection strings or shared keys.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/config/AzureBlobStorageConfig.java",
+    "description": "New configuration class replacing AwsS3Config.java. Creates BlobServiceClient bean using DefaultAzureCredentialBuilder for Managed Identity authentication and endpoint configuration from properties. Follows Azure SDK best practices by using DefaultAzureCredential instead of connection strings or shared keys.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/java/com/microsoft/migration/assets/service/AzureBlobStorageService.java",
+    "description": "New service class replacing AwsS3Service.java. Implements StorageService interface. Provides blob storage operations including listObjects(), uploadObject(), getObject(), and deleteObject(). Uses BlobServiceClient and BlobContainerClient APIs. Returns 'azure-blob' from getStorageType() method instead of 's3'. Maintains same functionality as AWS S3 implementation with Azure-equivalent APIs.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Line 55: Variable 's3Key' is semantically incorrect in Azure Blob Storage context. Metadata model should be updated to use 'blobKey' or 'storageKey' instead of 's3Key'. However, this is likely a pre-existing model field name that is reused for compatibility."
+      },
+      {
+        "severity": "Minor",
+        "description": "Line 96: Method uses 's3Url' field name in metadata which is semantically tied to AWS S3. For better clarity, consider renaming to 'storageUrl' in the metadata model when feasible."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/java/com/microsoft/migration/assets/worker/service/AzureBlobStorageFileProcessingService.java",
+    "description": "New service class replacing S3FileProcessingService.java. Extends AbstractFileProcessingService and implements blob storage operations for thumbnail processing. Provides downloadOriginal() and uploadThumbnail() methods using BlobClient APIs. Returns 'azure-blob' from getStorageType() method instead of 's3'. Maintains same functionality for thumbnail generation workflow.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Configuration migration from AWS S3 properties to Azure Blob Storage properties. Removed aws.accessKey, aws.secretKey, aws.region, aws.s3.bucket properties. Added azure.storage.endpoint and azure.storage.container properties. Follows Azure Storage Blob naming conventions as per skill guidance.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Configuration migration from AWS S3 properties to Azure Blob Storage properties. Removed aws.accessKeyId, aws.secretKey, aws.region, aws.s3.bucket properties. Added azure.storage.endpoint and azure.storage.container properties. Follows Azure Storage Blob naming conventions as per skill guidance.",
+    "issues": []
+  }
+]
