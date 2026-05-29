@@ -1,0 +1,94 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/modernize-cli/main/schemas/tasks-schema.json",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-migration-s3-to-azure-blob-storage",
+      "description": "Migrate AWS S3 storage to Azure Blob Storage in both the web and worker modules",
+      "reason": "The application uses AWS SDK v2 S3Client for all object storage operations. Migrating to Azure Blob Storage eliminates AWS dependency and enables credential-free access via Managed Identity.",
+      "requirements": "Migrate all S3 storage operations in both the web module (AwsS3Service: list, upload, download, delete, URL generation) and the worker module (S3FileProcessingService: download original, upload thumbnail) to Azure Blob Storage with Managed Identity authentication. Remove AWS SDK v2 S3 dependency and AWS credential configuration (aws.accessKey, aws.secretKey, aws.region, aws.s3.bucket) from both modules.",
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Migrated AWS S3 to Azure Blob Storage in both web and worker modules. Replaced S3Client with BlobServiceClient using DefaultAzureCredential (Managed Identity). All S3 operations (list, upload, download, delete, URL generation) migrated to Azure Blob equivalents. Removed AWS SDK v2 dependency and AWS credential configuration from both modules. Build and tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-migration-amqp-rabbitmq-servicebus",
+      "description": "Migrate RabbitMQ (AMQP) messaging to Azure Service Bus in both the web and worker modules",
+      "reason": "Both modules use Spring AMQP with RabbitMQ for the image-processing queue. Migrating to Azure Service Bus provides a fully managed cloud-native messaging service.",
+      "requirements": "Migrate the image-processing queue from RabbitMQ to Azure Service Bus in both modules. In the web module, migrate the RabbitTemplate producer in AwsS3Service and LocalFileStorageService. In the worker module, migrate the @RabbitListener consumer in AbstractFileProcessingService including retry policy (3 attempts, 60s backoff) and manual acknowledgment behavior. Remove RabbitMQ connection configuration (spring.rabbitmq.*) from both modules. Use Managed Identity authentication for Azure Service Bus.",
+      "dependencies": [
+        "001-transform-migration-s3-to-azure-blob-storage"
+      ],
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Migrated RabbitMQ (AMQP) messaging to Azure Service Bus in both web and worker modules. Replaced spring-boot-starter-amqp with spring-cloud-azure-starter and spring-messaging-azure-servicebus (version 5.22.0 BOM). Removed all spring.rabbitmq.* configuration from both modules and replaced with Azure Service Bus Managed Identity settings. Renamed RabbitConfig to ServiceBusConfig with @EnableAzureMessaging and PropertiesSupplier for manual acknowledgment. Migrated RabbitTemplate to ServiceBusTemplate in AwsS3Service and LocalFileStorageService. Migrated @RabbitListener to @ServiceBusListener in AbstractFileProcessingService and BackupMessageProcessor with context.complete()/abandon() for acknowledgment. Retained RetryTemplate (3 attempts, 60s backoff) for application-level retry. Build and tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-migration-mi-postgresql",
+      "description": "Migrate PostgreSQL from password-based authentication to Azure Managed Identity in both the web and worker modules",
+      "reason": "Both modules connect to PostgreSQL using plaintext credentials (postgres/postgres) in application.properties. Migrating to Managed Identity eliminates hardcoded secrets and improves security posture.",
+      "requirements": "Migrate the PostgreSQL connection in both the web and worker modules from password-based authentication to Azure Managed Identity for Azure Database for PostgreSQL. Remove plaintext credentials (spring.datasource.username, spring.datasource.password) from application.properties in both modules. Update the datasource configuration to use token-based authentication with Managed Identity.",
+      "dependencies": [
+        "001-transform-migration-s3-to-azure-blob-storage"
+      ],
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Migrated PostgreSQL from password-based authentication to Azure Managed Identity in both web and worker modules. Added spring-cloud-azure-starter-jdbc-postgresql dependency to both pom.xml files. Removed plaintext credentials (spring.datasource.username, spring.datasource.password) from application.properties in both modules. Updated datasource URL for Azure PostgreSQL and added spring.datasource.azure.passwordless-enabled=true for token-based Managed Identity authentication. Build and tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "Asset Manager Kit",
+    "language": "java",
+    "createdAt": "2026-04-22T05:11:55.264Z",
+    "version": "1.0"
+  }
+}
