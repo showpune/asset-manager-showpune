@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/modernize-cli/main/schemas/tasks-schema.json",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "003-transform-migration-mi-postgresql",
+      "description": "Migrate PostgreSQL from password-based authentication to Azure Managed Identity in both the web and worker modules",
+      "reason": "Both modules connect to PostgreSQL using plaintext credentials (postgres/postgres) in application.properties. Migrating to Managed Identity eliminates hardcoded secrets and improves security posture.",
+      "requirements": "Migrate the PostgreSQL connection in both the web and worker modules from password-based authentication to Azure Managed Identity for Azure Database for PostgreSQL. Remove plaintext credentials (spring.datasource.username, spring.datasource.password) from application.properties in both modules. Update the datasource configuration to use token-based authentication with Managed Identity.",
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "status": "success",
+      "taskSummary": "Migrated PostgreSQL from password-based authentication to Azure Managed Identity in both web and worker modules. Added spring-cloud-azure-starter-jdbc-postgresql dependency to both modules, added spring-cloud-azure-dependencies BOM v5.22.0 to root pom.xml, and removed plaintext credentials from application.properties in both modules. Test application.properties (H2 in-memory) was left untouched. Build and tests pass successfully.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "Asset Manager Kit",
+    "language": "java",
+    "createdAt": "2026-04-22T05:11:55.264Z",
+    "version": "1.0"
+  }
+}
