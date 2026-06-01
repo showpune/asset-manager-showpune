@@ -1,0 +1,11 @@
+execute-modernization-plan/
+execute-modernization-task/
+execute-upgrade-task/
+integration-tests/
+validate-playbook-compliance/
+validate-playbook-evidence/
+validation-check-consistency/
+infrastructure-bicep-generation/
+infrastructure-terraform-generation/
+migration-mi-postgresql/
+.gitignore

@@ -1,0 +1,27 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Root pom.xml - Added spring-cloud-azure-dependencies BOM with version 5.22.0 in dependencyManagement. This is compatible with Spring Boot 3.2.1 (spring-boot:3.x requires version >= 5.22.0). The change is correct and follows the guidance for Spring Boot 3.x projects.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency without explicit version (inherits from parent BOM). This follows best practices for dependency management through BOM import.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency without explicit version (inherits from parent BOM). This follows best practices for dependency management through BOM import.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Database configuration migrated from password-based (spring.datasource.password=postgres) to passwordless authentication using managed identity. Changes include: 1) Removed spring.datasource.password property; 2) Updated spring.datasource.url to use environment variables and Azure PostgreSQL host; 3) Updated spring.datasource.username to use ${MANAGED_IDENTITY_NAME}; 4) Added spring.datasource.azure.passwordless-enabled=true; 5) Added managed identity and credential properties; 6) Added comprehensive comments about authentication options and Azure sovereign clouds. All changes are consistent with the migration guidance.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Database configuration migrated from password-based (spring.datasource.password=postgres) to passwordless authentication using managed identity. Changes include: 1) Removed spring.datasource.password property; 2) Updated spring.datasource.url to use environment variables and Azure PostgreSQL host; 3) Updated spring.datasource.username to use ${MANAGED_IDENTITY_NAME}; 4) Added spring.datasource.azure.passwordless-enabled=true; 5) Added managed identity and credential properties; 6) Added comprehensive comments about authentication options and Azure sovereign clouds. All changes are consistent with the migration guidance.",
+    "issues": []
+  }
+]
