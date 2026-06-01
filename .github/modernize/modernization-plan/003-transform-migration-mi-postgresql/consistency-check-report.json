@@ -1,0 +1,32 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Parent POM updated to add spring-cloud-azure-dependencies BOM version 5.22.0 in dependencyManagement. The project uses Spring Boot 3.2.1, which requires spring-cloud-azure-dependencies >= 5.22.0 and < 7.0.0. The chosen version 5.22.0 satisfies this constraint. The BOM is correctly declared with type 'pom' and scope 'import'. The version is managed via a dedicated property 'spring-cloud-azure.version'.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency without an explicit version, correctly relying on the BOM declared in the parent POM to manage the version.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql dependency without an explicit version, correctly relying on the BOM declared in the parent POM to manage the version.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Migrated from password-based authentication to Azure Managed Identity for PostgreSQL. spring.datasource.password was removed. The datasource URL was updated to use the Azure PostgreSQL hostname pattern with environment variable placeholders. spring.datasource.username is set to ${MANAGED_IDENTITY_NAME}. Passwordless properties (spring.datasource.azure.passwordless-enabled, spring.cloud.azure.credential.managed-identity-enabled, spring.cloud.azure.credential.client-id) were added. Required comments for service principal auth, sovereign cloud, and instructions for system-assigned MI were included.",
+    "issues": []
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Migrated from password-based authentication to Azure Managed Identity for PostgreSQL, consistent with the web module. spring.datasource.password was removed. The datasource URL was updated to use the Azure PostgreSQL hostname pattern with environment variable placeholders. spring.datasource.username is set to ${MANAGED_IDENTITY_NAME}. Passwordless properties (spring.datasource.azure.passwordless-enabled, spring.cloud.azure.credential.managed-identity-enabled, spring.cloud.azure.credential.client-id) were added. Required comments for service principal auth, sovereign cloud, and instructions for system-assigned MI were included.",
+    "issues": []
+  },
+  {
+    "file": "web/src/test/resources/application.properties",
+    "description": "Test configuration uses H2 in-memory database. No changes were made to this file, which is correct since the passwordless migration applies only to the Azure PostgreSQL datasource used at runtime, not to the H2 datasource used for unit tests.",
+    "issues": []
+  }
+]
