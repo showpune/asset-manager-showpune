@@ -1,0 +1,42 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Parent POM updated to support PostgreSQL Managed Identity authentication via Spring Cloud Azure. Added spring-cloud-azure-dependencies BOM with version 5.22.0, which is the correct version for Spring Boot 3.2.1.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Web module POM updated to include spring-cloud-azure-starter-jdbc-postgresql dependency. This dependency provides Spring Boot auto-configuration for PostgreSQL passwordless authentication using Managed Identity.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Worker module POM updated to include spring-cloud-azure-starter-jdbc-postgresql dependency. Ensures consistent Managed Identity authentication setup across both application modules.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Web module application properties migrated from hardcoded password-based authentication to Azure Managed Identity. Original plaintext credentials (postgres/postgres) replaced with environment variable references and passwordless authentication configuration. Comprehensive comments added for Azure sovereign cloud and service principal authentication alternatives.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Placeholder value 'spring.cloud.azure.credential.client-id=<your_managed_identity_client_id>' uses angle bracket notation instead of being an environment variable reference. While this matches the migration skill example, it should be replaced with an environment variable like ${MANAGED_IDENTITY_CLIENT_ID} before deployment for consistency with other properties in the file."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Worker module application properties migrated from hardcoded password-based authentication to Azure Managed Identity. Original plaintext credentials (postgres/postgres) replaced with environment variable references and passwordless authentication configuration. Comprehensive comments added for Azure sovereign cloud and service principal authentication alternatives.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Placeholder value 'spring.cloud.azure.credential.client-id=<your_managed_identity_client_id>' uses angle bracket notation instead of being an environment variable reference. While this matches the migration skill example, it should be replaced with an environment variable like ${MANAGED_IDENTITY_CLIENT_ID} before deployment for consistency with other properties in the file."
+      }
+    ]
+  },
+  {
+    "file": ".github/modernize/modernization-plan/tasks.json",
+    "description": "Task metadata updated with 'status': 'started' field. This is a non-functional change related to task state tracking.",
+    "issues": []
+  }
+]
