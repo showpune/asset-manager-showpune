@@ -1,0 +1,47 @@
+[
+  {
+    "file": "pom.xml",
+    "description": "Added spring-cloud-azure-dependencies BOM for managing Spring Cloud Azure versions. Added version property for spring-cloud-azure (5.22.0) which is compatible with Spring Boot 3.x. This follows best practice guidelines in the migration-mi-postgresql skill.",
+    "issues": []
+  },
+  {
+    "file": "web/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency for Spring Boot Azure PostgreSQL integration. This dependency is essential for enabling Azure Managed Identity authentication with PostgreSQL. The dependency uses the version managed by the parent BOM, which is appropriate.",
+    "issues": []
+  },
+  {
+    "file": "worker/pom.xml",
+    "description": "Added spring-cloud-azure-starter-jdbc-postgresql dependency for Spring Boot Azure PostgreSQL integration in the worker module. This ensures both web and worker modules have the same Azure PostgreSQL authentication capability.",
+    "issues": []
+  },
+  {
+    "file": "web/src/main/resources/application.properties",
+    "description": "Updated PostgreSQL datasource configuration to use Azure Managed Identity authentication. Changes include: (1) Removed hardcoded username and password (security improvement), (2) Added comprehensive comments explaining Azure-specific configuration options including managed identity, service principal, and sovereign cloud support, (3) Updated JDBC URL to use environment variables for Azure PostgreSQL server details, (4) Set spring.datasource.username to use managed identity name via environment variable, (5) Enabled passwordless authentication with spring.datasource.azure.passwordless-enabled=true, (6) Added Azure credential configuration properties for managed identity.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Property 'spring.cloud.azure.credential.client-id=<your_managed_identity_client_id>' contains a placeholder value that needs to be replaced at deployment time. This is noted in the comments but should be clearly documented in deployment instructions. For system-assigned managed identity (as noted in comment 2), this property can be omitted."
+      }
+    ]
+  },
+  {
+    "file": "worker/src/main/resources/application.properties",
+    "description": "Updated PostgreSQL datasource configuration to use Azure Managed Identity authentication, identical to web module changes. Changes follow the same pattern as web module: removed hardcoded credentials, added comprehensive documentation for Azure configuration options, and enabled passwordless authentication with managed identity.",
+    "issues": [
+      {
+        "severity": "Minor",
+        "description": "Property 'spring.cloud.azure.credential.client-id=<your_managed_identity_client_id>' contains a placeholder value that needs to be replaced at deployment time. This is noted in the comments but should be clearly documented in deployment instructions. For system-assigned managed identity (as noted in comment 2), this property can be omitted."
+      }
+    ]
+  },
+  {
+    "file": ".github/modernize/modernization-plan/tasks.json",
+    "description": "Updated task status to 'started' for tracking modernization plan execution progress. This is a metadata change for plan management and does not affect application functionality.",
+    "issues": []
+  },
+  {
+    "file": "web/src/test/resources/application.properties",
+    "description": "Test configuration file using H2 in-memory database was correctly NOT modified. This is appropriate because test configurations should not be affected by production database migration changes. The test environment continues to use H2 for unit testing, which is independent of the PostgreSQL migration.",
+    "issues": []
+  }
+]
