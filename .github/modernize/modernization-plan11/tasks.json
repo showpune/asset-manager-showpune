@@ -1,0 +1,70 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/azure-modernization-toolkit/main/schemas/tasks-schema.json",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-migration-s3-to-azure-blob-storage",
+      "description": "Migrate all file storage operations from AWS S3 to Azure Blob Storage in both the web and worker modules.",
+      "reason": "The application uses AWS S3 for storing original images and thumbnails. To run on Azure, storage must be migrated to Azure Blob Storage with managed identity for secure, credential-free authentication.",
+      "requirements": "Migrate the StorageService implementation (AwsS3Service and LocalFileStorageService) in the web module and corresponding storage usage in the worker module to use Azure Blob Storage. Replace AWS SDK v2 S3 client with Azure Blob Storage SDK. Support upload, download, list, delete, and URL generation operations. Use managed identity for authentication. Remove AWS access key and secret key configuration.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-s3-to-azure-blob-storage",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-migration-amqp-rabbitmq-servicebus",
+      "description": "Migrate the AMQP-based RabbitMQ messaging to Azure Service Bus in both the web and worker modules.",
+      "reason": "The application uses RabbitMQ with AMQP for asynchronous image-processing message passing. Migrating to Azure Service Bus provides a fully managed, cloud-native messaging service with managed identity support.",
+      "requirements": "Migrate the image-processing queue producer in the web module and the @RabbitListener consumer in the worker module from RabbitMQ (AMQP) to Azure Service Bus. Preserve manual acknowledgment semantics and retry logic (3 attempts, 1-minute backoff). Migrate JSON message serialization. Use managed identity for authentication. Remove RabbitMQ host, port, username, and password configuration.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-amqp-rabbitmq-servicebus",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-migration-postgresql-azure-sdk-public-cloud",
+      "description": "Migrate database connectivity from password-based local PostgreSQL to Azure Database for PostgreSQL with managed identity authentication in both the web and worker modules.",
+      "reason": "The application connects to a local PostgreSQL database using plaintext password credentials. Migrating to Azure Database for PostgreSQL with managed identity eliminates static credential management and follows Azure security best practices.",
+      "requirements": "Migrate the datasource configuration in both web and worker modules from password-based local PostgreSQL to Azure Database for PostgreSQL using Azure SDK and managed identity for credential-free authentication. JPA entities (ImageMetadata) and Spring Data JPA repositories remain unchanged. Remove plaintext postgres username and password from application.properties.",
+      "environmentConfiguration": null,
+      "skills": [
+        {
+          "name": "migration-mi-postgresql-azure-sdk-public-cloud",
+          "location": "project"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan11",
+    "projectName": "asset-manager-kit",
+    "language": "java",
+    "createdAt": "2026-04-17T09:13:20.254Z",
+    "version": "1.0"
+  }
+}
